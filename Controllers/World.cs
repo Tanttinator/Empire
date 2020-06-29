@@ -11,6 +11,10 @@ public class World : MonoBehaviour
     [SerializeField] int width = 10;
     [SerializeField] int height = 10;
 
+    [Header("Terrain")]
+    [SerializeField] Ground grassland = default;
+    [SerializeField] Ground water = default;
+
     public static int Width => instance.width;
     public static int Height => instance.height;
 
@@ -29,7 +33,7 @@ public class World : MonoBehaviour
         {
             for(int y = 0; y < Height; y++)
             {
-                tiles[x, y] = new Tile(new Coords(x, y), instance);
+                tiles[x, y] = new Tile(new Coords(x, y), (Random.value < 0.5f? instance.grassland : instance.water), instance);
             }
         }
     }

@@ -9,6 +9,7 @@ public class WorldGraphics : MonoBehaviour
 {
 
     [SerializeField] TileGraphics tileObject = default;
+    [SerializeField] GroundSpriteData[] groundSprites = default;
     static TileGraphics[,] tiles;
 
     static WorldGraphics instance;
@@ -60,9 +61,30 @@ public class WorldGraphics : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Find a sprite for the ground type in the registry.
+    /// </summary>
+    /// <param name="ground"></param>
+    /// <returns></returns>
+    public static Sprite GetGroundSprite(Ground ground)
+    {
+        foreach(GroundSpriteData data in instance.groundSprites)
+        {
+            if (data.ground == ground) return data.sprite;
+        }
+        return null;
+    }
+
     private void Awake()
     {
         instance = this;
     }
 
+}
+
+[System.Serializable]
+public struct GroundSpriteData
+{
+    public Ground ground;
+    public Sprite sprite;
 }

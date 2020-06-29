@@ -18,5 +18,6 @@ public class TileGraphics : MonoBehaviour
     public void SetTile(Tile tile)
     {
         this.tile = tile;
+        ground.sprite = WorldGraphics.GetGroundSprite(tile.ground);
     }
 }
