@@ -8,28 +8,55 @@ using UnityEngine;
 public class WorldGraphics : MonoBehaviour
 {
 
-    [SerializeField] GameObject tileObject = default;
-    static GameObject[,] tiles;
+    [SerializeField] TileGraphics tileObject = default;
+    static TileGraphics[,] tiles;
 
     static WorldGraphics instance;
 
     /// <summary>
-    /// Refresh the world graphics according to the current state of the game.
+    /// Create all tile objects.
     /// </summary>
-    public static void RefreshWorld()
+    public static void InitTiles()
     {
         int width = World.Width;
         int height = World.Height;
 
-        tiles = new GameObject[width, height];
+        tiles = new TileGraphics[width, height];
 
-        for(int x = 0; x < width; x++)
+        for (int x = 0; x < width; x++)
         {
-            for(int y = 0; y < height; y++)
+            for (int y = 0; y < height; y++)
             {
-                if(tiles[x, y] == null)
-                    tiles[x, y] = Instantiate(instance.tileObject, new Vector3(x, y, 0), Quaternion.identity, instance.transform);
+                TileGraphics gfx = tiles[x, y] = Instantiate(instance.tileObject.gameObject, new Vector3(x, y, 0), Quaternion.identity, instance.transform).GetComponent<TileGraphics>();
+                gfx.SetTile(World.GetTile(x, y));
             }
+        }
+    }
+
+    /// <summary>
+    /// Refresh the world graphics according to the current state of the game.
+    /// </summary>
+    public static void RefreshTiles()
+    {
+        for(int x = 0; x < World.Width; x++)
+        {
+            for(int y = 0; y < World.Height; y++)
+            {
+                RefreshTile(x, y);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Refresh graphics of a single tile.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    public static void RefreshTile(int x, int y)
+    {
+        if (tiles[x, y] == null)
+        {
+            
         }
     }
 

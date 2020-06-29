@@ -14,11 +14,52 @@ public class World : MonoBehaviour
     public static int Width => instance.width;
     public static int Height => instance.height;
 
+    static Tile[,] tiles;
+
     static World instance;
+
+    /// <summary>
+    /// Generate tiles based on the worlds parametes.
+    /// </summary>
+    static void GenerateWorld()
+    {
+        tiles = new Tile[Width, Height];
+
+        for(int x = 0; x < Width; x++)
+        {
+            for(int y = 0; y < Height; y++)
+            {
+                tiles[x, y] = new Tile(new Coords(x, y), instance);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Try to get a tile at the given coordinates.
+    /// </summary>
+    /// <param name="coords"></param>
+    /// <returns></returns>
+    public static Tile GetTile(Coords coords)
+    {
+        return GetTile(coords.x, coords.y);
+    }
+
+    /// <summary>
+    /// Try to get a tile at the given coordinates.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns></returns>
+    public static Tile GetTile(int x, int y)
+    {
+        if (x < 0 || x >= Width || y < 0 || y >= Height) return null;
+        return tiles[x, y];
+    }
 
     private void Start()
     {
-        WorldGraphics.RefreshWorld();
+        GenerateWorld();
+        WorldGraphics.InitTiles();
     }
 
     private void Awake()
