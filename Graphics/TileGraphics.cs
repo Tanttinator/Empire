@@ -9,7 +9,8 @@ public class TileGraphics : MonoBehaviour
 {
     Tile tile;
 
-    [SerializeField] SpriteRenderer ground = default;
+    [SerializeField] SpriteRenderer groundGfx = default;
+    [SerializeField] UnitGraphics unitGfx = default;
 
     /// <summary>
     /// Set the target tile.
@@ -18,6 +19,15 @@ public class TileGraphics : MonoBehaviour
     public void SetTile(Tile tile)
     {
         this.tile = tile;
-        ground.sprite = WorldGraphics.GetGroundSprite(tile.ground);
+        groundGfx.sprite = WorldGraphics.GetGroundSprite(tile.ground);
+        tile.onUnitSet += (u) => Refresh();
+    }
+
+    /// <summary>
+    /// Refresh the graphics.
+    /// </summary>
+    public void Refresh()
+    {
+        unitGfx.SetUnit(tile.unit);
     }
 }

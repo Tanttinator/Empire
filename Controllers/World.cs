@@ -64,6 +64,7 @@ public class World : MonoBehaviour
     {
         GenerateWorld();
         WorldGraphics.InitTiles();
+        UnitController.SpawnUnit(UnitController.Units[0], GetTile(Width / 2, Height / 2));
     }
 
     private void Awake()
