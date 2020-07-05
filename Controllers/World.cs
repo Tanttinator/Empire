@@ -56,8 +56,19 @@ public class World : MonoBehaviour
     /// <returns></returns>
     public static Tile GetTile(int x, int y)
     {
-        if (x < 0 || x >= Width || y < 0 || y >= Height) return null;
+        if (!ValidCoords(x, y)) return null;
         return tiles[x, y];
+    }
+
+    /// <summary>
+    /// Are the given coordiantes within this worlds dimensions?
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns></returns>
+    public static bool ValidCoords(int x, int y)
+    {
+        return x >= 0 && x < Width && y >= 0 && y < Height;
     }
 
     private void Start()

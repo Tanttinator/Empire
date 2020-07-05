@@ -19,12 +19,30 @@ public class UnitGraphicsController : MonoBehaviour
         {
             if (data.unit == unit) return data.sprite;
         }
+        Debug.LogError("No sprite registered for unit of type: " + unit.name);
         return null;
+    }
+
+    /// <summary>
+    /// Called when a unit of a tile changes.
+    /// </summary>
+    /// <param name="tile"></param>
+    /// <param name="unit"></param>
+    void OnUnitTileSet(Tile tile, Unit unit)
+    {
+        WorldGraphics.GetTileGraphics(tile.coords.x, tile.coords.y).SetUnit(unit);
     }
 
     private void Awake()
     {
         instance = this;
+
+        Tile.onTileUnitSet += OnUnitTileSet;
+    }
+
+    private void OnDisable()
+    {
+        Tile.onTileUnitSet -= OnUnitTileSet;
     }
 }
 

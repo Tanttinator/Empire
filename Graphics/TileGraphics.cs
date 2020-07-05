@@ -7,8 +7,6 @@ using UnityEngine;
 /// </summary>
 public class TileGraphics : MonoBehaviour
 {
-    Tile tile;
-
     [SerializeField] SpriteRenderer groundGfx = default;
     [SerializeField] UnitGraphics unitGfx = default;
 
@@ -16,18 +14,17 @@ public class TileGraphics : MonoBehaviour
     /// Set the target tile.
     /// </summary>
     /// <param name="tile"></param>
-    public void SetTile(Tile tile)
+    public void SetGround(Ground ground)
     {
-        this.tile = tile;
-        groundGfx.sprite = WorldGraphics.GetGroundSprite(tile.ground);
-        tile.onUnitSet += (u) => Refresh();
+        groundGfx.sprite = WorldGraphics.GetGroundSprite(ground);
     }
 
     /// <summary>
-    /// Refresh the graphics.
+    /// Set the unit on this tile.
     /// </summary>
-    public void Refresh()
+    /// <param name="unit"></param>
+    public void SetUnit(Unit unit)
     {
-        unitGfx.SetUnit(tile.unit);
+        unitGfx.SetUnit(unit);
     }
 }

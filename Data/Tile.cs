@@ -12,7 +12,7 @@ public class Tile
     public Ground ground { get; protected set; }
     public Unit unit { get; protected set; }
 
-    public event Action<Unit> onUnitSet;
+    public static event Action<Tile, Unit> onTileUnitSet;
 
     World world;
 
@@ -30,6 +30,6 @@ public class Tile
     public void SetUnit(Unit unit)
     {
         this.unit = unit;
-        onUnitSet?.Invoke(unit);
+        onTileUnitSet?.Invoke(this, unit);
     }
 }

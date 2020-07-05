@@ -29,35 +29,8 @@ public class WorldGraphics : MonoBehaviour
             for (int y = 0; y < height; y++)
             {
                 TileGraphics gfx = tiles[x, y] = Instantiate(instance.tileObject.gameObject, new Vector3(x, y, 0), Quaternion.identity, instance.transform).GetComponent<TileGraphics>();
-                gfx.SetTile(World.GetTile(x, y));
+                gfx.SetGround(World.GetTile(x, y).ground);
             }
-        }
-    }
-
-    /// <summary>
-    /// Refresh the world graphics according to the current state of the game.
-    /// </summary>
-    public static void RefreshTiles()
-    {
-        for(int x = 0; x < World.Width; x++)
-        {
-            for(int y = 0; y < World.Height; y++)
-            {
-                RefreshTile(x, y);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Refresh graphics of a single tile.
-    /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    public static void RefreshTile(int x, int y)
-    {
-        if (tiles[x, y] == null)
-        {
-            
         }
     }
 
@@ -72,7 +45,20 @@ public class WorldGraphics : MonoBehaviour
         {
             if (data.ground == ground) return data.sprite;
         }
+        Debug.LogError("No sprite found for ground of type: " + ground.name);
         return null;
+    }
+
+    /// <summary>
+    /// Returns the graphics at the given coordinates.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns></returns>
+    public static TileGraphics GetTileGraphics(int x, int y)
+    {
+        if (!World.ValidCoords(x, y)) return null;
+        return tiles[x, y];
     }
 
     private void Awake()

@@ -6,6 +6,12 @@ public class UnitGraphics : MonoBehaviour
 {
     [SerializeField] SpriteRenderer unitSprite = default;
 
+    bool shown = false;
+
+    bool idle = false;
+    float idleTimer = 0f;
+    [SerializeField] float idleFrequency = 1f;
+
     /// <summary>
     /// Set the type of unit to be shown.
     /// </summary>
@@ -21,11 +27,26 @@ public class UnitGraphics : MonoBehaviour
     }
 
     /// <summary>
+    /// Start / Stop unit idle animation.
+    /// </summary>
+    /// <param name="idle"></param>
+    public void SetIdle(bool idle)
+    {
+        this.idle = idle;
+        idleTimer = 0f;
+        unitSprite.enabled = shown;
+    }
+
+    /// <summary>
     /// Make this graphic visible.
     /// </summary>
     public void Show()
     {
         unitSprite.enabled = true;
+        shown = true;
+
+        //TEST
+        SetIdle(true);
     }
 
     /// <summary>
@@ -34,10 +55,25 @@ public class UnitGraphics : MonoBehaviour
     public void Hide()
     {
         unitSprite.enabled = false;
+        shown = false;
+        SetIdle(false);
     }
 
     private void Awake()
     {
         Hide();
+    }
+
+    private void Update()
+    {
+        if(idle && shown)
+        {
+            idleTimer += Time.deltaTime;
+            if(idleTimer >= idleFrequency)
+            {
+                unitSprite.enabled = !unitSprite.enabled;
+                idleTimer = 0f;
+            }
+        }
     }
 }
