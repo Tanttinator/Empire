@@ -25,7 +25,7 @@ public struct Coords
 
     public static implicit operator Coords(Vector2 v2)
     {
-        return new Coords((int)v2.x, (int)v2.y);
+        return new Coords(Mathf.RoundToInt(v2.x), Mathf.RoundToInt(v2.y));
     }
 
     public static implicit operator Vector2(Coords c)

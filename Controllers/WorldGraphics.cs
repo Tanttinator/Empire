@@ -61,6 +61,17 @@ public class WorldGraphics : MonoBehaviour
         return tiles[x, y];
     }
 
+    /// <summary>
+    /// Returns the tile whose graphics overlap a point in the world.
+    /// </summary>
+    /// <param name="point"></param>
+    /// <returns></returns>
+    public static Tile GetTileAtPoint(Vector2 point)
+    {
+        Vector2 relativePoint = new Vector2(point.x - instance.transform.position.x, point.y - instance.transform.position.y);
+        return World.GetTile(relativePoint);
+    }
+
     private void Awake()
     {
         instance = this;
