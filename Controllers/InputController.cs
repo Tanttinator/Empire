@@ -35,7 +35,11 @@ public class InputController : MonoBehaviour
         if(Input.GetMouseButtonDown(0))
         {
             Tile tile = GetTileUnderMouse();
-            if (tile != null) UnitController.unit.SetTile(tile);
+            if (tile != null)
+            {
+                UnitController.unit.SetTarget(tile);
+                UnitController.unit.MoveToTarget();
+            }
         }
     }
 }

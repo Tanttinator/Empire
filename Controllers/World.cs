@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using AStar;
 
 /// <summary>
 /// Stores data for the current world.
@@ -33,7 +34,7 @@ public class World : MonoBehaviour
         {
             for(int y = 0; y < Height; y++)
             {
-                tiles[x, y] = new Tile(new Coords(x, y), (Random.value < 0.5f? instance.grassland : instance.water), instance);
+                tiles[x, y] = new Tile(new Coords(x, y), (Random.value < 0.5f? instance.grassland : instance.water));
             }
         }
     }
@@ -61,6 +62,33 @@ public class World : MonoBehaviour
     }
 
     /// <summary>
+    /// Get all neighboring tiles of a tile.
+    /// </summary>
+    /// <param name="tile"></param>
+    /// <returns></returns>
+    public static Tile[] GetNeighbors(Tile tile)
+    {
+        List<Tile> tiles = new List<Tile>();
+        foreach(Direction dir in Direction.directions)
+        {
+            Tile neighbor = GetNeighbor(tile, dir);
+            if (neighbor != null) tiles.Add(neighbor);
+        }
+        return tiles.ToArray();
+    }
+
+    /// <summary>
+    /// Return the neighbor of the given tile in a direction.
+    /// </summary>
+    /// <param name="tile"></param>
+    /// <param name="dir"></param>
+    /// <returns></returns>
+    public static Tile GetNeighbor(Tile tile, Direction dir)
+    {
+        return GetTile(tile.coords.Neighbor(dir));
+    }
+
+    /// <summary>
     /// Are the given coordiantes within this worlds dimensions?
     /// </summary>
     /// <param name="x"></param>
@@ -69,6 +97,18 @@ public class World : MonoBehaviour
     public static bool ValidCoords(int x, int y)
     {
         return x >= 0 && x < Width && y >= 0 && y < Height;
+    }
+
+    /// <summary>
+    /// Find the shortest path to the target for the given unit.
+    /// </summary>
+    /// <param name="from"></param>
+    /// <param name="to"></param>
+    /// <param name="unit"></param>
+    /// <returns></returns>
+    public static Queue<Tile> GetPath(Unit unit, Tile target)
+    {
+        return AStar.AStar.GeneratePath<Tile>(unit.tile, target, unit);
     }
 
     private void Start()
