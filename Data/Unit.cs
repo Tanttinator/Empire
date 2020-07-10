@@ -11,6 +11,8 @@ public class Unit
     Tile target;
     Queue<Tile> currentPath;
 
+    public static event Action<Unit, Tile, Tile> onUnitMoved;
+
     public Unit(UnitType type, Tile tile)
     {
         this.type = type;
@@ -23,9 +25,11 @@ public class Unit
     /// <param name="tile"></param>
     public bool SetTile(Tile tile)
     {
-        this.tile?.SetUnit(null);
+        Tile oldTile = this.tile;
+        oldTile?.SetUnit(null);
         this.tile = tile;
         tile.SetUnit(this);
+        onUnitMoved?.Invoke(this, oldTile, tile);
         return true;
     }
 

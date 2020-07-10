@@ -28,21 +28,21 @@ public class UnitGraphicsController : MonoBehaviour
     /// </summary>
     /// <param name="tile"></param>
     /// <param name="unit"></param>
-    void OnUnitTileSet(Tile tile, Unit unit)
+    void OnUnitMoved(Unit unit, Tile from, Tile to)
     {
-        WorldGraphics.GetTileGraphics(tile.coords.x, tile.coords.y).SetUnit(unit);
+        Sequencer.AddSequence(new UnitMoveSequence(unit, from, to));
     }
 
     private void Awake()
     {
         instance = this;
 
-        Tile.onTileUnitSet += OnUnitTileSet;
+        Unit.onUnitMoved += OnUnitMoved;
     }
 
     private void OnDisable()
     {
-        Tile.onTileUnitSet -= OnUnitTileSet;
+        Unit.onUnitMoved -= OnUnitMoved;
     }
 }
 
@@ -51,4 +51,32 @@ public struct UnitSpriteData
 {
     public UnitType unit;
     public Sprite sprite;
+}
+
+public class UnitMoveSequence : Sequence
+{
+    Unit unit;
+    Tile from;
+    Tile to;
+
+    float progress = 0f;
+
+    public UnitMoveSequence(Unit unit, Tile from, Tile to)
+    {
+        this.unit = unit;
+        this.from = from;
+        this.to = to;
+    }
+
+    public override void Start()
+    {
+        if(from != null) WorldGraphics.GetTileGraphics(from.coords.x, from.coords.y).SetUnit(null);
+        WorldGraphics.GetTileGraphics(to.coords.x, to.coords.y).SetUnit(unit);
+    }
+
+    public override bool Update()
+    {
+        progress += Time.deltaTime;
+        return progress >= 0.4f;
+    }
 }
