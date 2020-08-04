@@ -7,16 +7,20 @@ public class Unit
 {
     public UnitType type { get; protected set; }
     public Tile tile { get; protected set; }
+    public Player owner { get; protected set; }
 
     Tile target;
     Queue<Tile> currentPath;
 
     public static event Action<Unit, Tile, Tile> onUnitMoved;
 
-    public Unit(UnitType type, Tile tile)
+    public Unit(UnitType type, Tile tile, Player owner)
     {
         this.type = type;
         SetTile(tile);
+
+        this.owner = owner;
+        owner.AddUnit(this);
     }
 
     /// <summary>

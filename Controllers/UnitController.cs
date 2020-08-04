@@ -6,7 +6,6 @@ public class UnitController : MonoBehaviour
 {
     [SerializeField] UnitType[] units = default;
     public static UnitType[] Units => instance.units;
-    public static Unit unit;
 
     static UnitController instance;
 
@@ -15,10 +14,9 @@ public class UnitController : MonoBehaviour
     /// </summary>
     /// <param name="type"></param>
     /// <param name="tile"></param>
-    public static Unit SpawnUnit(UnitType type, Tile tile)
+    public static Unit SpawnUnit(UnitType type, Tile tile, Player owner)
     {
-        unit = new Unit(type, tile);
-        return unit;
+        return new Unit(type, tile, owner);
     }
 
     private void Awake()

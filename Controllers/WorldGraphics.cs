@@ -62,6 +62,18 @@ public class WorldGraphics : MonoBehaviour
     }
 
     /// <summary>
+    /// Returns the graphics at the given coordinates.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns></returns>
+    public static TileGraphics GetTileGraphics(Coords c)
+    {
+        if (!World.ValidCoords(c.x, c.y)) return null;
+        return tiles[c.x, c.y];
+    }
+
+    /// <summary>
     /// Returns the tile whose graphics overlap a point in the world.
     /// </summary>
     /// <param name="point"></param>

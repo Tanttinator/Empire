@@ -19,19 +19,20 @@ public class Sequencer : MonoBehaviour
 
     private void Update()
     {
-        if(currentSequence != null)
+        if (currentSequence != null)
         {
-            if(currentSequence.Update())
+            if (currentSequence.Update())
             {
                 currentSequence.End();
                 currentSequence = null;
             }
-        } 
-        else if(sequenceQueue.Count > 0)
+        }
+        else if (sequenceQueue.Count > 0)
         {
             currentSequence = sequenceQueue.Dequeue();
             currentSequence.Start();
         }
+        else UnitGraphicsController.Idle();
     }
 }
 

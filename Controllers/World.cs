@@ -26,7 +26,7 @@ public class World : MonoBehaviour
     /// <summary>
     /// Generate tiles based on the worlds parametes.
     /// </summary>
-    static void GenerateWorld()
+    public static void GenerateWorld()
     {
         tiles = new Tile[Width, Height];
 
@@ -109,13 +109,6 @@ public class World : MonoBehaviour
     public static Queue<Tile> GetPath(Unit unit, Tile target)
     {
         return AStar.AStar.GeneratePath<Tile>(unit.tile, target, unit);
-    }
-
-    private void Start()
-    {
-        GenerateWorld();
-        WorldGraphics.InitTiles();
-        UnitController.SpawnUnit(UnitController.Units[0], GetTile(Width / 2, Height / 2));
     }
 
     private void Awake()

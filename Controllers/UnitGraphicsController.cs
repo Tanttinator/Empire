@@ -9,6 +9,14 @@ public class UnitGraphicsController : MonoBehaviour
     static UnitGraphicsController instance;
 
     /// <summary>
+    /// Play unit idle animation.
+    /// </summary>
+    public static void Idle()
+    {
+
+    }
+
+    /// <summary>
     /// Find a sprite matching the given unit type in the registry.
     /// </summary>
     /// <param name="unit"></param>
@@ -70,13 +78,13 @@ public class UnitMoveSequence : Sequence
 
     public override void Start()
     {
-        if(from != null) WorldGraphics.GetTileGraphics(from.coords.x, from.coords.y).SetUnit(null);
-        WorldGraphics.GetTileGraphics(to.coords.x, to.coords.y).SetUnit(unit);
+        if(from != null) WorldGraphics.GetTileGraphics(from.coords).SetUnit(null);
+        WorldGraphics.GetTileGraphics(to.coords).SetUnit(unit);
     }
 
     public override bool Update()
     {
         progress += Time.deltaTime;
-        return progress >= 0.4f;
+        return progress >= 0.3f;
     }
 }

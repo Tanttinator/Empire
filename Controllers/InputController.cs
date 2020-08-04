@@ -11,8 +11,10 @@ public class InputController : MonoBehaviour
     /// <param name="dir"></param>
     void Move(Direction dir)
     {
-        Tile tile = World.GetTile(UnitController.unit.tile.coords.Neighbor(dir));
-        if (tile != null) UnitController.unit.SetTile(tile);
+        if (LocalPlayer.ActiveUnit == null) return;
+
+        Tile tile = World.GetTile(LocalPlayer.ActiveUnit.tile.coords.Neighbor(dir));
+        if (tile != null) LocalPlayer.ActiveUnit.SetTile(tile);
     }
 
     /// <summary>
@@ -32,13 +34,15 @@ public class InputController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.DownArrow)) Move(Direction.SOUTH);
         if (Input.GetKeyDown(KeyCode.LeftArrow)) Move(Direction.WEST);
 
-        if(Input.GetMouseButtonDown(0))
+        if (Input.GetKeyDown(KeyCode.Space)) LocalPlayer.activePlayer?.EndTurn();
+
+        if(Input.GetMouseButtonDown(1))
         {
             Tile tile = GetTileUnderMouse();
             if (tile != null)
             {
-                UnitController.unit.SetTarget(tile);
-                UnitController.unit.MoveToTarget();
+                LocalPlayer.ActiveUnit?.SetTarget(tile);
+                LocalPlayer.ActiveUnit?.MoveToTarget();
             }
         }
     }

@@ -22,6 +22,7 @@ public class UnitGraphics : MonoBehaviour
         else
         {
             unitSprite.sprite = UnitGraphicsController.GetUnitSprite(unit.type);
+            unitSprite.color = unit.owner.color;
             Show();
         }
     }
@@ -44,9 +45,6 @@ public class UnitGraphics : MonoBehaviour
     {
         unitSprite.enabled = true;
         shown = true;
-
-        //TEST
-        SetIdle(true);
     }
 
     /// <summary>
