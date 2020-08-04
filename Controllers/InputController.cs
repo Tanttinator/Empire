@@ -34,7 +34,7 @@ public class InputController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.DownArrow)) Move(Direction.SOUTH);
         if (Input.GetKeyDown(KeyCode.LeftArrow)) Move(Direction.WEST);
 
-        if (Input.GetKeyDown(KeyCode.Space)) LocalPlayer.activePlayer?.EndTurn();
+        if (Input.GetKeyDown(KeyCode.Space)) LocalPlayer.activePlayer?.NextUnit();
 
         if(Input.GetMouseButtonDown(1))
         {
