@@ -35,6 +35,27 @@ public class Tile : INode
         onTileUnitSet?.Invoke(this, unit);
     }
 
+    /// <summary>
+    /// Called when the given unit tries to move onto this tile.
+    /// </summary>
+    /// <param name="unit"></param>
+    public bool Interact(Unit unit)
+    {
+        if (this.unit == null)
+        {
+            unit.SetTile(this);
+            return true;
+        }
+
+        if (this.unit.owner != unit.owner)
+        {
+            unit.Battle(this.unit);
+            return true;
+        }
+
+        return false;
+    }
+
     float INode.EntryCost(object agent, INode from)
     {
         return 1f;

@@ -21,6 +21,11 @@ public class Player
         units.Add(unit);
     }
 
+    public void RemoveUnit(Unit unit)
+    {
+        units.Remove(unit);
+    }
+
     public override string ToString()
     {
         return name;

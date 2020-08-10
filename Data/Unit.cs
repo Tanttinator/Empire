@@ -8,11 +8,15 @@ public class Unit
     public UnitType type { get; protected set; }
     public Tile tile { get; protected set; }
     public Player owner { get; protected set; }
+    public int moves { get; protected set; }
 
     Tile target;
     Queue<Tile> currentPath;
 
     public static event Action<Unit, Tile, Tile> onUnitMoved;
+    public static event Action<Unit> onUnitDestroyed;
+
+    public event Action onTurnFinished;
 
     public Unit(UnitType type, Tile tile, Player owner)
     {
@@ -53,14 +57,16 @@ public class Unit
     {
         if (target == null) return;
 
-        while(tile != target)
+        while(tile != target && moves > 0)
         {
             if (currentPath == null || currentPath.Count == 0) GeneratePath();
 
             Tile nextTile = currentPath.Dequeue();
 
-            if (!SetTile(nextTile)) GeneratePath();
+            if (!nextTile.Interact(this)) GeneratePath();
         }
+
+        if (moves == 0) onTurnFinished?.Invoke();
     }
 
     /// <summary>
@@ -70,5 +76,47 @@ public class Unit
     {
         currentPath = World.GetPath(this, target);
         currentPath.Dequeue();
+    }
+
+    /// <summary>
+    /// Attack the given unit.
+    /// </summary>
+    /// <param name="enemy"></param>
+    public void Battle(Unit enemy)
+    {
+        if (enemy.owner == owner) return;
+
+        if (UnityEngine.Random.Range(0, 2) == 0) Destroy();
+        else
+        {
+            Tile tile = enemy.tile;
+            enemy.Destroy();
+            SetTile(tile);
+            moves = 0;
+        }
+    }
+
+    /// <summary>
+    /// Destroy this unit.
+    /// </summary>
+    void Destroy()
+    {
+        owner.RemoveUnit(this);
+        tile.SetUnit(null);
+        moves = 0;
+        onUnitDestroyed?.Invoke(this);
+    }
+
+    /// <summary>
+    /// Called on the start of the owners turn.
+    /// </summary>
+    public void Refresh()
+    {
+        moves = 1;
+    }
+
+    public override string ToString()
+    {
+        return owner + " " + type.name;
     }
 }

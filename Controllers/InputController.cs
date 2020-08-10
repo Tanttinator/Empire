@@ -14,7 +14,7 @@ public class InputController : MonoBehaviour
         if (LocalPlayer.ActiveUnit == null) return;
 
         Tile tile = World.GetTile(LocalPlayer.ActiveUnit.tile.coords.Neighbor(dir));
-        if (tile != null) LocalPlayer.ActiveUnit.SetTile(tile);
+        if (tile != null) tile.Interact(LocalPlayer.ActiveUnit);
     }
 
     /// <summary>

@@ -25,17 +25,34 @@ public class LocalPlayer : PlayerController
     /// </summary>
     public void NextUnit()
     {
-        if (!active) return;
+        if (!active || activeUnits.Count == 0) return;
 
+        activeUnits[0].onTurnFinished -= NextUnit;
         activeUnits.RemoveAt(0);
 
         if (activeUnits.Count == 0) EndTurn();
+        else SelectUnit(ActiveUnit);
+    }
+
+    /// <summary>
+    /// Set a unit as active.
+    /// </summary>
+    /// <param name="unit"></param>
+    void SelectUnit(Unit unit)
+    {
+        if (unit == null) return;
+        unit.onTurnFinished += NextUnit;
     }
 
     protected override void OnTurnStarted()
     {
         activePlayer = this;
         activeUnits.AddRange(player.Units);
+        foreach(Unit unit in player.Units)
+        {
+            unit.Refresh();
+        }
+        SelectUnit(ActiveUnit);
         Debug.Log("Start Turn: " + this);
     }
 

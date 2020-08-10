@@ -41,16 +41,27 @@ public class UnitGraphicsController : MonoBehaviour
         Sequencer.AddSequence(new UnitMoveSequence(unit, from, to));
     }
 
+    /// <summary>
+    /// Called when unit is destroyed.
+    /// </summary>
+    /// <param name="unit"></param>
+    void OnUnitDestroyed(Unit unit)
+    {
+        Sequencer.AddSequence(new UnitDieSequence(unit));
+    }
+
     private void Awake()
     {
         instance = this;
 
         Unit.onUnitMoved += OnUnitMoved;
+        Unit.onUnitDestroyed += OnUnitDestroyed;
     }
 
     private void OnDisable()
     {
         Unit.onUnitMoved -= OnUnitMoved;
+        Unit.onUnitDestroyed -= OnUnitDestroyed;
     }
 }
 
@@ -86,5 +97,20 @@ public class UnitMoveSequence : Sequence
     {
         progress += Time.deltaTime;
         return progress >= 0.3f;
+    }
+}
+
+public class UnitDieSequence : Sequence
+{
+    Unit unit;
+
+    public UnitDieSequence(Unit unit)
+    {
+        this.unit = unit;
+    }
+
+    public override void Start()
+    {
+        WorldGraphics.GetTileGraphics(unit.tile.coords).SetUnit(null);
     }
 }
