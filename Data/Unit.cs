@@ -15,6 +15,7 @@ public class Unit
 
     public static event Action<Unit, Tile, Tile> onUnitMoved;
     public static event Action<Unit> onUnitDestroyed;
+    public static event Action<Unit> onUnitCreated;
 
     public Unit(UnitType type, Tile tile, Player owner)
     {
@@ -23,19 +24,35 @@ public class Unit
 
         this.owner = owner;
         owner.AddUnit(this);
+
+        onUnitCreated?.Invoke(this);
     }
 
     /// <summary>
     /// Place this unit on the given tile.
     /// </summary>
     /// <param name="tile"></param>
-    public bool SetTile(Tile tile)
+    public void SetTile(Tile tile)
     {
         Tile oldTile = this.tile;
         oldTile?.SetUnit(null);
         this.tile = tile;
         tile.SetUnit(this);
-        onUnitMoved?.Invoke(this, oldTile, tile);
+    }
+
+    /// <summary>
+    /// Try to move to the given target.
+    /// </summary>
+    /// <param name="tile"></param>
+    /// <returns></returns>
+    public bool Move(Tile tile, bool forced = false)
+    {
+        if (moves <= 0 && !forced) return false;
+
+        Tile oldTile = this.tile;
+        SetTile(tile);
+        moves -= tile.MovementCost(this);
+        onUnitMoved?.Invoke(this, oldTile, this.tile);
         return true;
     }
 
@@ -53,7 +70,7 @@ public class Unit
     /// </summary>
     public bool DoTurn()
     {
-        if (moves == 0) return true;
+        if (moves <= 0) return true;
 
         if(target != null && target != tile)
         {
@@ -89,7 +106,7 @@ public class Unit
         {
             Tile tile = enemy.tile;
             enemy.Destroy();
-            SetTile(tile);
+            Move(tile, true);
             moves = 0;
         }
     }
@@ -110,7 +127,7 @@ public class Unit
     /// </summary>
     public void Refresh()
     {
-        moves = 1;
+        moves = type.movement;
     }
 
     public override string ToString()

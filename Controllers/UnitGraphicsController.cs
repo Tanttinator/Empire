@@ -50,18 +50,29 @@ public class UnitGraphicsController : MonoBehaviour
         Sequencer.AddSequence(new UnitDieSequence(unit));
     }
 
+    /// <summary>
+    /// Called when a unit is created.
+    /// </summary>
+    /// <param name="unit"></param>
+    void OnUnitCreated(Unit unit)
+    {
+        WorldGraphics.GetTileGraphics(unit.tile.coords).SetUnit(unit);
+    }
+
     private void Awake()
     {
         instance = this;
 
         Unit.onUnitMoved += OnUnitMoved;
         Unit.onUnitDestroyed += OnUnitDestroyed;
+        Unit.onUnitCreated += OnUnitCreated;
     }
 
     private void OnDisable()
     {
         Unit.onUnitMoved -= OnUnitMoved;
         Unit.onUnitDestroyed -= OnUnitDestroyed;
+        Unit.onUnitCreated -= OnUnitCreated;
     }
 }
 

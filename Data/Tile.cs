@@ -41,10 +41,9 @@ public class Tile : INode
     /// <param name="unit"></param>
     public bool Interact(Unit unit)
     {
-        if (this.unit == null)
+        if (this.unit == null && CanEnter(unit))
         {
-            unit.SetTile(this);
-            return true;
+            return unit.Move(this);
         }
 
         if (this.unit.owner != unit.owner)
@@ -56,14 +55,29 @@ public class Tile : INode
         return false;
     }
 
+    /// <summary>
+    /// Can the given unit enter this tile?
+    /// </summary>
+    /// <param name="unit"></param>
+    /// <returns></returns>
     bool CanEnter(Unit unit)
     {
         return this.unit == null || this.unit.owner != unit.owner;
     }
 
+    /// <summary>
+    /// How many movement points does it cost for the given unit to enter this tile?
+    /// </summary>
+    /// <param name="unit"></param>
+    /// <returns></returns>
+    public int MovementCost(Unit unit)
+    {
+        return 1;
+    }
+
     float INode.EntryCost(object agent, INode from)
     {
-        return 1f;
+        return MovementCost(agent as Unit);
     }
 
     bool INode.CanEnter(object agent, INode from)
