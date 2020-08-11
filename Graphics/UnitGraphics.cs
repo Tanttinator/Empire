@@ -34,7 +34,7 @@ public class UnitGraphics : MonoBehaviour
     public void SetIdle(bool idle)
     {
         this.idle = idle;
-        idleTimer = 0f;
+        idleTimer = idleFrequency / 2f;
         unitSprite.enabled = shown;
     }
 

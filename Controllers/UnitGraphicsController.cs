@@ -10,14 +10,6 @@ public class UnitGraphicsController : MonoBehaviour
     static UnitGraphicsController instance;
 
     /// <summary>
-    /// Play unit idle animation.
-    /// </summary>
-    public static void Idle()
-    {
-
-    }
-
-    /// <summary>
     /// Find a sprite matching the given unit type in the registry.
     /// </summary>
     /// <param name="unit"></param>
@@ -33,6 +25,16 @@ public class UnitGraphicsController : MonoBehaviour
     }
 
     /// <summary>
+    /// Find the graphics representing the given unit.
+    /// </summary>
+    /// <param name="unit"></param>
+    /// <returns></returns>
+    public static UnitGraphics GetUnitGraphics(Unit unit)
+    {
+        return WorldGraphics.GetTileGraphics(unit.tile.coords).UnitGraphics;
+    }
+
+    /// <summary>
     /// Creates an explosion effect on the given tile.
     /// </summary>
     /// <param name="position"></param>
@@ -42,39 +44,31 @@ public class UnitGraphicsController : MonoBehaviour
     }
 
     /// <summary>
-    /// Called when a unit of a tile changes.
+    /// Start / Stop unit idle animation.
     /// </summary>
-    /// <param name="tile"></param>
     /// <param name="unit"></param>
+    /// <param name="idle"></param>
+    void SetIdle(Unit unit, bool idle)
+    {
+        if (unit == null) return;
+        GetUnitGraphics(unit).SetIdle(idle);
+    }
+
     void OnUnitMoved(Unit unit, Tile from, Tile to)
     {
         Sequencer.AddSequence(new UnitMoveSequence(unit, from, to));
     }
 
-    /// <summary>
-    /// Called when unit is destroyed.
-    /// </summary>
-    /// <param name="unit"></param>
     void OnUnitDestroyed(Unit unit)
     {
         Sequencer.AddSequence(new UnitDieSequence(unit));
     }
 
-    /// <summary>
-    /// Called when a unit is created.
-    /// </summary>
-    /// <param name="unit"></param>
     void OnUnitCreated(Unit unit)
     {
         WorldGraphics.GetTileGraphics(unit.tile.coords).SetUnit(unit);
     }
 
-    /// <summary>
-    /// Called when two units have battled.
-    /// </summary>
-    /// <param name="attacker"></param>
-    /// <param name="defender"></param>
-    /// <param name="hits"></param>
     void OnUnitsBattled(Unit attacker, Unit defender, Unit[] hits)
     {
         Sequencer.AddSequence(new ExplosionSequence(defender.tile));
@@ -82,6 +76,26 @@ public class UnitGraphicsController : MonoBehaviour
 
         foreach(Unit unit in hits)
             Sequencer.AddSequence(new ExplosionSequence(unit.tile));
+    }
+
+    void OnUnitDeselected(Unit unit)
+    {
+        SetIdle(unit, false);
+    }
+
+    void OnUnitSelected(Unit unit)
+    {
+        SetIdle(unit, Sequencer.idle);
+    }
+
+    void OnIdleStarted()
+    {
+        SetIdle(LocalPlayer.ActiveUnit, true);
+    }
+
+    void OnIdleEnded()
+    {
+        SetIdle(LocalPlayer.ActiveUnit, false);
     }
 
     private void Awake()
@@ -92,6 +106,12 @@ public class UnitGraphicsController : MonoBehaviour
         Unit.onUnitDestroyed += OnUnitDestroyed;
         Unit.onUnitCreated += OnUnitCreated;
         Unit.onUnitsBattled += OnUnitsBattled;
+
+        LocalPlayer.onUnitDeselected += OnUnitDeselected;
+        LocalPlayer.onUnitSelected += OnUnitSelected;
+
+        Sequencer.onIdleStart += OnIdleStarted;
+        Sequencer.onIdleEnd += OnIdleEnded;
     }
 
     private void OnDisable()
@@ -100,6 +120,12 @@ public class UnitGraphicsController : MonoBehaviour
         Unit.onUnitDestroyed -= OnUnitDestroyed;
         Unit.onUnitCreated -= OnUnitCreated;
         Unit.onUnitsBattled -= OnUnitsBattled;
+
+        LocalPlayer.onUnitDeselected -= OnUnitDeselected;
+        LocalPlayer.onUnitSelected -= OnUnitSelected;
+
+        Sequencer.onIdleStart -= OnIdleStarted;
+        Sequencer.onIdleEnd -= OnIdleEnded;
     }
 }
 
@@ -172,6 +198,6 @@ public class ExplosionSequence : Sequence
     public override bool Update()
     {
         progress += Time.deltaTime;
-        return progress >= 0.66f;
+        return progress >= 0.8f;
     }
 }

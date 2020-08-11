@@ -1,11 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class LocalPlayer : PlayerController
 {
     public static LocalPlayer activePlayer { get; protected set; }
     public static Unit ActiveUnit => (activePlayer != null && activePlayer.activeUnits.Count > 0 ? activePlayer.activeUnits[0] : null);
+
+    public static event Action<Unit> onUnitSelected;
+    public static event Action<Unit> onUnitDeselected;
 
     List<Unit> activeUnits = new List<Unit>();
 
@@ -21,6 +25,7 @@ public class LocalPlayer : PlayerController
     {
         if (!active || activeUnits.Count == 0) return;
 
+        onUnitDeselected?.Invoke(ActiveUnit);
         activeUnits.RemoveAt(0);
 
         if (activeUnits.Count == 0) EndTurn();
@@ -34,6 +39,7 @@ public class LocalPlayer : PlayerController
     void SelectUnit(Unit unit)
     {
         if (unit == null) return;
+        onUnitSelected?.Invoke(unit);
     }
 
     protected override void OnTurnStarted()
@@ -45,7 +51,6 @@ public class LocalPlayer : PlayerController
             unit.Refresh();
         }
         SelectUnit(ActiveUnit);
-        Debug.Log("Start Turn: " + this);
     }
 
     protected override void OnTurnEnded()
@@ -56,6 +61,7 @@ public class LocalPlayer : PlayerController
 
     public override void DoTurn()
     {
+        if (ActiveUnit == null) return;
         if (ActiveUnit.DoTurn()) NextUnit();
     }
 

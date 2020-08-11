@@ -9,6 +9,7 @@ public class TileGraphics : MonoBehaviour
 {
     [SerializeField] SpriteRenderer groundGfx = default;
     [SerializeField] UnitGraphics unitGfx = default;
+    public UnitGraphics UnitGraphics => unitGfx;
 
     /// <summary>
     /// Set the target tile.

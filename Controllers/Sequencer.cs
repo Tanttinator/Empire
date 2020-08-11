@@ -1,12 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Sequencer : MonoBehaviour
 {
 
     static Queue<Sequence> sequenceQueue = new Queue<Sequence>();
     static Sequence currentSequence;
+
+    public static bool idle { get; private set; }
+
+    public static event Action onIdleStart;
+    public static event Action onIdleEnd;
 
     /// <summary>
     /// Add new sequence to be executed.
@@ -15,6 +21,12 @@ public class Sequencer : MonoBehaviour
     public static void AddSequence(Sequence sequence)
     {
         sequenceQueue.Enqueue(sequence);
+
+        if (idle)
+        {
+            idle = false;
+            onIdleEnd?.Invoke();
+        }
     }
 
     private void Update()
@@ -31,8 +43,12 @@ public class Sequencer : MonoBehaviour
         {
             currentSequence = sequenceQueue.Dequeue();
             currentSequence.Start();
+        } 
+        else if(!idle)
+        {
+            idle = true;
+            onIdleStart?.Invoke();
         }
-        else UnitGraphicsController.Idle();
     }
 }
 
