@@ -5,6 +5,7 @@ using UnityEngine;
 public class UnitGraphicsController : MonoBehaviour
 {
     [SerializeField] UnitSpriteData[] unitSprites = default;
+    [SerializeField] GameObject explosion = default;
 
     static UnitGraphicsController instance;
 
@@ -29,6 +30,15 @@ public class UnitGraphicsController : MonoBehaviour
         }
         Debug.LogError("No sprite registered for unit of type: " + unit.name);
         return null;
+    }
+
+    /// <summary>
+    /// Creates an explosion effect on the given tile.
+    /// </summary>
+    /// <param name="position"></param>
+    public static void SpawnExplosion(Tile tile)
+    {
+        Instantiate(instance.explosion, WorldGraphics.GetTilePosition(tile.coords), Quaternion.identity);
     }
 
     /// <summary>
@@ -59,6 +69,21 @@ public class UnitGraphicsController : MonoBehaviour
         WorldGraphics.GetTileGraphics(unit.tile.coords).SetUnit(unit);
     }
 
+    /// <summary>
+    /// Called when two units have battled.
+    /// </summary>
+    /// <param name="attacker"></param>
+    /// <param name="defender"></param>
+    /// <param name="hits"></param>
+    void OnUnitsBattled(Unit attacker, Unit defender, Unit[] hits)
+    {
+        Sequencer.AddSequence(new ExplosionSequence(defender.tile));
+        Sequencer.AddSequence(new ExplosionSequence(attacker.tile));
+
+        foreach(Unit unit in hits)
+            Sequencer.AddSequence(new ExplosionSequence(unit.tile));
+    }
+
     private void Awake()
     {
         instance = this;
@@ -66,6 +91,7 @@ public class UnitGraphicsController : MonoBehaviour
         Unit.onUnitMoved += OnUnitMoved;
         Unit.onUnitDestroyed += OnUnitDestroyed;
         Unit.onUnitCreated += OnUnitCreated;
+        Unit.onUnitsBattled += OnUnitsBattled;
     }
 
     private void OnDisable()
@@ -73,6 +99,7 @@ public class UnitGraphicsController : MonoBehaviour
         Unit.onUnitMoved -= OnUnitMoved;
         Unit.onUnitDestroyed -= OnUnitDestroyed;
         Unit.onUnitCreated -= OnUnitCreated;
+        Unit.onUnitsBattled -= OnUnitsBattled;
     }
 }
 
@@ -123,5 +150,28 @@ public class UnitDieSequence : Sequence
     public override void Start()
     {
         WorldGraphics.GetTileGraphics(unit.tile.coords).SetUnit(null);
+    }
+}
+
+public class ExplosionSequence : Sequence
+{
+    Tile tile;
+
+    float progress = 0f;
+
+    public ExplosionSequence(Tile tile)
+    {
+        this.tile = tile;
+    }
+
+    public override void Start()
+    {
+        UnitGraphicsController.SpawnExplosion(tile);
+    }
+
+    public override bool Update()
+    {
+        progress += Time.deltaTime;
+        return progress >= 0.66f;
     }
 }

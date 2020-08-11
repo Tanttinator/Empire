@@ -28,7 +28,7 @@ public class WorldGraphics : MonoBehaviour
         {
             for (int y = 0; y < height; y++)
             {
-                TileGraphics gfx = tiles[x, y] = Instantiate(instance.tileObject.gameObject, new Vector3(x, y, 0), Quaternion.identity, instance.transform).GetComponent<TileGraphics>();
+                TileGraphics gfx = tiles[x, y] = Instantiate(instance.tileObject.gameObject, GetTilePosition(new Coords(x, y)), Quaternion.identity, instance.transform).GetComponent<TileGraphics>();
                 gfx.SetGround(World.GetTile(x, y).ground);
             }
         }
@@ -82,6 +82,16 @@ public class WorldGraphics : MonoBehaviour
     {
         Vector2 relativePoint = new Vector2(point.x - instance.transform.position.x, point.y - instance.transform.position.y);
         return World.GetTile(relativePoint);
+    }
+
+    /// <summary>
+    /// Returns the coordinates for the position of the given tile in the world graphics.
+    /// </summary>
+    /// <param name="tile"></param>
+    /// <returns></returns>
+    public static Vector3 GetTilePosition(Coords coords)
+    {
+        return new Vector3(coords.x, coords.y, 0f);
     }
 
     private void Awake()

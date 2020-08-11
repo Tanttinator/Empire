@@ -16,6 +16,7 @@ public class Unit
     public static event Action<Unit, Tile, Tile> onUnitMoved;
     public static event Action<Unit> onUnitDestroyed;
     public static event Action<Unit> onUnitCreated;
+    public static event Action<Unit, Unit, Unit[]> onUnitsBattled;
 
     public Unit(UnitType type, Tile tile, Player owner)
     {
@@ -101,10 +102,15 @@ public class Unit
     {
         if (enemy.owner == owner) return;
 
-        if (UnityEngine.Random.Range(0, 2) == 0) Destroy();
+        if (UnityEngine.Random.Range(0, 2) == 0)
+        {
+            onUnitsBattled?.Invoke(this, enemy, new Unit[] { this });
+            Destroy();
+        }
         else
         {
             Tile tile = enemy.tile;
+            onUnitsBattled?.Invoke(this, enemy, new Unit[] { enemy });
             enemy.Destroy();
             Move(tile, true);
             moves = 0;
