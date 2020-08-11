@@ -16,8 +16,6 @@ public class Unit
     public static event Action<Unit, Tile, Tile> onUnitMoved;
     public static event Action<Unit> onUnitDestroyed;
 
-    public event Action onTurnFinished;
-
     public Unit(UnitType type, Tile tile, Player owner)
     {
         this.type = type;
@@ -51,13 +49,13 @@ public class Unit
     }
 
     /// <summary>
-    /// Order this unit to move towards it's target.
+    /// Tell this unit to execute the next queued action if one exists.
     /// </summary>
-    public void MoveToTarget()
+    public bool DoTurn()
     {
-        if (target == null) return;
+        if (moves == 0) return true;
 
-        while(tile != target && moves > 0)
+        if(target != null && target != tile)
         {
             if (currentPath == null || currentPath.Count == 0) GeneratePath();
 
@@ -66,7 +64,7 @@ public class Unit
             if (!nextTile.Interact(this)) GeneratePath();
         }
 
-        if (moves == 0) onTurnFinished?.Invoke();
+        return false;
     }
 
     /// <summary>

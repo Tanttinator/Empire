@@ -46,9 +46,17 @@ public abstract class PlayerController
     }
 
     /// <summary>
-    /// Callback for when this players turn has started;
+    /// Callback for when this players turn has started.
     /// </summary>
     protected virtual void OnTurnStarted()
+    {
+
+    }
+
+    /// <summary>
+    /// Called every frame while this player is active.
+    /// </summary>
+    public virtual void DoTurn()
     {
 
     }

@@ -42,7 +42,6 @@ public class InputController : MonoBehaviour
             if (tile != null)
             {
                 LocalPlayer.ActiveUnit?.SetTarget(tile);
-                LocalPlayer.ActiveUnit?.MoveToTarget();
             }
         }
     }

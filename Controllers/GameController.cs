@@ -6,6 +6,7 @@ public class GameController : MonoBehaviour
 {
     static PlayerController[] players;
     static int activePlayer = 0;
+    static PlayerController ActivePlayer => players[activePlayer];
 
     static int turn = 1;
 
@@ -24,7 +25,7 @@ public class GameController : MonoBehaviour
             Debug.Log("Turn " + turn);
         }
 
-        players[activePlayer].StartTurn();
+        ActivePlayer.StartTurn();
     }
 
     static GameController instance;
@@ -45,6 +46,11 @@ public class GameController : MonoBehaviour
         UnitController.SpawnUnit(UnitController.Units[0], World.GetTile(0, World.Height - 1), players[0].player);
         UnitController.SpawnUnit(UnitController.Units[0], World.GetTile(World.Width - 1, World.Height - 1), players[1].player);
 
-        players[activePlayer].StartTurn();
+        ActivePlayer.StartTurn();
+    }
+
+    private void Update()
+    {
+        ActivePlayer.DoTurn();
     }
 }

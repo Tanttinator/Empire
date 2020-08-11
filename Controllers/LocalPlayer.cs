@@ -5,13 +5,7 @@ using UnityEngine;
 public class LocalPlayer : PlayerController
 {
     public static LocalPlayer activePlayer { get; protected set; }
-    public static Unit ActiveUnit {
-        get 
-        {
-            Unit unit = (activePlayer != null && activePlayer.activeUnits.Count > 0 ? activePlayer.activeUnits[0] : null);
-            return unit; 
-        }
-    }
+    public static Unit ActiveUnit => (activePlayer != null && activePlayer.activeUnits.Count > 0 ? activePlayer.activeUnits[0] : null);
 
     List<Unit> activeUnits = new List<Unit>();
 
@@ -27,7 +21,6 @@ public class LocalPlayer : PlayerController
     {
         if (!active || activeUnits.Count == 0) return;
 
-        activeUnits[0].onTurnFinished -= NextUnit;
         activeUnits.RemoveAt(0);
 
         if (activeUnits.Count == 0) EndTurn();
@@ -41,7 +34,6 @@ public class LocalPlayer : PlayerController
     void SelectUnit(Unit unit)
     {
         if (unit == null) return;
-        unit.onTurnFinished += NextUnit;
     }
 
     protected override void OnTurnStarted()
@@ -60,6 +52,11 @@ public class LocalPlayer : PlayerController
     {
         activePlayer = null;
         activeUnits.Clear();
+    }
+
+    public override void DoTurn()
+    {
+        if (ActiveUnit.DoTurn()) NextUnit();
     }
 
     public override string ToString()

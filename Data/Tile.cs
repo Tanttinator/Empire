@@ -56,6 +56,11 @@ public class Tile : INode
         return false;
     }
 
+    bool CanEnter(Unit unit)
+    {
+        return this.unit == null || this.unit.owner != unit.owner;
+    }
+
     float INode.EntryCost(object agent, INode from)
     {
         return 1f;
@@ -63,6 +68,6 @@ public class Tile : INode
 
     bool INode.CanEnter(object agent, INode from)
     {
-        return true;
+        return CanEnter(agent as Unit);
     }
 }
