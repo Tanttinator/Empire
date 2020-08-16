@@ -26,6 +26,31 @@ public class Tile : INode
     }
 
     /// <summary>
+    /// Create tiledata object that represents this tile.
+    /// </summary>
+    /// <returns></returns>
+    public TileData GetData()
+    {
+        return new TileData()
+        {
+            ground = ground,
+            unit = (unit != null? unit.type : null),
+            unitColor = (unit != null? unit.owner.color : new Color(0f, 0f, 0f, 0f))
+        };
+    }
+
+    /// <summary>
+    /// Refresh the seen state of this tile to all players who currently have vision on it.
+    /// </summary>
+    public void Refresh()
+    {
+        foreach(Player player in GameController.Players)
+        {
+            player.RefreshTile(this);
+        }
+    }
+
+    /// <summary>
     /// Place the unit on this tile.
     /// </summary>
     /// <param name="unit"></param>
@@ -33,6 +58,7 @@ public class Tile : INode
     {
         this.unit = unit;
         onTileUnitSet?.Invoke(this, unit);
+        Refresh();
     }
 
     /// <summary>

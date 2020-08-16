@@ -17,21 +17,27 @@ public class WorldGraphics : MonoBehaviour
     /// <summary>
     /// Create all tile objects.
     /// </summary>
-    public static void InitTiles()
+    public static void InitTiles(int width, int height)
     {
-        int width = World.Width;
-        int height = World.Height;
-
         tiles = new TileGraphics[width, height];
 
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                TileGraphics gfx = tiles[x, y] = Instantiate(instance.tileObject.gameObject, GetTilePosition(new Coords(x, y)), Quaternion.identity, instance.transform).GetComponent<TileGraphics>();
-                gfx.SetGround(World.GetTile(x, y).ground);
+                tiles[x, y] = Instantiate(instance.tileObject.gameObject, GetTilePosition(new Coords(x, y)), Quaternion.identity, instance.transform).GetComponent<TileGraphics>();
             }
         }
+    }
+
+    /// <summary>
+    /// Refresh the graphics of the given tile.
+    /// </summary>
+    /// <param name="coords"></param>
+    /// <param name="data"></param>
+    void RefreshTile(Coords coords, TileData data)
+    {
+        tiles[coords.x, coords.y].Refresh(data);
     }
 
     /// <summary>
@@ -74,14 +80,13 @@ public class WorldGraphics : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns the tile whose graphics overlap a point in the world.
+    /// Returns the coords of the tile whose graphics overlap a point in the world.
     /// </summary>
     /// <param name="point"></param>
     /// <returns></returns>
-    public static Tile GetTileAtPoint(Vector2 point)
+    public static Coords GetTileAtPoint(Vector2 point)
     {
-        Vector2 relativePoint = new Vector2(point.x - instance.transform.position.x, point.y - instance.transform.position.y);
-        return World.GetTile(relativePoint);
+        return new Vector2(point.x - instance.transform.position.x, point.y - instance.transform.position.y);
     }
 
     /// <summary>
@@ -97,6 +102,12 @@ public class WorldGraphics : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        GameState.onTileUpdated += RefreshTile;
+    }
+
+    private void OnDisable()
+    {
+        GameState.onTileUpdated -= RefreshTile;
     }
 
 }

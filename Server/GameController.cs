@@ -7,6 +7,18 @@ public class GameController : MonoBehaviour
     static PlayerController[] players;
     static int activePlayer = 0;
     static PlayerController ActivePlayer => players[activePlayer];
+    public static Player[] Players
+    {
+        get
+        {
+            Player[] players = new Player[GameController.players.Length];
+            for(int i = 0; i < GameController.players.Length; i++)
+            {
+                players[i] = GameController.players[i].player;
+            }
+            return players;
+        }
+    }
 
     static int turn = 1;
 
@@ -33,14 +45,15 @@ public class GameController : MonoBehaviour
     private void Start()
     {
         instance = this;
+        World.GenerateWorld();
+        ClientController.Init(World.Width, World.Height);
+
         players = new PlayerController[]
         {
-            new LocalPlayer(new Player("Player 1", Color.red)),
-            new LocalPlayer(new Player("Player 2", Color.blue))
+            new HumanPlayer(new Player("Player 1", Color.red)),
+            new HumanPlayer(new Player("Player 2", Color.blue))
         };
 
-        World.GenerateWorld();
-        WorldGraphics.InitTiles();
         UnitController.SpawnUnit(UnitController.Units[0], World.GetTile(0, 0), players[0].player);
         UnitController.SpawnUnit(UnitController.Units[0], World.GetTile(World.Width - 1, 0), players[1].player);
         UnitController.SpawnUnit(UnitController.Units[0], World.GetTile(0, World.Height - 1), players[0].player);

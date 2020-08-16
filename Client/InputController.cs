@@ -11,17 +11,14 @@ public class InputController : MonoBehaviour
     /// <param name="dir"></param>
     void Move(Direction dir)
     {
-        if (LocalPlayer.ActiveUnit == null) return;
-
-        Tile tile = World.GetTile(LocalPlayer.ActiveUnit.tile.coords.Neighbor(dir));
-        if (tile != null) tile.Interact(LocalPlayer.ActiveUnit);
+        ClientController.activePlayer?.ExecuteCommand(new CommandMoveDir(dir));
     }
 
     /// <summary>
-    /// Returns the tile which is under the mouse pointer currently.
+    /// Returns the coords of the tile which is under the mouse pointer currently.
     /// </summary>
     /// <returns></returns>
-    Tile GetTileUnderMouse()
+    Coords GetCoordsUnderMouse()
     {
         Vector2 point = Camera.main.ScreenToWorldPoint(Input.mousePosition, Camera.MonoOrStereoscopicEye.Mono);
         return WorldGraphics.GetTileAtPoint(point);
@@ -34,14 +31,14 @@ public class InputController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.DownArrow)) Move(Direction.SOUTH);
         if (Input.GetKeyDown(KeyCode.LeftArrow)) Move(Direction.WEST);
 
-        if (Input.GetKeyDown(KeyCode.Space)) LocalPlayer.activePlayer?.NextUnit();
+        if (Input.GetKeyDown(KeyCode.Space)) ClientController.activePlayer?.ExecuteCommand(new CommandWait());
 
         if(Input.GetMouseButtonDown(1))
         {
-            Tile tile = GetTileUnderMouse();
-            if (tile != null)
+            Coords coords = GetCoordsUnderMouse();
+            if (coords != null)
             {
-                LocalPlayer.ActiveUnit?.SetTarget(tile);
+                ClientController.activePlayer?.ExecuteCommand(new CommandMove(coords));
             }
         }
     }

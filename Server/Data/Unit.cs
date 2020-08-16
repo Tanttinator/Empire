@@ -21,9 +21,10 @@ public class Unit
     public Unit(UnitType type, Tile tile, Player owner)
     {
         this.type = type;
+        this.owner = owner;
+
         SetTile(tile);
 
-        this.owner = owner;
         owner.AddUnit(this);
 
         onUnitCreated?.Invoke(this);

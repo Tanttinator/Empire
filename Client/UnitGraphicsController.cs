@@ -25,33 +25,12 @@ public class UnitGraphicsController : MonoBehaviour
     }
 
     /// <summary>
-    /// Find the graphics representing the given unit.
-    /// </summary>
-    /// <param name="unit"></param>
-    /// <returns></returns>
-    public static UnitGraphics GetUnitGraphics(Unit unit)
-    {
-        return WorldGraphics.GetTileGraphics(unit.tile.coords).UnitGraphics;
-    }
-
-    /// <summary>
     /// Creates an explosion effect on the given tile.
     /// </summary>
     /// <param name="position"></param>
     public static void SpawnExplosion(Tile tile)
     {
         Instantiate(instance.explosion, WorldGraphics.GetTilePosition(tile.coords), Quaternion.identity);
-    }
-
-    /// <summary>
-    /// Start / Stop unit idle animation.
-    /// </summary>
-    /// <param name="unit"></param>
-    /// <param name="idle"></param>
-    void SetIdle(Unit unit, bool idle)
-    {
-        if (unit == null) return;
-        GetUnitGraphics(unit).SetIdle(idle);
     }
 
     void OnUnitMoved(Unit unit, Tile from, Tile to)
@@ -64,11 +43,6 @@ public class UnitGraphicsController : MonoBehaviour
         Sequencer.AddSequence(new UnitDieSequence(unit));
     }
 
-    void OnUnitCreated(Unit unit)
-    {
-        WorldGraphics.GetTileGraphics(unit.tile.coords).SetUnit(unit);
-    }
-
     void OnUnitsBattled(Unit attacker, Unit defender, Unit[] hits)
     {
         Sequencer.AddSequence(new ExplosionSequence(defender.tile));
@@ -78,54 +52,20 @@ public class UnitGraphicsController : MonoBehaviour
             Sequencer.AddSequence(new ExplosionSequence(unit.tile));
     }
 
-    void OnUnitDeselected(Unit unit)
-    {
-        SetIdle(unit, false);
-    }
-
-    void OnUnitSelected(Unit unit)
-    {
-        SetIdle(unit, Sequencer.idle);
-    }
-
-    void OnIdleStarted()
-    {
-        SetIdle(LocalPlayer.ActiveUnit, true);
-    }
-
-    void OnIdleEnded()
-    {
-        SetIdle(LocalPlayer.ActiveUnit, false);
-    }
-
     private void Awake()
     {
         instance = this;
 
         Unit.onUnitMoved += OnUnitMoved;
         Unit.onUnitDestroyed += OnUnitDestroyed;
-        Unit.onUnitCreated += OnUnitCreated;
         Unit.onUnitsBattled += OnUnitsBattled;
-
-        LocalPlayer.onUnitDeselected += OnUnitDeselected;
-        LocalPlayer.onUnitSelected += OnUnitSelected;
-
-        Sequencer.onIdleStart += OnIdleStarted;
-        Sequencer.onIdleEnd += OnIdleEnded;
     }
 
     private void OnDisable()
     {
         Unit.onUnitMoved -= OnUnitMoved;
         Unit.onUnitDestroyed -= OnUnitDestroyed;
-        Unit.onUnitCreated -= OnUnitCreated;
         Unit.onUnitsBattled -= OnUnitsBattled;
-
-        LocalPlayer.onUnitDeselected -= OnUnitDeselected;
-        LocalPlayer.onUnitSelected -= OnUnitSelected;
-
-        Sequencer.onIdleStart -= OnIdleStarted;
-        Sequencer.onIdleEnd -= OnIdleEnded;
     }
 }
 
@@ -153,8 +93,7 @@ public class UnitMoveSequence : Sequence
 
     public override void Start()
     {
-        if(from != null) WorldGraphics.GetTileGraphics(from.coords).SetUnit(null);
-        WorldGraphics.GetTileGraphics(to.coords).SetUnit(unit);
+        GameState.MoveUnit(unit.type, unit.owner.color, from.coords, to.coords);
     }
 
     public override bool Update()
@@ -175,7 +114,7 @@ public class UnitDieSequence : Sequence
 
     public override void Start()
     {
-        WorldGraphics.GetTileGraphics(unit.tile.coords).SetUnit(null);
+        GameState.RemoveUnit(unit.tile.coords);
     }
 }
 

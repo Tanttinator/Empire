@@ -3,19 +3,31 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class LocalPlayer : PlayerController
+public class HumanPlayer : PlayerController
 {
-    public static LocalPlayer activePlayer { get; protected set; }
-    public static Unit ActiveUnit => (activePlayer != null && activePlayer.activeUnits.Count > 0 ? activePlayer.activeUnits[0] : null);
+    ClientController client;
 
-    public static event Action<Unit> onUnitSelected;
-    public static event Action<Unit> onUnitDeselected;
+    public Unit ActiveUnit => (activeUnits.Count > 0 ? activeUnits[0] : null);
+
+    public event Action<Unit> onUnitSelected;
+    public event Action<Unit> onUnitDeselected;
 
     List<Unit> activeUnits = new List<Unit>();
 
-    public LocalPlayer(Player player) : base(player)
-    {
+    public TileData[,] SeenTiles => player.seenTiles;
 
+    public HumanPlayer(Player player) : base(player)
+    {
+        client = ClientController.instance;
+    }
+
+    /// <summary>
+    /// Try to execute a command given by the player.
+    /// </summary>
+    /// <param name="command"></param>
+    public void ExecuteCommand(PlayerCommand command)
+    {
+        command.Execute(this, ActiveUnit);
     }
 
     /// <summary>
@@ -44,18 +56,19 @@ public class LocalPlayer : PlayerController
 
     protected override void OnTurnStarted()
     {
-        activePlayer = this;
+        client.SetActivePlayer(this);
+
         activeUnits.AddRange(player.Units);
         foreach(Unit unit in player.Units)
         {
             unit.Refresh();
         }
+
         SelectUnit(ActiveUnit);
     }
 
     protected override void OnTurnEnded()
     {
-        activePlayer = null;
         activeUnits.Clear();
     }
 

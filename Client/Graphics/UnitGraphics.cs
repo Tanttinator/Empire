@@ -16,13 +16,13 @@ public class UnitGraphics : MonoBehaviour
     /// Set the type of unit to be shown.
     /// </summary>
     /// <param name="unit"></param>
-    public void SetUnit(Unit unit)
+    public void SetUnit(UnitType unit, Color unitColor)
     {
         if (unit == null) Hide();
         else
         {
-            unitSprite.sprite = UnitGraphicsController.GetUnitSprite(unit.type);
-            unitSprite.color = unit.owner.color;
+            unitSprite.sprite = UnitGraphicsController.GetUnitSprite(unit);
+            unitSprite.color = unitColor;
             Show();
         }
     }
