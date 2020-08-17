@@ -100,6 +100,16 @@ public class World : MonoBehaviour
     }
 
     /// <summary>
+    /// Are the given coordinates within this worlds dimensions?
+    /// </summary>
+    /// <param name="coords"></param>
+    /// <returns></returns>
+    public static bool ValidCoords(Coords coords)
+    {
+        return coords.x >= 0 && coords.x < Width && coords.y >= 0 && coords.y < Height;
+    }
+
+    /// <summary>
     /// Find the shortest path to the target for the given unit.
     /// </summary>
     /// <param name="from"></param>
