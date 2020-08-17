@@ -9,7 +9,7 @@ public class Sequencer : MonoBehaviour
     static Queue<Sequence> sequenceQueue = new Queue<Sequence>();
     static Sequence currentSequence;
 
-    public static bool idle { get; private set; }
+    public static bool idle { get; private set; } = true;
 
     public static event Action onIdleStart;
     public static event Action onIdleEnd;
@@ -67,5 +67,36 @@ public class Sequence
     public virtual void End()
     {
 
+    }
+}
+
+public class EndTurnSequence : Sequence
+{
+    public override void Start()
+    {
+        ClientController.activePlayer.EndTurn();
+    }
+}
+
+public class SelectUnitSequence : Sequence
+{
+    Coords unit;
+
+    public SelectUnitSequence(Coords unit)
+    {
+        this.unit = unit;
+    }
+
+    public override void Start()
+    {
+        ClientController.SelectUnit(unit);
+    }
+}
+
+public class DeselectUnitSequence : Sequence
+{
+    public override void Start()
+    {
+        ClientController.DeselectUnit();
     }
 }

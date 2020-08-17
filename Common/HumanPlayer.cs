@@ -39,8 +39,9 @@ public class HumanPlayer : PlayerController
 
         onUnitDeselected?.Invoke(ActiveUnit);
         activeUnits.RemoveAt(0);
+        Sequencer.AddSequence(new DeselectUnitSequence());
 
-        if (activeUnits.Count == 0) EndTurn();
+        if (activeUnits.Count == 0) Sequencer.AddSequence(new EndTurnSequence());
         else SelectUnit(ActiveUnit);
     }
 
@@ -52,6 +53,7 @@ public class HumanPlayer : PlayerController
     {
         if (unit == null) return;
         onUnitSelected?.Invoke(unit);
+        Sequencer.AddSequence(new SelectUnitSequence(unit.tile.coords));
     }
 
     protected override void OnTurnStarted()
