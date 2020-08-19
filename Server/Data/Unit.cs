@@ -13,6 +13,8 @@ public class Unit
     Tile target;
     Queue<Tile> currentPath;
 
+    Tile[] visibleTiles;
+
     public static event Action<Unit, Tile, Tile> onUnitMoved;
     public static event Action<Unit> onUnitDestroyed;
     public static event Action<Unit> onUnitCreated;
@@ -36,10 +38,12 @@ public class Unit
     /// <param name="tile"></param>
     public void SetTile(Tile tile)
     {
-        Tile oldTile = this.tile;
-        oldTile?.SetUnit(null);
+        this.tile?.SetUnit(null);
+
         this.tile = tile;
         tile.SetUnit(this);
+
+        RefreshVision();
     }
 
     /// <summary>
@@ -135,6 +139,30 @@ public class Unit
     public void Refresh()
     {
         moves = type.movement;
+    }
+
+    /// <summary>
+    /// Update the tiles which this unit can see.
+    /// </summary>
+    void RefreshVision()
+    {
+        if(visibleTiles != null)
+        {
+            foreach(Tile tile in visibleTiles) tile.RemoveObserver(this);
+        }
+
+        visibleTiles = GetTilesInVision();
+        foreach (Tile tile in visibleTiles) tile.AddObserver(this);
+    }
+
+    Tile[] GetTilesInVision()
+    {
+        List<Tile> tiles = new List<Tile>();
+
+        tiles.Add(tile);
+        tiles.AddRange(World.GetNeighbors(tile));
+
+        return tiles.ToArray();
     }
 
     public UnitData GetData()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using AStar;
+using System.Linq;
 
 /// <summary>
 /// Holds data for one tile in the map.
@@ -13,6 +14,19 @@ public class Tile : INode
     public Ground ground { get; protected set; }
     public Structure structure { get; protected set; }
     public Unit unit { get; protected set; }
+
+    HashSet<Unit> seenBy = new HashSet<Unit>();
+    Player[] SeenBy
+    {
+        get
+        {
+            HashSet<Player> players = new HashSet<Player>();
+
+            foreach (Unit unit in seenBy) players.Add(unit.owner);
+
+            return players.ToArray();
+        }
+    }
 
     AStar.Vector2 INode.Position => coords;
 
@@ -30,14 +44,23 @@ public class Tile : INode
     /// Create tiledata object that represents this tile.
     /// </summary>
     /// <returns></returns>
-    public TileData GetData()
+    public TileData GetData(Player player, TileData oldData)
     {
-        return new TileData()
+        if (CanSee(player))
         {
-            ground = ground,
-            unit = (unit != null? unit.GetData() : null),
-            structure = (structure != null? structure.GetData() : null)
-        };
+            return new TileData()
+            {
+                ground = ground,
+                unit = (unit != null ? unit.GetData() : null),
+                structure = (structure != null ? structure.GetData() : null),
+                visible = true
+            };
+        } else
+        {
+            if(oldData != null)
+                oldData.visible = false;
+            return oldData;
+        }
     }
 
     /// <summary>
@@ -96,6 +119,36 @@ public class Tile : INode
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Add a unit who can see this tile.
+    /// </summary>
+    /// <param name="unit"></param>
+    public void AddObserver(Unit unit)
+    {
+        seenBy.Add(unit);
+        Refresh();
+    }
+
+    /// <summary>
+    /// The given unit no longer sees this tile.
+    /// </summary>
+    /// <param name="unit"></param>
+    public void RemoveObserver(Unit unit)
+    {
+        seenBy.Remove(unit);
+        Refresh();
+    }
+
+    /// <summary>
+    /// Does any unit of the given player have sight onto this tile.
+    /// </summary>
+    /// <param name="player"></param>
+    /// <returns></returns>
+    public bool CanSee(Player player)
+    {
+        return SeenBy.Contains(player);
     }
 
     /// <summary>

@@ -58,9 +58,9 @@ public class GameController : MonoBehaviour
             new HumanPlayer(new Player("Player 2", Color.blue))
         };
 
-        foreach(PlayerController controller in players)
+        foreach (PlayerController controller in players)
         {
-            controller.player.RefreshVision();
+            controller.player.InitVision();
         }
 
         UnitController.SpawnUnit(UnitController.Units[0], World.GetTile(0, 0), players[0].player);

@@ -10,6 +10,8 @@ public class TileGraphics : MonoBehaviour
     [SerializeField] SpriteRenderer groundGfx = default;
     [SerializeField] UnitGraphics unitGfx = default;
     [SerializeField] StructureGraphics structureGfx = default;
+    [SerializeField] SpriteRenderer fogOfWar = default;
+    [SerializeField] SpriteRenderer unexplored = default;
 
     public UnitGraphics Unit => unitGfx;
 
@@ -19,8 +21,17 @@ public class TileGraphics : MonoBehaviour
     /// <param name="data"></param>
     public void Refresh(TileData data)
     {
-        groundGfx.sprite = WorldGraphics.GetGroundSprite(data.ground);
-        unitGfx.SetUnit(data.unit);
-        structureGfx.SetStructure(data.structure);
+        if (data == null)
+        {
+            unexplored.enabled = true;
+        }
+        else
+        {
+            groundGfx.sprite = WorldGraphics.GetGroundSprite(data.ground);
+            unitGfx.SetUnit(data.unit);
+            structureGfx.SetStructure(data.structure);
+            fogOfWar.enabled = !data.visible;
+            unexplored.enabled = false;
+        }
     }
 }
