@@ -51,9 +51,18 @@ public class Tile : INode
         }
     }
 
-    public void SetStructure(StructureType type)
+    /// <summary>
+    /// Set the structure on this tile.
+    /// </summary>
+    /// <param name="structure"></param>
+    public void SetStructure(Structure structure)
     {
-        structure = new Structure(type, this);
+        if (this.structure != null) this.structure.onOwnerChanged -= Refresh;
+
+        this.structure = structure;
+        structure.SetTile(this);
+        structure.onOwnerChanged += Refresh;
+
         Refresh();
     }
 
@@ -74,6 +83,7 @@ public class Tile : INode
     /// <param name="unit"></param>
     public bool Interact(Unit unit)
     {
+        if (structure != null) structure.Interact(unit);
         if (this.unit == null && CanEnter(unit))
         {
             return unit.Move(this);

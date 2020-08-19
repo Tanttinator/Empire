@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Structure
 {
@@ -8,16 +9,28 @@ public class Structure
     public Player owner { get; protected set; }
     public Tile tile { get; protected set; }
 
-    public Structure(StructureType type, Tile tile)
+    public event Action onOwnerChanged;
+
+    public Structure(StructureType type)
     {
         this.type = type;
-        this.tile = tile;
         SetOwner(GameController.neutral);
+    }
+
+    public void SetTile(Tile tile)
+    {
+        this.tile = tile;
     }
 
     public void SetOwner(Player owner)
     {
         this.owner = owner;
+        onOwnerChanged?.Invoke();
+    }
+
+    public virtual void Interact(Unit unit)
+    {
+
     }
 
     public StructureData GetData()
@@ -28,4 +41,9 @@ public class Structure
             color = owner.color
         };
     }
+}
+
+public enum StructureType
+{
+    CITY
 }

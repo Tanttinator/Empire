@@ -67,7 +67,7 @@ public class WorldGraphics : MonoBehaviour
         {
             if (data.structure == structure) return data.sprite;
         }
-        Debug.LogError("No sprite found for structure of type: " + structure.name);
+        Debug.LogError("No sprite found for structure of type: " + structure);
         return null;
     }
 

@@ -16,9 +16,6 @@ public class World : MonoBehaviour
     [SerializeField] Ground grassland = default;
     [SerializeField] Ground water = default;
 
-    [Header("Structures")]
-    [SerializeField] StructureType city = default;
-
     public static int Width => instance.width;
     public static int Height => instance.height;
 
@@ -38,7 +35,7 @@ public class World : MonoBehaviour
             for(int y = 0; y < Height; y++)
             {
                 Tile tile = tiles[x, y] = new Tile(new Coords(x, y), (Random.value < 0.5f? instance.grassland : instance.water));
-                if (x == Width / 2 && y == Height / 2) tile.SetStructure(instance.city);
+                if (x == Width / 2 && y == Height / 2) tile.SetStructure(new City());
             }
         }
     }
