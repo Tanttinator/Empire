@@ -16,15 +16,6 @@ public class Player
     {
         this.name = name;
         this.color = color;
-
-        seenTiles = new TileData[World.Width, World.Height];
-        for(int x = 0; x < World.Width; x++)
-        {
-            for(int y = 0; y < World.Height; y++)
-            {
-                seenTiles[x, y] = World.GetTile(x, y).GetData();
-            }
-        }
     }
 
     public void AddUnit(Unit unit)
@@ -40,6 +31,18 @@ public class Player
     public void RefreshTile(Tile tile)
     {
         seenTiles[tile.coords.x, tile.coords.y] = tile.GetData();
+    }
+
+    public void RefreshVision()
+    {
+        seenTiles = new TileData[World.Width, World.Height];
+        for (int x = 0; x < World.Width; x++)
+        {
+            for (int y = 0; y < World.Height; y++)
+            {
+                seenTiles[x, y] = World.GetTile(x, y).GetData();
+            }
+        }
     }
 
     public override string ToString()

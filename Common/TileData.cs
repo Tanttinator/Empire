@@ -5,6 +5,6 @@ using UnityEngine;
 public class TileData
 {
     public Ground ground;
-    public UnitType unit;
-    public Color unitColor;
+    public UnitData unit;
+    public StructureData structure;
 }

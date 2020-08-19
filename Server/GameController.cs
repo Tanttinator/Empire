@@ -11,6 +11,7 @@ public class GameController : MonoBehaviour
     {
         get
         {
+            if (GameController.players == null) return new Player[] { };
             Player[] players = new Player[GameController.players.Length];
             for(int i = 0; i < GameController.players.Length; i++)
             {
@@ -21,6 +22,8 @@ public class GameController : MonoBehaviour
     }
 
     static int turn = 1;
+
+    public static Player neutral { get; protected set; } = new Player("Neutral", Color.white);
 
     /// <summary>
     /// Set the next player on the list as active.
@@ -45,6 +48,7 @@ public class GameController : MonoBehaviour
     private void Start()
     {
         instance = this;
+
         World.GenerateWorld();
         ClientController.Init(World.Width, World.Height);
 
@@ -53,6 +57,11 @@ public class GameController : MonoBehaviour
             new HumanPlayer(new Player("Player 1", Color.red)),
             new HumanPlayer(new Player("Player 2", Color.blue))
         };
+
+        foreach(PlayerController controller in players)
+        {
+            controller.player.RefreshVision();
+        }
 
         UnitController.SpawnUnit(UnitController.Units[0], World.GetTile(0, 0), players[0].player);
         UnitController.SpawnUnit(UnitController.Units[0], World.GetTile(World.Width - 1, 0), players[1].player);

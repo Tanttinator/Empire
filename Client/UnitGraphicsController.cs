@@ -93,7 +93,7 @@ public class UnitMoveSequence : Sequence
 
     public override void Start()
     {
-        GameState.MoveUnit(unit.type, unit.owner.color, from.coords, to.coords);
+        GameState.MoveUnit(unit.GetData(), from.coords, to.coords);
     }
 
     public override bool Update()

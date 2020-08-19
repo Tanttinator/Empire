@@ -11,6 +11,7 @@ public class Tile : INode
 {
     public Coords coords { get; protected set; }
     public Ground ground { get; protected set; }
+    public Structure structure { get; protected set; }
     public Unit unit { get; protected set; }
 
     AStar.Vector2 INode.Position => coords;
@@ -34,8 +35,8 @@ public class Tile : INode
         return new TileData()
         {
             ground = ground,
-            unit = (unit != null? unit.type : null),
-            unitColor = (unit != null? unit.owner.color : new Color(0f, 0f, 0f, 0f))
+            unit = (unit != null? unit.GetData() : null),
+            structure = (structure != null? structure.GetData() : null)
         };
     }
 
@@ -48,6 +49,12 @@ public class Tile : INode
         {
             player.RefreshTile(this);
         }
+    }
+
+    public void SetStructure(StructureType type)
+    {
+        structure = new Structure(type, this);
+        Refresh();
     }
 
     /// <summary>

@@ -51,11 +51,10 @@ public class GameState : MonoBehaviour
     /// <param name="tile"></param>
     /// <param name="unit"></param>
     /// <param name="unitColor"></param>
-    public static void PlaceUnit(Coords tile, UnitType unit, Color unitColor)
+    public static void PlaceUnit(Coords tile, UnitData unit)
     {
         TileData data = tiles[tile.x, tile.y];
         data.unit = unit;
-        data.unitColor = unitColor;
         UpdateTile(tile, data);
     }
 
@@ -76,10 +75,10 @@ public class GameState : MonoBehaviour
     /// <param name="unit"></param>
     /// <param name="from"></param>
     /// <param name="to"></param>
-    public static void MoveUnit(UnitType unit, Color unitColor, Coords from, Coords to)
+    public static void MoveUnit(UnitData unit, Coords from, Coords to)
     {
         RemoveUnit(from);
 
-        PlaceUnit(to, unit, unitColor);
+        PlaceUnit(to, unit);
     }
 }

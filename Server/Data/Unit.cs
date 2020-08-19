@@ -137,6 +137,15 @@ public class Unit
         moves = type.movement;
     }
 
+    public UnitData GetData()
+    {
+        return new UnitData()
+        {
+            unit = type,
+            color = owner.color
+        };
+    }
+
     public override string ToString()
     {
         return owner + " " + type.name;

@@ -9,6 +9,7 @@ public class TileGraphics : MonoBehaviour
 {
     [SerializeField] SpriteRenderer groundGfx = default;
     [SerializeField] UnitGraphics unitGfx = default;
+    [SerializeField] StructureGraphics structureGfx = default;
 
     public UnitGraphics Unit => unitGfx;
 
@@ -19,6 +20,7 @@ public class TileGraphics : MonoBehaviour
     public void Refresh(TileData data)
     {
         groundGfx.sprite = WorldGraphics.GetGroundSprite(data.ground);
-        unitGfx.SetUnit(data.unit, data.unitColor);
+        unitGfx.SetUnit(data.unit);
+        structureGfx.SetStructure(data.structure);
     }
 }

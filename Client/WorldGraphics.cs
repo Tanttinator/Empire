@@ -10,6 +10,7 @@ public class WorldGraphics : MonoBehaviour
 
     [SerializeField] TileGraphics tileObject = default;
     [SerializeField] GroundSpriteData[] groundSprites = default;
+    [SerializeField] StructureSpriteData[] structureSprites = default;
     static TileGraphics[,] tiles;
 
     static WorldGraphics instance;
@@ -41,7 +42,7 @@ public class WorldGraphics : MonoBehaviour
     }
 
     /// <summary>
-    /// Find a sprite for the ground type in the registry.
+    /// Find a sprite for the ground type from the registry.
     /// </summary>
     /// <param name="ground"></param>
     /// <returns></returns>
@@ -52,6 +53,21 @@ public class WorldGraphics : MonoBehaviour
             if (data.ground == ground) return data.sprite;
         }
         Debug.LogError("No sprite found for ground of type: " + ground.name);
+        return null;
+    }
+
+    /// <summary>
+    /// Find a sprite for the structure type from the registry.
+    /// </summary>
+    /// <param name="structure"></param>
+    /// <returns></returns>
+    public static Sprite GetStructureSprite(StructureType structure)
+    {
+        foreach (StructureSpriteData data in instance.structureSprites)
+        {
+            if (data.structure == structure) return data.sprite;
+        }
+        Debug.LogError("No sprite found for structure of type: " + structure.name);
         return null;
     }
 
@@ -116,5 +132,12 @@ public class WorldGraphics : MonoBehaviour
 public struct GroundSpriteData
 {
     public Ground ground;
+    public Sprite sprite;
+}
+
+[System.Serializable]
+public struct StructureSpriteData
+{
+    public StructureType structure;
     public Sprite sprite;
 }
