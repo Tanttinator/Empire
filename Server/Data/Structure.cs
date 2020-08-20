@@ -24,8 +24,15 @@ public class Structure
 
     public void SetOwner(Player owner)
     {
+        Player oldOwner = this.owner;
         this.owner = owner;
+        OnOwnerChanged(oldOwner);
         onOwnerChanged?.Invoke();
+    }
+
+    protected virtual void OnOwnerChanged(Player oldOwner)
+    {
+
     }
 
     public virtual void Interact(Unit unit)

@@ -42,6 +42,7 @@ public abstract class PlayerController
         if (active) return;
 
         active = true;
+        player.StartTurn();
         OnTurnStarted();
     }
 

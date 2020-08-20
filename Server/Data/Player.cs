@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Player
 {
@@ -12,10 +13,21 @@ public class Player
 
     public TileData[,] seenTiles { get; protected set; }
 
+    public event Action onTurnStarted;
+
     public Player(string name, Color color)
     {
         this.name = name;
         this.color = color;
+    }
+
+    public void StartTurn()
+    {
+        foreach (Unit unit in units)
+        {
+            unit.Refresh();
+        }
+        onTurnStarted?.Invoke();
     }
 
     public void InitVision()

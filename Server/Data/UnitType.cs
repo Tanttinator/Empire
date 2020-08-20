@@ -6,4 +6,5 @@ using UnityEngine;
 public class UnitType : ScriptableObject
 {
     public int movement = 1;
+    public int productionCost = 10;
 }

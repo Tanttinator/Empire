@@ -96,7 +96,8 @@ public class Unit
     void GeneratePath()
     {
         currentPath = World.GetPath(this, target);
-        currentPath.Dequeue();
+        if(currentPath != null)
+            currentPath.Dequeue();
     }
 
     /// <summary>

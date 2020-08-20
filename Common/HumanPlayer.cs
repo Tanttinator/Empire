@@ -61,10 +61,6 @@ public class HumanPlayer : PlayerController
         client.SetActivePlayer(this);
 
         activeUnits.AddRange(player.Units);
-        foreach(Unit unit in player.Units)
-        {
-            unit.Refresh();
-        }
 
         SelectUnit(ActiveUnit);
     }
