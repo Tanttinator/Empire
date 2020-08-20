@@ -130,6 +130,9 @@ public class Unit
         owner.RemoveUnit(this);
         tile.SetUnit(null);
         moves = 0;
+
+        foreach (Tile tile in visibleTiles) tile.RemoveObserver(this);
+
         onUnitDestroyed?.Invoke(this);
     }
 

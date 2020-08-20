@@ -35,7 +35,7 @@ public class UnitGraphicsController : MonoBehaviour
 
     void OnUnitMoved(Unit unit, Tile from, Tile to)
     {
-        Sequencer.AddSequence(new UnitMoveSequence(unit, from, to));
+        Sequencer.AddSequence(new UnitMoveSequence(unit.GetData(), from.coords, to.coords, unit.owner.seenTiles));
     }
 
     void OnUnitDestroyed(Unit unit)
@@ -78,22 +78,25 @@ public struct UnitSpriteData
 
 public class UnitMoveSequence : Sequence
 {
-    Unit unit;
-    Tile from;
-    Tile to;
+    UnitData unit;
+    Coords from;
+    Coords to;
+    TileData[,] vision;
 
     float progress = 0f;
 
-    public UnitMoveSequence(Unit unit, Tile from, Tile to)
+    public UnitMoveSequence(UnitData unit, Coords from, Coords to, TileData[,] vision)
     {
         this.unit = unit;
         this.from = from;
         this.to = to;
+        this.vision = vision;
     }
 
     public override void Start()
     {
-        GameState.MoveUnit(unit.GetData(), from.coords, to.coords);
+        GameState.MoveUnit(unit, from, to);
+        GameState.UpdateTiles(vision);
     }
 
     public override bool Update()
