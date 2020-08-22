@@ -31,15 +31,57 @@ public class WorldGraphics : MonoBehaviour
         }
     }
 
+    #region Tile Graphics
+
     /// <summary>
-    /// Refresh the graphics of the given tile.
+    /// Update the state of all tiles.
     /// </summary>
-    /// <param name="coords"></param>
     /// <param name="data"></param>
-    void RefreshTile(Coords coords, TileData data)
+    public static void UpdateTiles(TileData[,] data)
     {
-        tiles[coords.x, coords.y].Refresh(data);
+        for(int x = 0; x < tiles.GetLength(0); x++)
+        {
+            for(int y = 0; y < tiles.GetLength(1); y++)
+            {
+                tiles[x, y].SetState(data[x, y]);
+            }
+        }
     }
+
+    /// <summary>
+    /// Place a unit on a tile.
+    /// </summary>
+    /// <param name="unit"></param>
+    /// <param name="tile"></param>
+    public static void PlaceUnit(UnitData unit, Coords tile)
+    {
+        tiles[tile.x, tile.y].PlaceUnit(unit);
+    }
+
+    /// <summary>
+    /// Remove the current unit from a tile.
+    /// </summary>
+    /// <param name="tile"></param>
+    public static void RemoveUnit(Coords tile)
+    {
+        tiles[tile.x, tile.y].RemoveUnit();
+    }
+
+    /// <summary>
+    /// Move a unit from one tile to another.
+    /// </summary>
+    /// <param name="unit"></param>
+    /// <param name="from"></param>
+    /// <param name="to"></param>
+    public static void MoveUnit(UnitData unit, Coords from, Coords to)
+    {
+        RemoveUnit(from);
+        PlaceUnit(unit, to);
+    }
+
+    #endregion
+
+    #region Accessors
 
     /// <summary>
     /// Find a sprite for the ground type from the registry.
@@ -115,15 +157,11 @@ public class WorldGraphics : MonoBehaviour
         return new Vector3(coords.x, coords.y, 0f);
     }
 
+    #endregion
+
     private void Awake()
     {
         instance = this;
-        GameState.onTileUpdated += RefreshTile;
-    }
-
-    private void OnDisable()
-    {
-        GameState.onTileUpdated -= RefreshTile;
     }
 
 }

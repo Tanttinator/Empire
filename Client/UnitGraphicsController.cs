@@ -95,8 +95,8 @@ public class UnitMoveSequence : Sequence
 
     public override void Start()
     {
-        GameState.MoveUnit(unit, from, to);
-        GameState.UpdateTiles(vision);
+        WorldGraphics.MoveUnit(unit, from, to);
+        WorldGraphics.UpdateTiles(vision);
     }
 
     public override bool Update()
@@ -117,7 +117,7 @@ public class UnitDieSequence : Sequence
 
     public override void Start()
     {
-        GameState.RemoveUnit(unit.tile.coords);
+        WorldGraphics.RemoveUnit(unit.tile.coords);
     }
 }
 

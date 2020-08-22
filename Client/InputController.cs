@@ -10,7 +10,7 @@ public class InputController : MonoBehaviour
     bool[] isDragging;
     Vector3[] clickPos;
 
-    Coords hoverTile;
+    static Coords hoverTile;
 
     [SerializeField] LineRenderer movementIndicator = default;
 
@@ -24,7 +24,7 @@ public class InputController : MonoBehaviour
     {
         currentState.End();
         currentState = state;
-        currentState.Start();
+        currentState.Start(hoverTile);
     }
 
     /// <summary>
@@ -90,7 +90,7 @@ public class InputController : MonoBehaviour
         if(Input.GetMouseButton(button))
         {
             if (isDragging[button]) currentState.Drag(button);
-            else if (Vector3.Distance(clickPos[button], Input.mousePosition) < 1f)
+            else if (Vector3.Distance(clickPos[button], Input.mousePosition) > 5f)
             {
                 isDragging[button] = true;
                 currentState.DragStart(button);
@@ -143,7 +143,7 @@ public class InputController : MonoBehaviour
 
 public abstract class InputState
 {
-    public virtual void Start()
+    public virtual void Start(Coords hoverTile)
     {
 
     }
@@ -210,7 +210,7 @@ public class UnitSelectedState : InputState
         this.unit = WorldGraphics.GetTileGraphics(unit).Unit;
     }
 
-    public override void Start()
+    public override void Start(Coords hoverTile)
     {
         unit.SetIdle(true);
     }
@@ -262,14 +262,15 @@ public class DragMoveState : InputState
         this.unit = unit;
     }
 
-    public override void Start()
+    public override void Start(Coords hoverTile)
     {
         unit.SetIdle(false);
+        InputController.DrawMovementIndicator(pos, hoverTile);
     }
 
     public override void HoverEnter(Coords tile)
     {
-        InputController.DrawMovementIndicator(tile, pos);
+        InputController.DrawMovementIndicator(pos, tile);
     }
 
     public override void End()

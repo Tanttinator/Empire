@@ -17,13 +17,12 @@ public class ClientController : MonoBehaviour
     {
         activePlayer = player;
 
-        GameState.UpdateTiles(activePlayer.SeenTiles);
+        WorldGraphics.UpdateTiles(activePlayer.SeenTiles);
     }
 
     public static void Init(int width, int height)
     {
         WorldGraphics.InitTiles(width, height);
-        GameState.Init(width, height);
     }
 
     public static void SelectUnit(Coords coords)
