@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using AStar;
+using PerlinNoise;
 
 /// <summary>
 /// Stores data for the current world.
@@ -11,6 +11,8 @@ public class World : MonoBehaviour
     [Header("World Parameters")]
     [SerializeField] int width = 10;
     [SerializeField] int height = 10;
+    [SerializeField] Settings perlinSettings;
+    [SerializeField, Range(0f, 1f)] float waterLevel = 0.5f;
 
     [Header("Terrain")]
     [SerializeField] Ground grassland = default;
@@ -30,11 +32,13 @@ public class World : MonoBehaviour
     {
         tiles = new Tile[Width, Height];
 
+        float[,] heightmap = Generator.GenerateHeightmap(Width, Height, Random.Range(-999999, 999999), instance.perlinSettings, Vector2.zero);
+
         for(int x = 0; x < Width; x++)
         {
             for(int y = 0; y < Height; y++)
             {
-                Tile tile = tiles[x, y] = new Tile(new Coords(x, y), (Random.value < 0.5f? instance.grassland : instance.water));
+                Tile tile = tiles[x, y] = new Tile(new Coords(x, y), (heightmap[x, y] > instance.waterLevel? instance.grassland : instance.water));
                 if (x == Width / 2 && y == Height / 2) tile.SetStructure(new City());
             }
         }
