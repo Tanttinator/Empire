@@ -88,13 +88,13 @@ public class WorldGraphics : MonoBehaviour
     /// </summary>
     /// <param name="ground"></param>
     /// <returns></returns>
-    public static Sprite GetGroundSprite(Ground ground)
+    public static Sprite GetGroundSprite(TileData tile)
     {
         foreach(GroundSpriteData data in instance.groundSprites)
         {
-            if (data.ground == ground) return data.sprite;
+            if (data.ground == tile.ground) return data.sprite.GetSprite(tile.groundConnections[0], tile.groundConnections[1], tile.groundConnections[2], tile.groundConnections[3]);
         }
-        Debug.LogError("No sprite found for ground of type: " + ground.name);
+        Debug.LogError("No sprite found for ground of type: " + tile.ground.name);
         return null;
     }
 
@@ -170,7 +170,7 @@ public class WorldGraphics : MonoBehaviour
 public struct GroundSpriteData
 {
     public Ground ground;
-    public Sprite sprite;
+    public SpriteProvider sprite;
 }
 
 [System.Serializable]

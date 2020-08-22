@@ -28,7 +28,7 @@ public class TileGraphics : MonoBehaviour
         }
         else
         {
-            groundGfx.sprite = WorldGraphics.GetGroundSprite(state.ground);
+            groundGfx.sprite = WorldGraphics.GetGroundSprite(state);
             unitGfx.SetUnit(state.unit);
             structureGfx.SetStructure(state.structure);
             fogOfWar.enabled = !state.visible;

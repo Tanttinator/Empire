@@ -51,6 +51,13 @@ public class Tile : INode
             return new TileData()
             {
                 ground = ground,
+                groundConnections = new bool[]
+                {
+                    ConnectGroundTexture(Direction.NORTH),
+                    ConnectGroundTexture(Direction.EAST),
+                    ConnectGroundTexture(Direction.SOUTH),
+                    ConnectGroundTexture(Direction.WEST)
+                },
                 unit = (unit != null ? unit.GetData() : null),
                 structure = (structure != null ? structure.GetData() : null),
                 visible = true
@@ -61,6 +68,16 @@ public class Tile : INode
                 oldData.visible = false;
             return oldData;
         }
+    }
+
+    /// <summary>
+    /// Should our ground texture connect to the one in the given direction?
+    /// </summary>
+    /// <param name="dir"></param>
+    /// <returns></returns>
+    bool ConnectGroundTexture(Direction dir)
+    {
+        return World.GetNeighbor(this, dir) == null || World.GetNeighbor(this, dir).ground == ground;
     }
 
     /// <summary>
