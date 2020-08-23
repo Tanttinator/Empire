@@ -13,6 +13,7 @@ public class World : MonoBehaviour
     [SerializeField] int height = 10;
     [SerializeField] Settings perlinSettings;
     [SerializeField, Range(0f, 1f)] float waterLevel = 0.5f;
+    [SerializeField] int tilesPerCity = 25;
 
     [Header("Terrain")]
     [SerializeField] Ground grassland = default;
@@ -38,8 +39,9 @@ public class World : MonoBehaviour
         {
             for(int y = 0; y < Height; y++)
             {
-                Tile tile = tiles[x, y] = new Tile(new Coords(x, y), (heightmap[x, y] > instance.waterLevel? instance.grassland : instance.water));
-                if (x == Width / 2 && y == Height / 2) tile.SetStructure(new City());
+                Ground ground = (heightmap[x, y] > instance.waterLevel ? instance.grassland : instance.water);
+                Tile tile = tiles[x, y] = new Tile(new Coords(x, y), ground);
+                if (ground == instance.grassland && Random.Range(0f, 1f) < 1f / instance.tilesPerCity) tile.SetStructure(new City());
             }
         }
     }

@@ -11,7 +11,8 @@ public class Player
     List<Unit> units = new List<Unit>();
     public Unit[] Units => units.ToArray();
 
-    public TileData[,] seenTiles { get; protected set; }
+    TileData[,] seenTiles;
+    public TileData[,] SeenTiles => (TileData[,])seenTiles.Clone();
 
     public event Action onTurnStarted;
 

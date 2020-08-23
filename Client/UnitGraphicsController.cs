@@ -35,7 +35,7 @@ public class UnitGraphicsController : MonoBehaviour
 
     void OnUnitMoved(Unit unit, Tile from, Tile to)
     {
-        Sequencer.AddSequence(new UnitMoveSequence(unit.GetData(), from.coords, to.coords, unit.owner.seenTiles));
+        Sequencer.AddSequence(new UnitMoveSequence(unit.GetData(), from.coords, to.coords, (TileData[,])unit.owner.SeenTiles));
     }
 
     void OnUnitDestroyed(Unit unit)

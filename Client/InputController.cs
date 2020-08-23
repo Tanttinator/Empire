@@ -196,10 +196,28 @@ public abstract class InputState
 
 public class DefaultState : InputState
 {
+    public override void Update()
+    {
+        if (Input.GetKey(KeyCode.UpArrow)) ClientController.Camera.Move(new Vector2(0, 1));
+        if (Input.GetKey(KeyCode.RightArrow)) ClientController.Camera.Move(new Vector2(1, 0));
+        if (Input.GetKey(KeyCode.DownArrow)) ClientController.Camera.Move(new Vector2(0, -1));
+        if (Input.GetKey(KeyCode.LeftArrow)) ClientController.Camera.Move(new Vector2(-1, 0));
 
+        ClientController.Camera.Zoom(Input.GetAxis("Mouse ScrollWheel"));
+    }
+
+    public override void DragStart(int button)
+    {
+        if (button == 0) ClientController.Camera.Drag(true);
+    }
+
+    public override void Drag(int button)
+    {
+        if (button == 0) ClientController.Camera.Drag();
+    }
 }
 
-public class UnitSelectedState : InputState
+public class UnitSelectedState : DefaultState
 {
     UnitGraphics unit;
     Coords pos;
@@ -217,10 +235,7 @@ public class UnitSelectedState : InputState
 
     public override void Update()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow)) ClientController.activePlayer?.ExecuteCommand(new CommandMoveDir(Direction.NORTH));
-        if (Input.GetKeyDown(KeyCode.RightArrow)) ClientController.activePlayer?.ExecuteCommand(new CommandMoveDir(Direction.EAST));
-        if (Input.GetKeyDown(KeyCode.DownArrow)) ClientController.activePlayer?.ExecuteCommand(new CommandMoveDir(Direction.SOUTH));
-        if (Input.GetKeyDown(KeyCode.LeftArrow)) ClientController.activePlayer?.ExecuteCommand(new CommandMoveDir(Direction.WEST));
+        base.Update();
 
         if (Input.GetKeyDown(KeyCode.Space)) ClientController.activePlayer?.ExecuteCommand(new CommandWait());
     }
@@ -244,6 +259,7 @@ public class UnitSelectedState : InputState
 
     public override void DragStart(int button)
     {
+        base.DragStart(button);
         if(button == 1)
         {
             InputController.ChangeState(new DragMoveState(pos, unit));
@@ -251,7 +267,7 @@ public class UnitSelectedState : InputState
     }
 }
 
-public class DragMoveState : InputState
+public class DragMoveState : DefaultState
 {
     Coords pos;
     UnitGraphics unit;
@@ -266,6 +282,11 @@ public class DragMoveState : InputState
     {
         unit.SetIdle(false);
         InputController.DrawMovementIndicator(pos, hoverTile);
+    }
+
+    public override void Update()
+    {
+        base.Update();
     }
 
     public override void HoverEnter(Coords tile)

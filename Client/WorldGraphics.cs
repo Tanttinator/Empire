@@ -29,6 +29,8 @@ public class WorldGraphics : MonoBehaviour
                 tiles[x, y] = Instantiate(instance.tileObject.gameObject, GetTilePosition(new Coords(x, y)), Quaternion.identity, instance.transform).GetComponent<TileGraphics>();
             }
         }
+
+        ClientController.Camera.SetConstraints(0f, 0f, width, height);
     }
 
     #region Tile Graphics

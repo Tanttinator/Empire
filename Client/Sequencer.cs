@@ -43,6 +43,7 @@ public class Sequencer : MonoBehaviour
         {
             currentSequence = sequenceQueue.Dequeue();
             currentSequence.Start();
+            Debug.Log("Started sequence: " + currentSequence);
         } 
         else if(!idle)
         {
@@ -70,6 +71,24 @@ public class Sequence
     }
 }
 
+public class StartTurnSequence : Sequence
+{
+    HumanPlayer player;
+    TileData[,] seenTiles;
+
+    public StartTurnSequence(HumanPlayer player, TileData[,] seenTiles)
+    {
+        this.player = player;
+        this.seenTiles = seenTiles;
+    }
+
+    public override void Start()
+    {
+        ClientController.SetActivePlayer(player);
+        WorldGraphics.UpdateTiles(seenTiles);
+    }
+}
+
 public class EndTurnSequence : Sequence
 {
     public override void Start()
@@ -90,6 +109,12 @@ public class SelectUnitSequence : Sequence
     public override void Start()
     {
         ClientController.SelectUnit(unit);
+        ClientController.Camera.MoveTowards(WorldGraphics.GetTilePosition(unit));
+    }
+
+    public override bool Update()
+    {
+        return !ClientController.Camera.isMovingToTarget;
     }
 }
 

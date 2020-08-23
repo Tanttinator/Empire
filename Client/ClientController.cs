@@ -1,11 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using RTSCamera;
 
 public class ClientController : MonoBehaviour
 {
     public static HumanPlayer activePlayer { get; protected set; }
     public static Coords? activeUnit { get; protected set; }
+
+    [SerializeField] new RTSCameraController2D camera;
+    public static RTSCameraController2D Camera => instance.camera;
 
     public static ClientController instance;
 
@@ -13,11 +17,9 @@ public class ClientController : MonoBehaviour
     /// Switch viewpoint to the given player.
     /// </summary>
     /// <param name="player"></param>
-    public void SetActivePlayer(HumanPlayer player)
+    public static void SetActivePlayer(HumanPlayer player)
     {
         activePlayer = player;
-
-        WorldGraphics.UpdateTiles(activePlayer.SeenTiles);
     }
 
     public static void Init(int width, int height)
@@ -28,7 +30,7 @@ public class ClientController : MonoBehaviour
     public static void SelectUnit(Coords coords)
     {
         activeUnit = coords;
-        InputController.ChangeState(new UnitSelectedState(coords));
+        //InputController.ChangeState(new UnitSelectedState(coords));
     }
 
     public static void DeselectUnit()

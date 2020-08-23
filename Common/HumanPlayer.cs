@@ -14,8 +14,6 @@ public class HumanPlayer : PlayerController
 
     List<Unit> activeUnits = new List<Unit>();
 
-    public TileData[,] SeenTiles => player.seenTiles;
-
     public HumanPlayer(Player player) : base(player)
     {
         client = ClientController.instance;
@@ -58,7 +56,7 @@ public class HumanPlayer : PlayerController
 
     protected override void OnTurnStarted()
     {
-        client.SetActivePlayer(this);
+        Sequencer.AddSequence(new StartTurnSequence(this, player.SeenTiles));
 
         activeUnits.AddRange(player.Units);
 
