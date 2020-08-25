@@ -24,11 +24,11 @@ public class Player
 
     public void StartTurn()
     {
+        onTurnStarted?.Invoke();
         foreach (Unit unit in units)
         {
             unit.Refresh();
         }
-        onTurnStarted?.Invoke();
     }
 
     public void InitVision()

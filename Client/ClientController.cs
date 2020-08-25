@@ -19,6 +19,11 @@ public class ClientController : MonoBehaviour
     /// <param name="player"></param>
     public static void SetActivePlayer(HumanPlayer player)
     {
+        if(activePlayer != player)
+        {
+            Camera.Translate(WorldGraphics.GetTilePosition(player.ActiveUnit.tile.coords) - Camera.transform.position);
+        }
+
         activePlayer = player;
     }
 
