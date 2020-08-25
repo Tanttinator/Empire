@@ -14,6 +14,19 @@ public class Tile : INode
     public Ground ground { get; protected set; }
     public Structure structure { get; protected set; }
     public Unit unit { get; protected set; }
+    public Island island = null;
+
+    public bool IsCoastal
+    {
+        get
+        {
+            foreach(Tile neighbor in World.GetNeighbors(this))
+            {
+                if (neighbor.ground == World.Water) return true;
+            }
+            return false;
+        }
+    }
 
     HashSet<Unit> seenBy = new HashSet<Unit>();
     Player[] SeenBy
@@ -44,9 +57,9 @@ public class Tile : INode
     /// Create tiledata object that represents this tile.
     /// </summary>
     /// <returns></returns>
-    public TileData GetData(Player player, TileData oldData)
+    public TileData GetData(Player player, TileData oldData, bool forceVisible = false)
     {
-        if (CanSee(player))
+        if (CanSee(player) || forceVisible)
         {
             return new TileData()
             {

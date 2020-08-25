@@ -43,7 +43,7 @@ public class Sequencer : MonoBehaviour
         {
             currentSequence = sequenceQueue.Dequeue();
             currentSequence.Start();
-            Debug.Log("Started sequence: " + currentSequence);
+            //Debug.Log("Started sequence: " + currentSequence);
         } 
         else if(!idle)
         {

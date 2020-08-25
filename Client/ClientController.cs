@@ -8,7 +8,7 @@ public class ClientController : MonoBehaviour
     public static HumanPlayer activePlayer { get; protected set; }
     public static Coords? activeUnit { get; protected set; }
 
-    [SerializeField] new RTSCameraController2D camera;
+    [SerializeField] new RTSCameraController2D camera = default;
     public static RTSCameraController2D Camera => instance.camera;
 
     public static ClientController instance;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using PerlinNoise;
+using System.Linq;
 
 /// <summary>
 /// Stores data for the current world.
@@ -11,7 +12,7 @@ public class World : MonoBehaviour
     [Header("World Parameters")]
     [SerializeField] int width = 10;
     [SerializeField] int height = 10;
-    [SerializeField] Settings perlinSettings;
+    [SerializeField] Settings perlinSettings = default;
     [SerializeField, Range(0f, 1f)] float waterLevel = 0.5f;
     [SerializeField] int tilesPerCity = 25;
 
@@ -19,29 +20,99 @@ public class World : MonoBehaviour
     [SerializeField] Ground grassland = default;
     [SerializeField] Ground water = default;
 
+    public static Ground Grassland => instance.grassland;
+    public static Ground Water => instance.water;
+
     public static int Width => instance.width;
     public static int Height => instance.height;
 
     static Tile[,] tiles;
+    static List<Island> islands;
 
     static World instance;
 
     /// <summary>
     /// Generate tiles based on the worlds parametes.
     /// </summary>
-    public static void GenerateWorld()
+    public static void GenerateWorld(Player[] players)
     {
         tiles = new Tile[Width, Height];
 
         float[,] heightmap = Generator.GenerateHeightmap(Width, Height, Random.Range(-999999, 999999), instance.perlinSettings, Vector2.zero);
 
+        //Generate Tiles.
         for(int x = 0; x < Width; x++)
         {
             for(int y = 0; y < Height; y++)
             {
-                Ground ground = (heightmap[x, y] > instance.waterLevel ? instance.grassland : instance.water);
+                Ground ground = (heightmap[x, y] > instance.waterLevel && (x > 0 && x < Width - 1 && y > 0 && y < Height - 1) ? Grassland : Water);
                 Tile tile = tiles[x, y] = new Tile(new Coords(x, y), ground);
-                if (ground == instance.grassland && Random.Range(0f, 1f) < 1f / instance.tilesPerCity) tile.SetStructure(new City());
+            }
+        }
+
+        islands = new List<Island>();
+
+        //Create Islands.
+        for(int x = 0; x < Width; x++)
+        {
+            for(int y = 0; y < Height; y++)
+            {
+                Tile tile = GetTile(x, y);
+                if (tile.ground == Grassland && tile.island == null)
+                {
+                    Island island = new Island();
+                    islands.Add(island);
+                    FloodfillIsland(tile, island);
+                }
+            }
+        }
+
+        islands = islands.OrderBy(i => i.Area).Reverse().ToList();
+
+        //Place each player on a separate island.
+        for(int i = 0; i < players.Length; i++)
+        {
+            City city = new City();
+            Tile tile = islands[i].GetRandomCoastTile();
+            Structure.CreateStructure(city, tile, players[i]);
+            UnitController.SpawnUnit(UnitController.Units[0], tile, players[i]);
+        }
+
+        //Generate Neutral Cities.
+        foreach(Island island in islands)
+        {
+            int numCities = island.Area / instance.tilesPerCity + Random.Range(-1, 2);
+            numCities = Mathf.Clamp(numCities, 0, island.Area);
+
+            for(int i = 0; i < numCities; i++)
+            {
+                Tile tile = island.GetOptimalCitySpot();
+
+                City city = new City();
+                Structure.CreateStructure(city, tile, GameController.neutral);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Assign this tile and its neighbors recursively to the given island.
+    /// </summary>
+    /// <param name="tile"></param>
+    /// <param name="island"></param>
+    static void FloodfillIsland(Tile tile, Island island)
+    {
+        Stack<Tile> tiles = new Stack<Tile>();
+        tiles.Push(tile);
+
+        while(tiles.Count > 0)
+        {
+            Tile newTile = tiles.Pop();
+
+            if(newTile.ground == Grassland && newTile.island == null)
+            {
+                island.AddTile(newTile);
+
+                foreach (Tile neighbor in GetNeighbors(newTile)) tiles.Push(neighbor);
             }
         }
     }

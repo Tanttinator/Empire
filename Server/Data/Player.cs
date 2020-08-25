@@ -36,6 +36,17 @@ public class Player
         seenTiles = new TileData[World.Width, World.Height];
     }
 
+    public void RevealMap()
+    {
+        for(int x = 0; x < World.Width; x++)
+        {
+            for(int y = 0; y < World.Height; y++)
+            {
+                seenTiles[x, y] = World.GetTile(x, y).GetData(this, seenTiles[x, y], true);
+            }
+        }
+    }
+
     public void AddUnit(Unit unit)
     {
         units.Add(unit);

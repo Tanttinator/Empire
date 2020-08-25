@@ -48,6 +48,18 @@ public class Structure
             color = owner.color
         };
     }
+
+    /// <summary>
+    /// Create a new structure.
+    /// </summary>
+    /// <param name="structure"></param>
+    /// <param name="tile"></param>
+    /// <param name="owner"></param>
+    public static void CreateStructure(Structure structure, Tile tile, Player owner)
+    {
+        structure.SetOwner(owner);
+        tile.SetStructure(structure);
+    }
 }
 
 public enum StructureType

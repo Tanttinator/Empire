@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
+    [SerializeField] bool revealMap = false;
+
     static PlayerController[] players;
     static int activePlayer = 0;
     static PlayerController ActivePlayer => players[activePlayer];
@@ -49,24 +51,27 @@ public class GameController : MonoBehaviour
     {
         instance = this;
 
-        World.GenerateWorld();
         ClientController.Init(World.Width, World.Height);
 
-        players = new PlayerController[]
+        Player[] players = new Player[]
         {
-            new HumanPlayer(new Player("Player 1", Color.red)),
-            new HumanPlayer(new Player("Player 2", Color.blue))
+            new Player("Player 1", Color.red),
+            new Player("Player 2", Color.blue)
         };
 
-        foreach (PlayerController controller in players)
+        GameController.players = new PlayerController[players.Length];
+        for(int i = 0; i < players.Length; i++)
         {
-            controller.player.InitVision();
+            PlayerController player = GameController.players[i] = new HumanPlayer(players[i]);
+            player.player.InitVision();
         }
 
-        UnitController.SpawnUnit(UnitController.Units[0], World.GetTile(0, 0), players[0].player);
-        UnitController.SpawnUnit(UnitController.Units[0], World.GetTile(World.Width - 1, 0), players[1].player);
-        UnitController.SpawnUnit(UnitController.Units[0], World.GetTile(0, World.Height - 1), players[0].player);
-        UnitController.SpawnUnit(UnitController.Units[0], World.GetTile(World.Width - 1, World.Height - 1), players[1].player);
+        World.GenerateWorld(players);
+
+        foreach (PlayerController player in GameController.players)
+        {
+            if (revealMap) player.player.RevealMap();
+        }
 
         ActivePlayer.StartTurn();
     }
