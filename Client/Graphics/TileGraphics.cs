@@ -8,6 +8,7 @@ using UnityEngine;
 public class TileGraphics : MonoBehaviour
 {
     [SerializeField] SpriteRenderer groundGfx = default;
+    [SerializeField] SpriteRenderer featureGfx = default;
     [SerializeField] UnitGraphics unitGfx = default;
     [SerializeField] StructureGraphics structureGfx = default;
     [SerializeField] SpriteRenderer fogOfWar = default;
@@ -29,6 +30,12 @@ public class TileGraphics : MonoBehaviour
         else
         {
             groundGfx.sprite = WorldGraphics.GetGroundSprite(state);
+            if (state.feature == null) featureGfx.enabled = false;
+            else
+            {
+                featureGfx.enabled = true;
+                featureGfx.sprite = WorldGraphics.GetFeatureSprite(state);
+            }
             unitGfx.SetUnit(state.unit);
             structureGfx.SetStructure(state.structure);
             fogOfWar.enabled = !state.visible;

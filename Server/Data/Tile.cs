@@ -12,6 +12,7 @@ public class Tile : INode
 {
     public Coords coords { get; protected set; }
     public Ground ground { get; protected set; }
+    public Feature feature { get; protected set; }
     public Structure structure { get; protected set; }
     public Unit unit { get; protected set; }
     public Island island = null;
@@ -71,6 +72,14 @@ public class Tile : INode
                     ConnectGroundTexture(Direction.SOUTH),
                     ConnectGroundTexture(Direction.WEST)
                 },
+                feature = feature,
+                featureConnections = new bool[]
+                {
+                    ConnectFeatureTexture(Direction.NORTH),
+                    ConnectFeatureTexture(Direction.EAST),
+                    ConnectFeatureTexture(Direction.SOUTH),
+                    ConnectFeatureTexture(Direction.WEST)
+                },
                 unit = (unit != null ? unit.GetData() : null),
                 structure = (structure != null ? structure.GetData() : null),
                 visible = true
@@ -94,6 +103,16 @@ public class Tile : INode
     }
 
     /// <summary>
+    /// Should our feature texture connect to the one in the given direction?
+    /// </summary>
+    /// <param name="dir"></param>
+    /// <returns></returns>
+    bool ConnectFeatureTexture(Direction dir)
+    {
+        return World.GetNeighbor(this, dir) == null || World.GetNeighbor(this, dir).feature == feature;
+    }
+
+    /// <summary>
     /// Refresh the seen state of this tile to all players who currently have vision on it.
     /// </summary>
     public void Refresh()
@@ -102,6 +121,17 @@ public class Tile : INode
         {
             player.RefreshTile(this);
         }
+    }
+
+    /// <summary>
+    /// Set the feature on this tile.
+    /// </summary>
+    /// <param name="feature"></param>
+    public void SetFeature(Feature feature)
+    {
+        this.feature = feature;
+
+        Refresh();
     }
 
     /// <summary>

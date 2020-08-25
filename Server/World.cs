@@ -12,13 +12,16 @@ public class World : MonoBehaviour
     [Header("World Parameters")]
     [SerializeField] int width = 10;
     [SerializeField] int height = 10;
-    [SerializeField] Settings perlinSettings = default;
+    [SerializeField] Settings islandSettings = default;
+    [SerializeField] Settings mountainsSettings = default;
     [SerializeField, Range(0f, 1f)] float waterLevel = 0.5f;
+    [SerializeField, Range(0f, 1f)] float mountainsCount = 0.5f;
     [SerializeField] int tilesPerCity = 25;
 
     [Header("Terrain")]
     [SerializeField] Ground grassland = default;
     [SerializeField] Ground water = default;
+    [SerializeField] Feature mountains = default;
 
     public static Ground Grassland => instance.grassland;
     public static Ground Water => instance.water;
@@ -38,15 +41,24 @@ public class World : MonoBehaviour
     {
         tiles = new Tile[Width, Height];
 
-        float[,] heightmap = Generator.GenerateHeightmap(Width, Height, Random.Range(-999999, 999999), instance.perlinSettings, Vector2.zero);
+        int seed = Random.Range(-999999, 999999);
+        Random.InitState(seed);
 
-        //Generate Tiles.
+        float[,] heightmap = Generator.GenerateHeightmap(Width, Height, seed, instance.islandSettings, Vector2.zero);
+        float[,] mountains = Generator.GenerateHeightmap(Width, Height, seed + 1, instance.mountainsSettings, Vector2.zero);
+
+        //Generate Terrain.
         for(int x = 0; x < Width; x++)
         {
             for(int y = 0; y < Height; y++)
             {
                 Ground ground = (heightmap[x, y] > instance.waterLevel && (x > 0 && x < Width - 1 && y > 0 && y < Height - 1) ? Grassland : Water);
                 Tile tile = tiles[x, y] = new Tile(new Coords(x, y), ground);
+
+                if (ground == Grassland)
+                {
+                    if (mountains[x, y] < instance.mountainsCount) tile.SetFeature(instance.mountains);
+                }
             }
         }
 
@@ -73,7 +85,7 @@ public class World : MonoBehaviour
         for(int i = 0; i < players.Length; i++)
         {
             City city = new City();
-            Tile tile = islands[i].GetRandomCoastTile();
+            Tile tile = islands[i].GetCoastalCitySpot();
             Structure.CreateStructure(city, tile, players[i]);
             UnitController.SpawnUnit(UnitController.Units[0], tile, players[i]);
         }
@@ -87,6 +99,8 @@ public class World : MonoBehaviour
             for(int i = 0; i < numCities; i++)
             {
                 Tile tile = island.GetOptimalCitySpot();
+
+                if (tile == null) break;
 
                 City city = new City();
                 Structure.CreateStructure(city, tile, GameController.neutral);

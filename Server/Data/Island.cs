@@ -18,17 +18,17 @@ public class Island
     }
 
     /// <summary>
-    /// Try to return a random tile from this island that is coastal.
+    /// Try to return a random tile from this island that is coastal and doesn't have a feature.
     /// </summary>
     /// <returns></returns>
-    public Tile GetRandomCoastTile()
+    public Tile GetCoastalCitySpot()
     {
         if (Area == 0) return null;
 
         for(int i = 0; i < 1000; i++)
         {
             Tile tile = tiles[Random.Range(0, Area)];
-            if (tile.IsCoastal) return tile;
+            if (tile.IsCoastal && tile.feature == null) return tile;
         }
 
         return null;
@@ -45,7 +45,7 @@ public class Island
 
         foreach(Tile tile in tiles)
         {
-            if (tile.structure != null) continue;
+            if (tile.structure != null || tile.feature != null) continue;
 
             float score = CityScore(tile);
             if(score > maxScore || bestTile == null)

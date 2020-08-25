@@ -11,6 +11,7 @@ public class WorldGraphics : MonoBehaviour
     [SerializeField] TileGraphics tileObject = default;
     [SerializeField] GroundSpriteData[] groundSprites = default;
     [SerializeField] StructureSpriteData[] structureSprites = default;
+    [SerializeField] FeatureSpriteData[] featureSprites = default;
     static TileGraphics[,] tiles;
 
     static WorldGraphics instance;
@@ -116,6 +117,21 @@ public class WorldGraphics : MonoBehaviour
     }
 
     /// <summary>
+    /// Find a sprite for the feature from the registry.
+    /// </summary>
+    /// <param name="feature"></param>
+    /// <returns></returns>
+    public static Sprite GetFeatureSprite(TileData tile)
+    {
+        foreach(FeatureSpriteData data in instance.featureSprites)
+        {
+            if (data.feature == tile.feature) return data.sprite.GetSprite(tile.featureConnections[0], tile.featureConnections[1], tile.featureConnections[2], tile.featureConnections[3]);
+        }
+        Debug.LogError("No sprite found for feature of type: " + tile.feature);
+        return null;
+    }
+
+    /// <summary>
     /// Returns the graphics at the given coordinates.
     /// </summary>
     /// <param name="x"></param>
@@ -180,4 +196,11 @@ public struct StructureSpriteData
 {
     public StructureType structure;
     public Sprite sprite;
+}
+
+[System.Serializable]
+public struct FeatureSpriteData
+{
+    public Feature feature;
+    public SpriteProvider sprite;
 }
