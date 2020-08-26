@@ -7,8 +7,8 @@ public class SingleSpriteProvider : SpriteProvider
 {
     public Sprite sprite = default;
 
-    public override Sprite GetSprite(bool connectNorth, bool connectEast, bool connectSouth, bool connectWest)
+    public override SpriteOrientationData GetSprite(bool connectNorth, bool connectEast, bool connectSouth, bool connectWest)
     {
-        return sprite;
+        return new SpriteOrientationData(sprite, 0f);
     }
 }

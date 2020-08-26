@@ -91,7 +91,7 @@ public class WorldGraphics : MonoBehaviour
     /// </summary>
     /// <param name="ground"></param>
     /// <returns></returns>
-    public static Sprite GetGroundSprite(TileData tile)
+    public static SpriteOrientationData GetGroundSprite(TileData tile)
     {
         foreach(GroundSpriteData data in instance.groundSprites)
         {
@@ -121,7 +121,7 @@ public class WorldGraphics : MonoBehaviour
     /// </summary>
     /// <param name="feature"></param>
     /// <returns></returns>
-    public static Sprite GetFeatureSprite(TileData tile)
+    public static SpriteOrientationData GetFeatureSprite(TileData tile)
     {
         foreach(FeatureSpriteData data in instance.featureSprites)
         {

@@ -29,12 +29,16 @@ public class TileGraphics : MonoBehaviour
         }
         else
         {
-            groundGfx.sprite = WorldGraphics.GetGroundSprite(state);
+            SpriteOrientationData groundSprite = WorldGraphics.GetGroundSprite(state);
+            groundGfx.sprite = groundSprite.sprite;
+            groundGfx.transform.rotation = Quaternion.Euler(0f, 0f, groundSprite.rotation);
             if (state.feature == null) featureGfx.enabled = false;
             else
             {
                 featureGfx.enabled = true;
-                featureGfx.sprite = WorldGraphics.GetFeatureSprite(state);
+                SpriteOrientationData featureSprite = WorldGraphics.GetFeatureSprite(state);
+                featureGfx.sprite = featureSprite.sprite;
+                featureGfx.transform.rotation = Quaternion.Euler(0f, 0f, featureSprite.rotation);
             }
             unitGfx.SetUnit(state.unit);
             structureGfx.SetStructure(state.structure);
