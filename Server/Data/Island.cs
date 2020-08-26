@@ -73,7 +73,7 @@ public class Island
 
             if(other.structure is City)
             {
-                totalScore += Vector2.Distance(tile.coords, other.coords);
+                totalScore += Mathf.Pow(Vector2.Distance(tile.coords, other.coords), 0.1f);
             }
         }
 
