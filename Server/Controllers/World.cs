@@ -13,15 +13,18 @@ public class World : MonoBehaviour
     [SerializeField] int width = 10;
     [SerializeField] int height = 10;
     [SerializeField] Settings islandSettings = default;
-    [SerializeField] Settings mountainsSettings = default;
     [SerializeField, Range(0f, 1f)] float waterLevel = 0.5f;
-    [SerializeField, Range(0f, 1f)] float mountainsCount = 0.5f;
+    [SerializeField] Settings mountainsSettings = default;
+    [SerializeField, Range(0f, 1f)] float mountainsAmount = 0.5f;
+    [SerializeField] Settings forestSettings = default;
+    [SerializeField, Range(0f, 1f)] float forestAmount = 0.5f;
     [SerializeField] int tilesPerCity = 25;
 
     [Header("Terrain")]
     [SerializeField] Ground grassland = default;
     [SerializeField] Ground water = default;
     [SerializeField] Feature mountains = default;
+    [SerializeField] Feature forest = default;
 
     public static Ground Grassland => instance.grassland;
     public static Ground Water => instance.water;
@@ -46,6 +49,7 @@ public class World : MonoBehaviour
 
         float[,] heightmap = Generator.GenerateHeightmap(Width, Height, seed, instance.islandSettings, Vector2.zero);
         float[,] mountains = Generator.GenerateHeightmap(Width, Height, seed + 1, instance.mountainsSettings, Vector2.zero);
+        float[,] forests = Generator.GenerateHeightmap(Width, Height, seed + 2, instance.forestSettings, Vector2.zero);
 
         //Generate Terrain.
         for(int x = 0; x < Width; x++)
@@ -57,7 +61,8 @@ public class World : MonoBehaviour
 
                 if (ground == Grassland)
                 {
-                    if (mountains[x, y] < instance.mountainsCount) tile.SetFeature(instance.mountains);
+                    if (mountains[x, y] < instance.mountainsAmount) tile.SetFeature(instance.mountains);
+                    else if (forests[x, y] < instance.forestAmount) tile.SetFeature(instance.forest);
                 }
             }
         }

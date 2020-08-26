@@ -56,9 +56,9 @@ public class HumanPlayer : PlayerController
 
     protected override void OnTurnStarted()
     {
-        Sequencer.AddSequence(new StartTurnSequence(this, player.SeenTiles));
-
         activeUnits.AddRange(player.Units);
+
+        Sequencer.AddSequence(new StartTurnSequence(this, player.SeenTiles, ActiveUnit.tile.coords));
 
         SelectUnit(ActiveUnit);
     }

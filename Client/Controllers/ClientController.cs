@@ -17,11 +17,11 @@ public class ClientController : MonoBehaviour
     /// Switch viewpoint to the given player.
     /// </summary>
     /// <param name="player"></param>
-    public static void SetActivePlayer(HumanPlayer player)
+    public static void SetActivePlayer(HumanPlayer player, Coords focusTile)
     {
         if(activePlayer != player)
         {
-            Camera.Translate(WorldGraphics.GetTilePosition(player.ActiveUnit.tile.coords) - Camera.transform.position);
+            Camera.Translate(WorldGraphics.GetTilePosition(focusTile) - Camera.transform.position);
         }
 
         activePlayer = player;

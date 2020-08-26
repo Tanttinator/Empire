@@ -75,16 +75,18 @@ public class StartTurnSequence : Sequence
 {
     HumanPlayer player;
     TileData[,] seenTiles;
+    Coords focusTile;
 
-    public StartTurnSequence(HumanPlayer player, TileData[,] seenTiles)
+    public StartTurnSequence(HumanPlayer player, TileData[,] seenTiles, Coords focusTile)
     {
         this.player = player;
         this.seenTiles = seenTiles;
+        this.focusTile = focusTile;
     }
 
     public override void Start()
     {
-        ClientController.SetActivePlayer(player);
+        ClientController.SetActivePlayer(player, focusTile);
         WorldGraphics.UpdateTiles(seenTiles);
     }
 }

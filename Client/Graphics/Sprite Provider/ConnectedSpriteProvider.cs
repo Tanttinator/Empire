@@ -39,7 +39,7 @@ public class ConnectedSpriteProvider : SpriteProvider
             case "NW": return new SpriteOrientationData(northEast, -270f);
 
             case "NS": return new SpriteOrientationData(northSouth, 0f);
-            case "EW": return new SpriteOrientationData(northSouth, -180f);
+            case "EW": return new SpriteOrientationData(northSouth, -90f);
 
             case "NES": return new SpriteOrientationData(northEastSouth, 0f);
             case "ESW": return new SpriteOrientationData(northEastSouth, -90f);
