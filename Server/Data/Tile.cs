@@ -17,6 +17,8 @@ public class Tile : INode
     public Unit unit { get; protected set; }
     public Island island = null;
 
+    public bool CanBuildStructure => land && feature == null && structure == null;
+
     public bool IsCoastal
     {
         get

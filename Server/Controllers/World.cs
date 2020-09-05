@@ -21,7 +21,7 @@ public class World : MonoBehaviour
     [SerializeField, Range(0f, 1f)] float forestAmount = 0.5f;
     [SerializeField, Range(0f, 1f)] float riverStartHeight = 0.5f;
     [SerializeField, Range(0f, 1f)] float riverFrequency = 0.1f;
-    [SerializeField] int tilesPerCity = 25;
+    [SerializeField] int cityRadius = 2;
 
     public static int Width => instance.width;
     public static int Height => instance.height;
@@ -30,6 +30,8 @@ public class World : MonoBehaviour
     static List<Island> islands;
 
     static World instance;
+
+    #region Generation
 
     /// <summary>
     /// Generate tiles based on the worlds parametes.
@@ -101,6 +103,31 @@ public class World : MonoBehaviour
         }
 
         islands = islands.OrderBy(i => i.Area).Reverse().ToList();
+
+        //Generate cities
+        for(int i = 0; i < Width * Height / Mathf.Pow(instance.cityRadius * 2 + 1, 2); i++)
+        {
+            for(int t = 0; t < 5; t++)
+            {
+                Tile tile = GetRandomTile();
+
+                if (!tile.CanBuildStructure) continue;
+
+                Tile[] range = GetTilesInRange(tile, instance.cityRadius);
+
+                bool validSpot = true;
+
+                foreach(Tile other in range)
+                {
+                    if (other.structure is City) validSpot = false;
+                }
+
+                if (!validSpot) continue;
+
+                Structure.CreateStructure(new City(), tile, GameController.neutral);
+                break;
+            }
+        }
 
         //Place each player on a separate island.
         for(int i = 0; i < players.Length; i++)
@@ -206,6 +233,10 @@ public class World : MonoBehaviour
         return Mathf.Pow(value, a) / (Mathf.Pow(value, a) + Mathf.Pow(instance.landAmount - instance.landAmount * value, a));
     }
 
+    #endregion
+
+    #region Helpers
+
     /// <summary>
     /// Try to get a tile at the given coordinates.
     /// </summary>
@@ -256,6 +287,40 @@ public class World : MonoBehaviour
     }
 
     /// <summary>
+    /// Return all tiles within a range of the center tile.
+    /// </summary>
+    /// <param name="center"></param>
+    /// <param name="range"></param>
+    /// <returns></returns>
+    public static Tile[] GetTilesInRange(Tile center, int range)
+    {
+        int centerX = center.coords.x;
+        int centerY = center.coords.y;
+
+        List<Tile> tiles = new List<Tile>();
+
+        for(int x = centerX - range; x <= centerX + range; x++)
+        {
+            for(int y = centerY - range; y <= centerY + range; y++)
+            {
+                Tile tile = GetTile(x, y);
+                if (tile != null) tiles.Add(tile);
+            }
+        }
+
+        return tiles.ToArray();
+    }
+
+    /// <summary>
+    /// Returns a random tile in the world.
+    /// </summary>
+    /// <returns></returns>
+    public static Tile GetRandomTile()
+    {
+        return GetTile(Random.Range(0, Width), Random.Range(0, Height));
+    }
+
+    /// <summary>
     /// Are the given coordiantes within this worlds dimensions?
     /// </summary>
     /// <param name="x"></param>
@@ -287,6 +352,8 @@ public class World : MonoBehaviour
     {
         return AStar.AStar.GeneratePath<Tile>(unit.tile, target, unit);
     }
+
+    #endregion
 
     private void Awake()
     {
