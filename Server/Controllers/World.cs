@@ -23,16 +23,6 @@ public class World : MonoBehaviour
     [SerializeField, Range(0f, 1f)] float riverFrequency = 0.1f;
     [SerializeField] int tilesPerCity = 25;
 
-    [Header("Terrain")]
-    [SerializeField] Ground grassland = default;
-    [SerializeField] Ground water = default;
-    [SerializeField] Feature mountains = default;
-    [SerializeField] Feature forest = default;
-    [SerializeField] Feature river = default;
-
-    public static Ground Grassland => instance.grassland;
-    public static Ground Water => instance.water;
-
     public static int Width => instance.width;
     public static int Height => instance.height;
 
@@ -61,8 +51,7 @@ public class World : MonoBehaviour
             for(int y = 0; y < Height; y++)
             {
                 float height = heightmap[x, y] * Falloff(x, y);
-                Ground ground = (height > instance.waterLevel? Grassland : Water);
-                Tile tile = tiles[x, y] = new Tile(new Coords(x, y), ground);
+                Tile tile = tiles[x, y] = new Tile(new Coords(x, y), height > instance.waterLevel);
             }
         }
 
@@ -86,10 +75,10 @@ public class World : MonoBehaviour
             {
                 Tile tile = GetTile(x, y);
 
-                if(tile.ground == Grassland && tile.feature == null)
+                if(tile.land && tile.feature == null)
                 {
-                    if (heightmap[x, y] > instance.mountainsHeight) tile.SetFeature(instance.mountains);
-                    else if (forests[x, y] < instance.forestAmount) tile.SetFeature(instance.forest);
+                    if (heightmap[x, y] > instance.mountainsHeight) tile.SetFeature(Feature.mountains);
+                    else if (forests[x, y] < instance.forestAmount) tile.SetFeature(Feature.forest);
                 }
             }
         }
@@ -102,7 +91,7 @@ public class World : MonoBehaviour
             for(int y = 0; y < Height; y++)
             {
                 Tile tile = GetTile(x, y);
-                if (tile.ground == Grassland && tile.island == null)
+                if (tile.land && tile.island == null)
                 {
                     Island island = new Island();
                     islands.Add(island);
@@ -147,9 +136,9 @@ public class World : MonoBehaviour
     /// <param name="tile"></param>
     static void GenerateRiver(Tile tile, Direction cameFrom, float[,] heightmap)
     {
-        if (tile == null || tile.ground == Water || tile.feature == instance.river) return;
+        if (tile == null || !tile.land || tile.feature == Feature.river) return;
 
-        tile.SetFeature(instance.river);
+        tile.SetFeature(Feature.river);
 
         Tile nextTile = null;
         Direction nextDir = null;
@@ -190,7 +179,7 @@ public class World : MonoBehaviour
         {
             Tile newTile = tiles.Pop();
 
-            if(newTile.ground == Grassland && newTile.island == null)
+            if(newTile.land && newTile.island == null)
             {
                 island.AddTile(newTile);
 

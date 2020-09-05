@@ -11,7 +11,7 @@ using System.Linq;
 public class Tile : INode
 {
     public Coords coords { get; protected set; }
-    public Ground ground { get; protected set; }
+    public bool land { get; protected set; }
     public Feature feature { get; protected set; }
     public Structure structure { get; protected set; }
     public Unit unit { get; protected set; }
@@ -21,10 +21,13 @@ public class Tile : INode
     {
         get
         {
+            if (!land) return false;
+
             foreach(Tile neighbor in World.GetNeighbors(this))
             {
-                if (neighbor.ground == World.Water) return true;
+                if (!neighbor.land) return true;
             }
+
             return false;
         }
     }
@@ -48,10 +51,10 @@ public class Tile : INode
 
     public static event Action<Tile, Unit> onTileUnitSet;
 
-    public Tile(Coords coords, Ground ground)
+    public Tile(Coords coords, bool land)
     {
         this.coords = coords;
-        this.ground = ground;
+        this.land = land;
     }
 
     /// <summary>
@@ -64,15 +67,15 @@ public class Tile : INode
         {
             return new TileData()
             {
-                ground = ground,
-                groundConnections = new bool[]
+                land = land,
+                landConnections = new bool[]
                 {
-                    ConnectGroundTexture(Direction.NORTH),
-                    ConnectGroundTexture(Direction.EAST),
-                    ConnectGroundTexture(Direction.SOUTH),
-                    ConnectGroundTexture(Direction.WEST)
+                    ConnectTexture(Direction.NORTH),
+                    ConnectTexture(Direction.EAST),
+                    ConnectTexture(Direction.SOUTH),
+                    ConnectTexture(Direction.WEST)
                 },
-                feature = feature,
+                feature = (feature != null? feature.name : "empty"),
                 featureConnections = new bool[]
                 {
                     ConnectFeatureTexture(Direction.NORTH),
@@ -97,9 +100,9 @@ public class Tile : INode
     /// </summary>
     /// <param name="dir"></param>
     /// <returns></returns>
-    bool ConnectGroundTexture(Direction dir)
+    bool ConnectTexture(Direction dir)
     {
-        return World.GetNeighbor(this, dir) == null || World.GetNeighbor(this, dir).ground == ground;
+        return World.GetNeighbor(this, dir) == null || World.GetNeighbor(this, dir).land == land;
     }
 
     /// <summary>
@@ -109,7 +112,7 @@ public class Tile : INode
     /// <returns></returns>
     bool ConnectFeatureTexture(Direction dir)
     {
-        return World.GetNeighbor(this, dir) == null || World.GetNeighbor(this, dir).feature == feature;
+        return feature != null && feature.ConnectTexture(World.GetNeighbor(this, dir));
     }
 
     /// <summary>

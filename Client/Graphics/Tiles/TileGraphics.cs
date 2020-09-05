@@ -32,7 +32,7 @@ public class TileGraphics : MonoBehaviour
             SpriteOrientationData groundSprite = WorldGraphics.GetGroundSprite(state);
             groundGfx.sprite = groundSprite.sprite;
             groundGfx.transform.rotation = Quaternion.Euler(0f, 0f, groundSprite.rotation);
-            if (state.feature == null) featureGfx.enabled = false;
+            if (state.feature == "empty") featureGfx.enabled = false;
             else
             {
                 featureGfx.enabled = true;

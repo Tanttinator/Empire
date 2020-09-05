@@ -9,7 +9,8 @@ public class WorldGraphics : MonoBehaviour
 {
 
     [SerializeField] TileGraphics tileObject = default;
-    [SerializeField] GroundSpriteData[] groundSprites = default;
+    [SerializeField] SpriteProvider landSprite = default;
+    [SerializeField] SpriteProvider waterSprite = default;
     [SerializeField] StructureSpriteData[] structureSprites = default;
     [SerializeField] FeatureSpriteData[] featureSprites = default;
     static TileGraphics[,] tiles;
@@ -93,12 +94,11 @@ public class WorldGraphics : MonoBehaviour
     /// <returns></returns>
     public static SpriteOrientationData GetGroundSprite(TileData tile)
     {
-        foreach(GroundSpriteData data in instance.groundSprites)
-        {
-            if (data.ground == tile.ground) return data.sprite.GetSprite(tile.groundConnections[0], tile.groundConnections[1], tile.groundConnections[2], tile.groundConnections[3]);
-        }
-        Debug.LogError("No sprite found for ground of type: " + tile.ground.name);
-        return null;
+        SpriteProvider sprite;
+        if (tile.land) sprite = instance.landSprite;
+        else sprite = instance.waterSprite;
+
+        return sprite.GetSprite(tile.landConnections[0], tile.landConnections[1], tile.landConnections[2], tile.landConnections[3]);
     }
 
     /// <summary>
@@ -185,13 +185,6 @@ public class WorldGraphics : MonoBehaviour
 }
 
 [System.Serializable]
-public struct GroundSpriteData
-{
-    public Ground ground;
-    public SpriteProvider sprite;
-}
-
-[System.Serializable]
 public struct StructureSpriteData
 {
     public StructureType structure;
@@ -201,6 +194,6 @@ public struct StructureSpriteData
 [System.Serializable]
 public struct FeatureSpriteData
 {
-    public Feature feature;
+    public string feature;
     public SpriteProvider sprite;
 }

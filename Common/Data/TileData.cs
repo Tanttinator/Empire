@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class TileData
 {
-    public Ground ground;
-    public bool[] groundConnections;
-    public Feature feature;
+    public bool land;
+    public bool[] landConnections;
+    public string feature;
     public bool[] featureConnections;
     public UnitData unit;
     public StructureData structure;
