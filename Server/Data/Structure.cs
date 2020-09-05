@@ -58,6 +58,7 @@ public class Structure
     public static void CreateStructure(Structure structure, Tile tile, Player owner)
     {
         structure.SetOwner(owner);
+        structure.SetTile(tile);
         tile.SetStructure(structure);
     }
 }

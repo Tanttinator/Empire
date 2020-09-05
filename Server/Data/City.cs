@@ -9,9 +9,11 @@ public class City : Structure
     public int production = 1;
     int progress = 0;
 
+    public static List<City> cities = new List<City>();
+
     public City() : base(StructureType.CITY)
     {
-
+        cities.Add(this);
     }
 
     /// <summary>
