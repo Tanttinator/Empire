@@ -4,6 +4,6 @@ using UnityEngine;
 
 public class UnitData
 {
-    public UnitType unit;
+    public string unit;
     public Color color;
 }

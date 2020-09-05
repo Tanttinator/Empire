@@ -148,7 +148,7 @@ public class World : MonoBehaviour
             }
 
             bestCity.SetOwner(player);
-            UnitController.SpawnUnit(UnitController.Units[0], bestCity.tile, player);
+            Unit.CreateUnit(Unit.infantry, bestCity.tile, player);
         }
     }
 

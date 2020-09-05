@@ -14,13 +14,13 @@ public class UnitGraphicsController : MonoBehaviour
     /// </summary>
     /// <param name="unit"></param>
     /// <returns></returns>
-    public static Sprite GetUnitSprite(UnitType unit)
+    public static Sprite GetUnitSprite(string unit)
     {
         foreach(UnitSpriteData data in instance.unitSprites)
         {
             if (data.unit == unit) return data.sprite;
         }
-        Debug.LogError("No sprite registered for unit of type: " + unit.name);
+        Debug.LogError("No sprite registered for unit of type: " + unit);
         return null;
     }
 
@@ -72,7 +72,7 @@ public class UnitGraphicsController : MonoBehaviour
 [System.Serializable]
 public struct UnitSpriteData
 {
-    public UnitType unit;
+    public string unit;
     public Sprite sprite;
 }
 

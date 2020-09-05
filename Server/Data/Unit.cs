@@ -15,6 +15,8 @@ public class Unit
 
     Tile[] visibleTiles;
 
+    public static UnitType infantry = new UnitType("Infantry", 1, 10);
+
     public static event Action<Unit, Tile, Tile> onUnitMoved;
     public static event Action<Unit> onUnitDestroyed;
     public static event Action<Unit> onUnitCreated;
@@ -173,7 +175,7 @@ public class Unit
     {
         return new UnitData()
         {
-            unit = type,
+            unit = type.name,
             color = owner.color
         };
     }
@@ -181,5 +183,11 @@ public class Unit
     public override string ToString()
     {
         return owner + " " + type.name;
+    }
+
+    public static Unit CreateUnit(UnitType type, Tile tile, Player owner)
+    {
+        Unit unit = new Unit(type, tile, owner);
+        return unit;
     }
 }

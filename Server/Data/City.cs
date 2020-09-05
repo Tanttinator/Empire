@@ -5,7 +5,7 @@ using UnityEngine;
 public class City : Structure
 {
 
-    UnitType producedUnit = UnitController.Units[0];
+    UnitType producedUnit = Unit.infantry;
     public int production = 1;
     int progress = 0;
 
@@ -44,7 +44,7 @@ public class City : Structure
         if(progress >= producedUnit.productionCost)
         {
             progress = 0;
-            UnitController.SpawnUnit(producedUnit, tile, owner);
+            Unit.CreateUnit(producedUnit, tile, owner);
         }
     }
 }

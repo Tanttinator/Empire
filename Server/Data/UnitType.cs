@@ -2,9 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Unit")]
-public class UnitType : ScriptableObject
+public class UnitType
 {
-    public int movement = 1;
-    public int productionCost = 10;
+    public string name;
+    public int movement;
+    public int productionCost;
+
+    public UnitType(string name, int movement, int productionCost)
+    {
+        this.name = name;
+        this.movement = movement;
+        this.productionCost = productionCost;
+    }
 }
