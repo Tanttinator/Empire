@@ -70,6 +70,7 @@ public class Tile : INode
         {
             return new TileData()
             {
+                coords = coords,
                 land = land,
                 landConnections = new bool[]
                 {

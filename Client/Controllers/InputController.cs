@@ -105,7 +105,7 @@ public class InputController : MonoBehaviour
                 currentState.DragEnd(button);
                 isDragging[button] = false;
             }
-            else currentState.MouseUp(button);
+            else currentState.Click(button, hoverTile);
         }
     }
 
@@ -173,7 +173,7 @@ public abstract class InputState
 
     }
 
-    public virtual void MouseUp(int button)
+    public virtual void Click(int button, Coords hoverTile)
     {
 
     }
@@ -215,6 +215,17 @@ public class DefaultState : InputState
     {
         if (button == 0) ClientController.Camera.Drag();
     }
+
+    public override void Click(int button, Coords hoverTile)
+    {
+        if(button == 0)
+        {
+            if (hoverTile != null)
+            {
+                TileInfoUI.Show(WorldGraphics.GetTileGraphics(hoverTile).state);
+            }
+        }
+    }
 }
 
 public class UnitSelectedState : DefaultState
@@ -245,15 +256,12 @@ public class UnitSelectedState : DefaultState
         unit.SetIdle(false);
     }
 
-    public override void MouseUp(int button)
+    public override void Click(int button, Coords hoverTile)
     {
+        base.Click(button, hoverTile);
         if(button == 1)
         {
-            Coords coords = InputController.GetCoordsUnderMouse();
-            if (coords != null)
-            {
-                ClientController.activePlayer?.ExecuteCommand(new CommandMove(coords));
-            }
+            if (hoverTile != null) ClientController.activePlayer?.ExecuteCommand(new CommandMove(hoverTile));
         }
     }
 
@@ -307,5 +315,10 @@ public class DragMoveState : DefaultState
             if (World.ValidCoords(tile)) ClientController.activePlayer?.ExecuteCommand(new CommandMove(tile));
             InputController.CancelState();
         }
+    }
+
+    public override void Click(int button, Coords hoverTile)
+    {
+
     }
 }

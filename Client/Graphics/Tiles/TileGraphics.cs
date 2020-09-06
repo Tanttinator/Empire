@@ -14,7 +14,7 @@ public class TileGraphics : MonoBehaviour
     [SerializeField] SpriteRenderer fogOfWar = default;
     [SerializeField] SpriteRenderer unexplored = default;
 
-    TileData state = null;
+    public TileData state { get; protected set; } = null;
 
     public UnitGraphics Unit => unitGfx;
 
