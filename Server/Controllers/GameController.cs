@@ -63,7 +63,6 @@ public class GameController : MonoBehaviour
         for(int i = 0; i < players.Length; i++)
         {
             PlayerController player = GameController.players[i] = new HumanPlayer(players[i]);
-            player.player.InitVision();
         }
 
         World.GenerateWorld(players);

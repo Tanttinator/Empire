@@ -46,6 +46,7 @@ public class Tile : INode
             return players.ToArray();
         }
     }
+    Dictionary<Player, TileData> visibleStates = new Dictionary<Player, TileData>();
 
     AStar.Vector2 INode.Position => coords;
 
@@ -63,7 +64,7 @@ public class Tile : INode
     /// Create tiledata object that represents this tile.
     /// </summary>
     /// <returns></returns>
-    public TileData GetData(Player player, TileData oldData, bool forceVisible = false)
+    public TileData GetData(Player player, bool forceVisible = false)
     {
         if (CanSee(player) || forceVisible)
         {
@@ -91,6 +92,7 @@ public class Tile : INode
             };
         } else
         {
+            TileData oldData = VisibleState(player);
             if(oldData != null)
                 oldData.visible = false;
             return oldData;
@@ -124,8 +126,17 @@ public class Tile : INode
     {
         foreach(Player player in GameController.Players)
         {
-            player.RefreshTile(this);
+            visibleStates[player] = GetData(player);
         }
+    }
+
+    /// <summary>
+    /// Reveal this tile to a player.
+    /// </summary>
+    /// <param name="player"></param>
+    public void Reveal(Player player)
+    {
+        visibleStates[player] = GetData(player, true);
     }
 
     /// <summary>
@@ -217,13 +228,34 @@ public class Tile : INode
     }
 
     /// <summary>
+    /// Get the state of this tile that is visible to a player.
+    /// </summary>
+    /// <param name="player"></param>
+    /// <returns></returns>
+    public TileData VisibleState(Player player)
+    {
+        if (visibleStates.ContainsKey(player)) return visibleStates[player];
+
+        return null;
+    }
+
+    /// <summary>
     /// Can the given unit enter this tile?
     /// </summary>
     /// <param name="unit"></param>
     /// <returns></returns>
     bool CanEnter(Unit unit)
     {
-        return this.unit == null || this.unit.owner != unit.owner;
+        if (this.unit != null && this.unit.owner == unit.owner) return false;
+
+        switch(unit.type.unitClass)
+        {
+            case UnitClass.INFANTRY: return land;
+            case UnitClass.VEHICLE: return land && feature != Feature.mountains;
+            case UnitClass.SHIP: return !land || structure is City;
+            case UnitClass.PLANE: return true;
+            default: return false;
+        }
     }
 
     /// <summary>

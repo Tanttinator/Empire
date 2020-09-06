@@ -15,7 +15,7 @@ public class Unit
 
     Tile[] visibleTiles;
 
-    public static UnitType infantry = new UnitType("Infantry", 1, 10);
+    public static UnitType infantry = new UnitType("Infantry", UnitClass.INFANTRY, 1, 10);
 
     public static event Action<Unit, Tile, Tile> onUnitMoved;
     public static event Action<Unit> onUnitDestroyed;
@@ -83,6 +83,12 @@ public class Unit
         if(target != null && target != tile)
         {
             if (currentPath == null || currentPath.Count == 0) GeneratePath();
+
+            if (currentPath == null)
+            {
+                SetTarget(null);
+                return false;
+            }
 
             Tile nextTile = currentPath.Dequeue();
 

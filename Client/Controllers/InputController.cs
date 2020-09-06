@@ -305,7 +305,7 @@ public class DragMoveState : DefaultState
         {
             Coords tile = InputController.GetCoordsUnderMouse();
             if (World.ValidCoords(tile)) ClientController.activePlayer?.ExecuteCommand(new CommandMove(tile));
-            else InputController.CancelState();
+            InputController.CancelState();
         }
     }
 }

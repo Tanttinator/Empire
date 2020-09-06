@@ -4,14 +4,24 @@ using UnityEngine;
 
 public class UnitType
 {
-    public string name;
-    public int movement;
-    public int productionCost;
+    public string name { get; protected set; }
+    public UnitClass unitClass { get; protected set; }
+    public int movement { get; protected set; }
+    public int productionCost { get; protected set; }
 
-    public UnitType(string name, int movement, int productionCost)
+    public UnitType(string name, UnitClass unitClass, int movement, int productionCost)
     {
         this.name = name;
+        this.unitClass = unitClass;
         this.movement = movement;
         this.productionCost = productionCost;
     }
+}
+
+public enum UnitClass
+{
+    INFANTRY,
+    VEHICLE,
+    SHIP,
+    PLANE
 }
