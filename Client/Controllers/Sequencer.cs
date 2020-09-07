@@ -87,7 +87,7 @@ public class StartTurnSequence : Sequence
     public override void Start()
     {
         ClientController.SetActivePlayer(player, focusTile);
-        WorldGraphics.UpdateTiles(seenTiles);
+        GameState.UpdateTiles(seenTiles);
     }
 }
 

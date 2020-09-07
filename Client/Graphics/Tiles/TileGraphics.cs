@@ -14,14 +14,12 @@ public class TileGraphics : MonoBehaviour
     [SerializeField] SpriteRenderer fogOfWar = default;
     [SerializeField] SpriteRenderer unexplored = default;
 
-    public TileData state { get; protected set; } = null;
-
     public UnitGraphics Unit => unitGfx;
 
     /// <summary>
     /// Refresh graphics of this tile.
     /// </summary>
-    public void Refresh()
+    public void Refresh(TileData state)
     {
         if (state == null)
         {
@@ -45,34 +43,5 @@ public class TileGraphics : MonoBehaviour
             fogOfWar.enabled = !state.visible;
             unexplored.enabled = false;
         }
-    }
-
-    /// <summary>
-    /// Set the current state of this tile.
-    /// </summary>
-    /// <param name="data"></param>
-    public void SetState(TileData state)
-    {
-        this.state = state;
-        Refresh();
-    }
-
-    /// <summary>
-    /// Place a unit on this tile.
-    /// </summary>
-    /// <param name="unit"></param>
-    public void PlaceUnit(UnitData unit)
-    {
-        state.unit = unit;
-        Refresh();
-    }
-
-    /// <summary>
-    /// Remove the current unit from this tile.
-    /// </summary>
-    public void RemoveUnit()
-    {
-        state.unit = null;
-        Refresh();
     }
 }

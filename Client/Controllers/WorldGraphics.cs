@@ -35,56 +35,6 @@ public class WorldGraphics : MonoBehaviour
         ClientController.Camera.SetConstraints(0f, 0f, width, height);
     }
 
-    #region Tile Graphics
-
-    /// <summary>
-    /// Update the state of all tiles.
-    /// </summary>
-    /// <param name="data"></param>
-    public static void UpdateTiles(TileData[,] data)
-    {
-        for(int x = 0; x < tiles.GetLength(0); x++)
-        {
-            for(int y = 0; y < tiles.GetLength(1); y++)
-            {
-                tiles[x, y].SetState(data[x, y]);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Place a unit on a tile.
-    /// </summary>
-    /// <param name="unit"></param>
-    /// <param name="tile"></param>
-    public static void PlaceUnit(UnitData unit, Coords tile)
-    {
-        tiles[tile.x, tile.y].PlaceUnit(unit);
-    }
-
-    /// <summary>
-    /// Remove the current unit from a tile.
-    /// </summary>
-    /// <param name="tile"></param>
-    public static void RemoveUnit(Coords tile)
-    {
-        tiles[tile.x, tile.y].RemoveUnit();
-    }
-
-    /// <summary>
-    /// Move a unit from one tile to another.
-    /// </summary>
-    /// <param name="unit"></param>
-    /// <param name="from"></param>
-    /// <param name="to"></param>
-    public static void MoveUnit(UnitData unit, Coords from, Coords to)
-    {
-        RemoveUnit(from);
-        PlaceUnit(unit, to);
-    }
-
-    #endregion
-
     #region Accessors
 
     /// <summary>

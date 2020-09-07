@@ -5,10 +5,12 @@ using System;
 
 public class Unit
 {
+    public int ID { get; protected set; }
     public UnitType type { get; protected set; }
     public Tile tile { get; protected set; }
     public Player owner { get; protected set; }
     public int moves { get; protected set; }
+    public bool sleeping { get; protected set; } = false;
 
     Tile target;
     Queue<Tile> currentPath;
@@ -16,6 +18,9 @@ public class Unit
     Tile[] visibleTiles;
 
     public static UnitType infantry = new UnitType("Infantry", UnitClass.INFANTRY, 1, 10);
+    public static UnitType transport = new UnitType("Transport", UnitClass.SHIP, 1, 30);
+
+    static int nextID = 0;
 
     public static event Action<Unit, Tile, Tile> onUnitMoved;
     public static event Action<Unit> onUnitDestroyed;
@@ -24,6 +29,9 @@ public class Unit
 
     public Unit(UnitType type, Tile tile, Player owner)
     {
+        ID = nextID;
+        nextID++;
+
         this.type = type;
         this.owner = owner;
 
@@ -146,6 +154,15 @@ public class Unit
     }
 
     /// <summary>
+    /// Toggle unit sleeping.
+    /// </summary>
+    /// <param name="sleeping"></param>
+    public void SetSleeping(bool sleeping)
+    {
+        this.sleeping = sleeping;
+    }
+
+    /// <summary>
     /// Called on the start of the owners turn.
     /// </summary>
     public void Refresh()
@@ -181,8 +198,10 @@ public class Unit
     {
         return new UnitData()
         {
+            ID = ID,
             unit = type.name,
-            color = owner.color
+            color = owner.color,
+            sleeping = sleeping
         };
     }
 

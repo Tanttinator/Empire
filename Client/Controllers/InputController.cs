@@ -222,7 +222,7 @@ public class DefaultState : InputState
         {
             if (hoverTile != null)
             {
-                TileInfoUI.Show(WorldGraphics.GetTileGraphics(hoverTile).state);
+                TileInfoUI.Show(GameState.GetTile(hoverTile));
             }
         }
     }

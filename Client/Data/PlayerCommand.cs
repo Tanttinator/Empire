@@ -45,3 +45,11 @@ public class CommandWait : PlayerCommand
         player.NextUnit();
     }
 }
+
+public class CommandSleep : PlayerCommand
+{
+    public override void Execute(HumanPlayer player, Unit unit)
+    {
+        unit.SetSleeping(true);
+    }
+}

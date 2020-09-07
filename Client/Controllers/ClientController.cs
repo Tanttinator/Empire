@@ -30,6 +30,7 @@ public class ClientController : MonoBehaviour
     public static void Init(int width, int height)
     {
         WorldGraphics.InitTiles(width, height);
+        GameState.Init(width, height);
     }
 
     public static void SelectUnit(Coords coords)

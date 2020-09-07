@@ -5,12 +5,15 @@ using UnityEngine;
 public class UnitGraphics : MonoBehaviour
 {
     [SerializeField] SpriteRenderer unitSprite = default;
+    [SerializeField] SpriteRenderer unitBackground = default;
 
     bool shown = false;
 
     bool idle = false;
     float idleTimer = 0f;
     [SerializeField] float idleFrequency = 1f;
+
+    Color playerColor = Color.white;
 
     /// <summary>
     /// Set the type of unit to be shown.
@@ -22,7 +25,9 @@ public class UnitGraphics : MonoBehaviour
         else
         {
             unitSprite.sprite = UnitGraphicsController.GetUnitSprite(unit.unit);
-            unitSprite.color = unit.color;
+            playerColor = unit.color;
+            unitSprite.color = playerColor;
+            unitBackground.color = playerColor;
             Show();
         }
     }
@@ -36,6 +41,7 @@ public class UnitGraphics : MonoBehaviour
         this.idle = idle;
         idleTimer = idleFrequency / 2f;
         unitSprite.enabled = shown;
+        unitBackground.enabled = shown;
     }
 
     /// <summary>
@@ -44,6 +50,7 @@ public class UnitGraphics : MonoBehaviour
     public void Show()
     {
         unitSprite.enabled = true;
+        unitBackground.enabled = true;
         shown = true;
     }
 
@@ -53,6 +60,7 @@ public class UnitGraphics : MonoBehaviour
     public void Hide()
     {
         unitSprite.enabled = false;
+        unitBackground.enabled = false;
         shown = false;
         SetIdle(false);
     }
@@ -70,6 +78,7 @@ public class UnitGraphics : MonoBehaviour
             if(idleTimer >= idleFrequency)
             {
                 unitSprite.enabled = !unitSprite.enabled;
+                unitBackground.enabled = !unitBackground.enabled;
                 idleTimer = 0f;
             }
         }

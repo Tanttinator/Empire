@@ -56,7 +56,10 @@ public class HumanPlayer : PlayerController
 
     protected override void OnTurnStarted()
     {
-        activeUnits.AddRange(player.Units);
+        foreach(Unit unit in player.Units)
+        {
+            if (!unit.sleeping) activeUnits.Add(unit);
+        }
 
         Sequencer.AddSequence(new StartTurnSequence(this, player.SeenTiles, ActiveUnit.tile.coords));
 

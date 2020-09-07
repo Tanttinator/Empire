@@ -7,7 +7,7 @@ using Tanttinator.ModularUI;
 public class TileInfoUI : MonoBehaviour
 {
     [SerializeField] TMP_Text infoText = default;
-    [SerializeField] Hidable hidable;
+    [SerializeField] Hidable hidable = default;
 
     static TileInfoUI instance;
 
