@@ -2,217 +2,217 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Common;
 
-public class Unit
+namespace Server
 {
-    public int ID { get; protected set; }
-    public UnitType type { get; protected set; }
-    public Tile tile { get; protected set; }
-    public Player owner { get; protected set; }
-    public int moves { get; protected set; }
-    public bool sleeping { get; protected set; } = false;
-
-    Tile target;
-    Queue<Tile> currentPath;
-
-    Tile[] visibleTiles;
-
-    public static UnitType infantry = new UnitType("Infantry", UnitClass.INFANTRY, 1, 10);
-    public static UnitType transport = new UnitType("Transport", UnitClass.SHIP, 1, 30);
-
-    static int nextID = 0;
-
-    public static event Action<Unit, Tile, Tile> onUnitMoved;
-    public static event Action<Unit> onUnitDestroyed;
-    public static event Action<Unit> onUnitCreated;
-    public static event Action<Unit, Unit, Unit[]> onUnitsBattled;
-
-    public Unit(UnitType type, Tile tile, Player owner)
+    public class Unit
     {
-        ID = nextID;
-        nextID++;
+        public int ID { get; protected set; }
+        public UnitType type { get; protected set; }
+        public Tile tile { get; protected set; }
+        public Player owner { get; protected set; }
+        public int moves { get; protected set; }
+        public bool sleeping { get; protected set; } = false;
 
-        this.type = type;
-        this.owner = owner;
+        Tile target;
+        Queue<Tile> currentPath;
 
-        SetTile(tile);
+        Tile[] visibleTiles;
 
-        owner.AddUnit(this);
+        public static UnitType infantry = new UnitType("Infantry", UnitClass.INFANTRY, 1, 10);
+        public static UnitType transport = new UnitType("Transport", UnitClass.SHIP, 1, 30);
 
-        onUnitCreated?.Invoke(this);
-    }
+        static int nextID = 0;
 
-    /// <summary>
-    /// Place this unit on the given tile.
-    /// </summary>
-    /// <param name="tile"></param>
-    public void SetTile(Tile tile)
-    {
-        this.tile?.SetUnit(null);
-
-        this.tile = tile;
-        tile.SetUnit(this);
-
-        RefreshVision();
-    }
-
-    /// <summary>
-    /// Try to move to the given target.
-    /// </summary>
-    /// <param name="tile"></param>
-    /// <returns></returns>
-    public bool Move(Tile tile, bool forced = false)
-    {
-        if (moves <= 0 && !forced) return false;
-
-        Tile oldTile = this.tile;
-        SetTile(tile);
-        moves -= tile.MovementCost(this);
-        onUnitMoved?.Invoke(this, oldTile, this.tile);
-        return true;
-    }
-
-    /// <summary>
-    /// Set the target tile for this unit to move to.
-    /// </summary>
-    /// <param name="tile"></param>
-    public void SetTarget(Tile tile)
-    {
-        target = tile;
-    }
-
-    /// <summary>
-    /// Tell this unit to execute the next queued action if one exists.
-    /// </summary>
-    public bool DoTurn()
-    {
-        if (moves <= 0) return true;
-
-        if(target != null && target != tile)
+        public Unit(UnitType type, Tile tile, Player owner)
         {
-            if (currentPath == null || currentPath.Count == 0) GeneratePath();
+            ID = nextID;
+            nextID++;
 
-            if (currentPath == null)
+            this.type = type;
+            this.owner = owner;
+
+            SetTile(tile);
+
+            owner.AddUnit(this);
+
+            //TODO: Create unit graphics.
+        }
+
+        /// <summary>
+        /// Place this unit on the given tile.
+        /// </summary>
+        /// <param name="tile"></param>
+        public void SetTile(Tile tile)
+        {
+            this.tile?.SetUnit(null);
+
+            this.tile = tile;
+            tile.SetUnit(this);
+
+            RefreshVision();
+        }
+
+        /// <summary>
+        /// Try to move to the given target.
+        /// </summary>
+        /// <param name="tile"></param>
+        /// <returns></returns>
+        public bool Move(Tile tile, bool forced = false)
+        {
+            if (moves <= 0 && !forced) return false;
+
+            Tile oldTile = this.tile;
+            SetTile(tile);
+            moves -= tile.MovementCost(this);
+            tile.AddSequence(new UnitMoveSequence(GetData(), oldTile.coords, tile.coords, owner.SeenTiles));
+            return true;
+        }
+
+        /// <summary>
+        /// Set the target tile for this unit to move to.
+        /// </summary>
+        /// <param name="tile"></param>
+        public void SetTarget(Tile tile)
+        {
+            target = tile;
+        }
+
+        /// <summary>
+        /// Tell this unit to execute the next queued action if one exists.
+        /// </summary>
+        public bool DoTurn()
+        {
+            if (moves <= 0) return true;
+
+            if (target != null && target != tile)
             {
-                SetTarget(null);
-                return false;
+                if (currentPath == null || currentPath.Count == 0) GeneratePath();
+
+                if (currentPath == null)
+                {
+                    SetTarget(null);
+                    return false;
+                }
+
+                Tile nextTile = currentPath.Dequeue();
+
+                if (!nextTile.Interact(this)) GeneratePath();
             }
 
-            Tile nextTile = currentPath.Dequeue();
-
-            if (!nextTile.Interact(this)) GeneratePath();
+            return false;
         }
 
-        return false;
-    }
-
-    /// <summary>
-    /// Generate new path to the target.
-    /// </summary>
-    void GeneratePath()
-    {
-        currentPath = World.GetPath(this, target);
-        if(currentPath != null)
-            currentPath.Dequeue();
-    }
-
-    /// <summary>
-    /// Attack the given unit.
-    /// </summary>
-    /// <param name="enemy"></param>
-    public void Battle(Unit enemy)
-    {
-        if (enemy.owner == owner) return;
-
-        if (UnityEngine.Random.Range(0, 2) == 0)
+        /// <summary>
+        /// Generate new path to the target.
+        /// </summary>
+        void GeneratePath()
         {
-            onUnitsBattled?.Invoke(this, enemy, new Unit[] { this });
-            Destroy();
+            currentPath = World.GetPath(this, target);
+            if (currentPath != null)
+                currentPath.Dequeue();
         }
-        else
+
+        /// <summary>
+        /// Attack the given unit.
+        /// </summary>
+        /// <param name="enemy"></param>
+        public void Battle(Unit enemy)
         {
-            Tile tile = enemy.tile;
-            onUnitsBattled?.Invoke(this, enemy, new Unit[] { enemy });
-            enemy.Destroy();
-            Move(tile, true);
+            if (enemy.owner == owner) return;
+
+            if (UnityEngine.Random.Range(0, 2) == 0)
+            {
+                //TODO: Play battle animation.
+                //onUnitsBattled?.Invoke(this, enemy, new Unit[] { this });
+                Destroy();
+            }
+            else
+            {
+                Tile tile = enemy.tile;
+                //onUnitsBattled?.Invoke(this, enemy, new Unit[] { enemy });
+                enemy.Destroy();
+                Move(tile, true);
+                moves = 0;
+            }
+        }
+
+        /// <summary>
+        /// Destroy this unit.
+        /// </summary>
+        void Destroy()
+        {
+            owner.RemoveUnit(this);
+            tile.SetUnit(null);
             moves = 0;
-        }
-    }
 
-    /// <summary>
-    /// Destroy this unit.
-    /// </summary>
-    void Destroy()
-    {
-        owner.RemoveUnit(this);
-        tile.SetUnit(null);
-        moves = 0;
+            foreach (Tile tile in visibleTiles) tile.RemoveObserver(this);
 
-        foreach (Tile tile in visibleTiles) tile.RemoveObserver(this);
-
-        onUnitDestroyed?.Invoke(this);
-    }
-
-    /// <summary>
-    /// Toggle unit sleeping.
-    /// </summary>
-    /// <param name="sleeping"></param>
-    public void SetSleeping(bool sleeping)
-    {
-        this.sleeping = sleeping;
-    }
-
-    /// <summary>
-    /// Called on the start of the owners turn.
-    /// </summary>
-    public void Refresh()
-    {
-        moves = type.movement;
-    }
-
-    /// <summary>
-    /// Update the tiles which this unit can see.
-    /// </summary>
-    void RefreshVision()
-    {
-        if(visibleTiles != null)
-        {
-            foreach(Tile tile in visibleTiles) tile.RemoveObserver(this);
+            tile.AddSequence(new UnitDieSequence(tile.coords));
         }
 
-        visibleTiles = GetTilesInVision();
-        foreach (Tile tile in visibleTiles) tile.AddObserver(this);
-    }
-
-    Tile[] GetTilesInVision()
-    {
-        List<Tile> tiles = new List<Tile>();
-
-        tiles.Add(tile);
-        tiles.AddRange(World.GetNeighbors(tile));
-
-        return tiles.ToArray();
-    }
-
-    public UnitData GetData()
-    {
-        return new UnitData()
+        /// <summary>
+        /// Toggle unit sleeping.
+        /// </summary>
+        /// <param name="sleeping"></param>
+        public void SetSleeping(bool sleeping)
         {
-            ID = ID,
-            unit = type.name,
-            color = owner.color,
-            sleeping = sleeping
-        };
-    }
+            this.sleeping = sleeping;
+        }
 
-    public override string ToString()
-    {
-        return owner + " " + type.name;
-    }
+        /// <summary>
+        /// Called on the start of the owners turn.
+        /// </summary>
+        public void Refresh()
+        {
+            moves = type.movement;
+        }
 
-    public static Unit CreateUnit(UnitType type, Tile tile, Player owner)
-    {
-        Unit unit = new Unit(type, tile, owner);
-        return unit;
+        /// <summary>
+        /// Update the tiles which this unit can see.
+        /// </summary>
+        void RefreshVision()
+        {
+            if (visibleTiles != null)
+            {
+                foreach (Tile tile in visibleTiles) tile.RemoveObserver(this);
+            }
+
+            visibleTiles = GetTilesInVision();
+            foreach (Tile tile in visibleTiles) tile.AddObserver(this);
+        }
+
+        Tile[] GetTilesInVision()
+        {
+            List<Tile> tiles = new List<Tile>();
+
+            tiles.Add(tile);
+            tiles.AddRange(World.GetNeighbors(tile));
+
+            return tiles.ToArray();
+        }
+
+        public UnitData GetData()
+        {
+            return new UnitData()
+            {
+                ID = ID,
+                unit = type.name,
+                color = owner.color,
+                sleeping = sleeping
+            };
+        }
+
+        public override string ToString()
+        {
+            return owner + " " + type.name;
+        }
+
+        public static Unit CreateUnit(UnitType type, Tile tile, Player owner)
+        {
+            Unit unit = new Unit(type, tile, owner);
+            return unit;
+        }
     }
 }

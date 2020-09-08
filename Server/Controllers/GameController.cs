@@ -1,82 +1,70 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Common;
 
-public class GameController : MonoBehaviour
+namespace Server
 {
-    [SerializeField] bool revealMap = false;
-
-    static PlayerController[] players;
-    static int activePlayer = 0;
-    static PlayerController ActivePlayer => players[activePlayer];
-    public static Player[] Players
+    public class GameController : MonoBehaviour
     {
-        get
+        [SerializeField] bool revealMap = false;
+
+        public static Player[] players { get; protected set; }
+        static int activePlayer = 0;
+        static Player ActivePlayer => players[activePlayer];
+
+        static int turn = 1;
+
+        public static Player neutral { get; protected set; }
+
+        /// <summary>
+        /// Set the next player on the list as active.
+        /// </summary>
+        public static void NextPlayer()
         {
-            if (GameController.players == null) return new Player[] { };
-            Player[] players = new Player[GameController.players.Length];
-            for(int i = 0; i < GameController.players.Length; i++)
+            activePlayer++;
+
+            if (activePlayer >= players.Length)
             {
-                players[i] = GameController.players[i].player;
+                turn++;
+                activePlayer = 0;
+
+                Debug.Log("Turn " + turn);
             }
-            return players;
-        }
-    }
 
-    static int turn = 1;
-
-    public static Player neutral { get; protected set; } = new Player("Neutral", Color.white);
-
-    /// <summary>
-    /// Set the next player on the list as active.
-    /// </summary>
-    public static void NextPlayer()
-    {
-        activePlayer++;
-
-        if(activePlayer >= players.Length)
-        {
-            turn++;
-            activePlayer = 0;
-
-            Debug.Log("Turn " + turn);
+            ActivePlayer.StartTurn();
         }
 
-        ActivePlayer.StartTurn();
-    }
-
-    static GameController instance;
-
-    private void Start()
-    {
-        instance = this;
-
-        ClientController.Init(World.Width, World.Height);
-
-        Player[] players = new Player[]
+        public static Player GetPlayer(int ID)
         {
-            new Player("Player 1", Color.red),
-            new Player("Player 2", Color.blue)
-        };
-
-        GameController.players = new PlayerController[players.Length];
-        for(int i = 0; i < players.Length; i++)
-        {
-            PlayerController player = GameController.players[i] = new HumanPlayer(players[i]);
+            return players[ID];
         }
 
-        World.GenerateWorld(players);
-
-        foreach (PlayerController player in GameController.players)
+        private void Start()
         {
-            if (revealMap) player.player.RevealMap();
+            ClientController.Init(World.Width, World.Height);
+
+            players = new Player[]
+            {
+                new Human("Player 1", Color.red),
+                new Human("Player 2", Color.blue)
+            };
+
+            neutral = new Player("Neutral", Color.white);
+
+            World.GenerateWorld(players);
+
+            foreach (Player player in players)
+            {
+                if (revealMap) player.RevealMap();
+            }
+
+            ActivePlayer.StartTurn();
         }
 
-        ActivePlayer.StartTurn();
-    }
-
-    private void Update()
-    {
-        ActivePlayer.DoTurn();
+        private void Update()
+        {
+            ActivePlayer.DoTurn();
+        }
     }
 }

@@ -4,6 +4,6 @@ using UnityEngine;
 
 public class StructureData
 {
-    public StructureType structure;
+    public string structure;
     public Color color;
 }

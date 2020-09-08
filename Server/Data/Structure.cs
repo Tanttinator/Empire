@@ -3,67 +3,65 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class Structure
+namespace Server
 {
-    public StructureType type { get; protected set; }
-    public Player owner { get; protected set; }
-    public Tile tile { get; protected set; }
-
-    public event Action onOwnerChanged;
-
-    public Structure(StructureType type)
+    public class Structure
     {
-        this.type = type;
-        SetOwner(GameController.neutral);
-    }
+        public string type { get; protected set; }
+        public Player owner { get; protected set; }
+        public Tile tile { get; protected set; }
 
-    public void SetTile(Tile tile)
-    {
-        this.tile = tile;
-    }
+        public event Action onOwnerChanged;
 
-    public void SetOwner(Player owner)
-    {
-        Player oldOwner = this.owner;
-        this.owner = owner;
-        OnOwnerChanged(oldOwner);
-        onOwnerChanged?.Invoke();
-    }
-
-    protected virtual void OnOwnerChanged(Player oldOwner)
-    {
-
-    }
-
-    public virtual void Interact(Unit unit)
-    {
-
-    }
-
-    public StructureData GetData()
-    {
-        return new StructureData()
+        public Structure(string type)
         {
-            structure = type,
-            color = owner.color
-        };
-    }
+            this.type = type;
+            SetOwner(GameController.neutral);
+        }
 
-    /// <summary>
-    /// Create a new structure.
-    /// </summary>
-    /// <param name="structure"></param>
-    /// <param name="tile"></param>
-    /// <param name="owner"></param>
-    public static void CreateStructure(Structure structure, Tile tile, Player owner)
-    {
-        structure.SetOwner(owner);
-        structure.SetTile(tile);
-        tile.SetStructure(structure);
-    }
-}
+        public void SetTile(Tile tile)
+        {
+            this.tile = tile;
+        }
 
-public enum StructureType
-{
-    CITY
+        public void SetOwner(Player owner)
+        {
+            Player oldOwner = this.owner;
+            this.owner = owner;
+            OnOwnerChanged(oldOwner);
+            onOwnerChanged?.Invoke();
+        }
+
+        protected virtual void OnOwnerChanged(Player oldOwner)
+        {
+
+        }
+
+        public virtual void Interact(Unit unit)
+        {
+
+        }
+
+        public StructureData GetData()
+        {
+            return new StructureData()
+            {
+                structure = type,
+                color = owner.color
+            };
+        }
+
+        /// <summary>
+        /// Create a new structure.
+        /// </summary>
+        /// <param name="structure"></param>
+        /// <param name="tile"></param>
+        /// <param name="owner"></param>
+        public static void CreateStructure(Structure structure, Tile tile, Player owner)
+        {
+            structure.SetOwner(owner);
+            structure.SetTile(tile);
+            tile.SetStructure(structure);
+        }
+    }
 }
