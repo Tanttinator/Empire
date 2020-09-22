@@ -4,9 +4,8 @@ using UnityEngine;
 
 namespace Common
 {
-    public class StructureData
+    public class CityData : StructureData
     {
-        public string structure;
-        public PlayerData owner;
+        public string name;
     }
 }

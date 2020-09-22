@@ -2,23 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TileData
+namespace Common
 {
-    public Coords coords;
-    public bool land;
-    public bool[] landConnections;
-    public string feature;
-    public bool[] featureConnections;
-    public UnitData unit;
-    public StructureData structure;
-    public bool visible;
-
-    public override string ToString()
+    public class TileData
     {
-        return coords + "\n"
-            + (land? "Land" : "Water") + "\n" 
-            + (feature != "empty"? feature + "\n" : "") 
-            + (unit != null? unit.unit + "\n" : "")
-            + (structure != null? structure.structure + "\n" : "");
+        public Coords coords;
+        public bool land;
+        public bool[] landConnections;
+        public string feature;
+        public bool[] featureConnections;
+        public UnitData unit;
+        public StructureData structure;
+        public bool visible;
+
+        public override string ToString()
+        {
+            return "Tile: " + (land ? "Land" : "Sea") + "\n"
+                 + (feature != "empty" ? "Feature: " + feature + "\n" : "")
+                 + (unit != null ? "Unit: " + unit.unit + "\n" : "")
+                 + (structure != null ? "Structure: " + structure.structure : "");
+        }
     }
 }

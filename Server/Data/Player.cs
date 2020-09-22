@@ -100,6 +100,15 @@ namespace Server
             units.Remove(unit);
         }
 
+        public PlayerData GetData()
+        {
+            return new PlayerData()
+            {
+                name = name,
+                color = color
+            };
+        }
+
         public virtual void AddSequence(Sequence sequence)
         {
 

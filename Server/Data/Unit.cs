@@ -199,7 +199,7 @@ namespace Server
             {
                 ID = ID,
                 unit = type.name,
-                color = owner.color,
+                owner = owner.GetData(),
                 sleeping = sleeping
             };
         }

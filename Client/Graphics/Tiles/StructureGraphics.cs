@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Common;
 
 namespace Client {
     public class StructureGraphics : MonoBehaviour
@@ -18,7 +19,7 @@ namespace Client {
             else
             {
                 icon.sprite = SpriteRegistry.GetSprite(structure.structure).GetSprite(false, false, false, false).sprite;
-                icon.color = structure.color;
+                icon.color = structure.owner.color;
                 background.enabled = true;
                 icon.enabled = true;
             }

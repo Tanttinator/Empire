@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Common;
 
 namespace Client
 {
@@ -27,7 +28,7 @@ namespace Client
             else
             {
                 unitSprite.sprite = SpriteRegistry.GetSprite(unit.unit).GetSprite(false, false, false, false).sprite;
-                playerColor = unit.color;
+                playerColor = unit.owner.color;
                 unitSprite.color = playerColor;
                 unitBackground.color = playerColor;
                 Show();

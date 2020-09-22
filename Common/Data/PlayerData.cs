@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace Common
 {
-    public class StructureData
+    public class PlayerData
     {
-        public string structure;
-        public PlayerData owner;
+        public string name;
+        public Color color;
     }
 }

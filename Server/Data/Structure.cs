@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Common;
 
 namespace Server
 {
@@ -42,12 +43,12 @@ namespace Server
 
         }
 
-        public StructureData GetData()
+        public virtual StructureData GetData()
         {
             return new StructureData()
             {
                 structure = type,
-                color = owner.color
+                owner = owner.GetData()
             };
         }
 

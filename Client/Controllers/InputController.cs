@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Common;
+using Tanttinator.ModularUI;
 
 namespace Client
 {
@@ -12,6 +13,7 @@ namespace Client
 
         bool[] isDragging;
         Vector3[] clickPos;
+        bool pressed = false;
 
         static Coords hoverTile;
 
@@ -84,13 +86,14 @@ namespace Client
         /// <param name="button"></param>
         void HandleMouse(int button)
         {
-            if (Input.GetMouseButtonDown(button))
+            if (Input.GetMouseButtonDown(button) && Hoverable.MouseOver == null)
             {
+                pressed = true;
                 currentState.MouseDown(button);
                 clickPos[button] = Input.mousePosition;
             }
 
-            if (Input.GetMouseButton(button))
+            if (Input.GetMouseButton(button) && pressed)
             {
                 if (isDragging[button]) currentState.Drag(button);
                 else if (Vector3.Distance(clickPos[button], Input.mousePosition) > 5f)
@@ -101,7 +104,7 @@ namespace Client
                 else currentState.MouseHold(button);
             }
 
-            if (Input.GetMouseButtonUp(button))
+            if (Input.GetMouseButtonUp(button) && pressed)
             {
                 if (isDragging[button])
                 {
@@ -109,6 +112,7 @@ namespace Client
                     isDragging[button] = false;
                 }
                 else currentState.Click(button, hoverTile);
+                pressed = false;
             }
         }
 
@@ -225,7 +229,7 @@ namespace Client
             {
                 if (hoverTile != null)
                 {
-                    TileInfoUI.Show(GameState.GetTile(hoverTile));
+                    TileInfoUI.Show(hoverTile, GameState.GetTile(hoverTile));
                 }
             }
         }

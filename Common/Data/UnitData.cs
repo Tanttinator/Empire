@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitData
+namespace Common
 {
-    public int ID;
-    public string unit;
-    public Color color;
-    public bool sleeping;
+    public class UnitData
+    {
+        public int ID;
+        public string unit;
+        public PlayerData owner;
+        public bool sleeping;
+    }
 }
