@@ -14,6 +14,8 @@ namespace Client
 
         public static bool idle { get; private set; } = true;
 
+        float cooldown = 0f;
+
         public static event Action onIdleStart;
         public static event Action onIdleEnd;
 
@@ -40,19 +42,25 @@ namespace Client
                 {
                     currentSequence.End();
                     currentSequence = null;
+                    cooldown = 0f;
                 }
             }
             else if (sequenceQueue.Count > 0)
             {
-                currentSequence = sequenceQueue.Dequeue();
-                currentSequence.Start();
-                //Debug.Log("Started sequence: " + currentSequence);
+                if (cooldown == 0f)
+                {
+                    currentSequence = sequenceQueue.Dequeue();
+                    currentSequence.Start();
+                    //Debug.Log("Started sequence: " + currentSequence);
+                }
             }
             else if (!idle)
             {
                 idle = true;
                 onIdleStart?.Invoke();
             }
+
+            cooldown = Mathf.Max(0f, cooldown - Time.deltaTime);
         }
     }
 }

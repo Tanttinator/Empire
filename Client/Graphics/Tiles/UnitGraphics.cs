@@ -42,7 +42,7 @@ namespace Client
         public void SetIdle(bool idle)
         {
             this.idle = idle;
-            idleTimer = idleFrequency / 2f;
+            idleTimer = idleFrequency / 1.1f;
             unitSprite.enabled = shown;
             unitBackground.enabled = shown;
         }

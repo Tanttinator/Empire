@@ -29,6 +29,8 @@ namespace Common
         TileData[] seenTiles;
         Coords focusTile;
 
+        float progress = 0f;
+
         public StartTurnSequence(int playerID, TileData[] seenTiles, Coords focusTile)
         {
             this.playerID = playerID;
@@ -40,6 +42,12 @@ namespace Common
         {
             ClientController.SetActivePlayer(playerID, focusTile);
             GameState.UpdateTiles(seenTiles);
+        }
+
+        public override bool Update()
+        {
+            progress += Time.deltaTime;
+            return progress >= 0.3f;
         }
     }
 
@@ -54,6 +62,7 @@ namespace Common
     public class SelectUnitSequence : Sequence
     {
         Coords unit;
+        float progress = 0f;
 
         public SelectUnitSequence(Coords unit)
         {
@@ -68,15 +77,28 @@ namespace Common
 
         public override bool Update()
         {
-            return !ClientController.Camera.isMovingToTarget;
+            if(!ClientController.Camera.isMovingToTarget)
+            {
+                progress += Time.deltaTime;
+                return progress >= 0.3f;
+            }
+            return false;
         }
     }
 
     public class DeselectUnitSequence : Sequence
     {
+        float progress = 0f;
+
         public override void Start()
         {
             ClientController.DeselectUnit();
+        }
+
+        public override bool Update()
+        {
+            progress += Time.deltaTime;
+            return progress >= 0.3f;
         }
     }
 
