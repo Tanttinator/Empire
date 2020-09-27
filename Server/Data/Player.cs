@@ -15,17 +15,17 @@ namespace Server
         protected List<Unit> units = new List<Unit>();
 
         //TODO: cache seen tiles when they are updated.
-        public TileData[,] SeenTiles
+        public TileData[] SeenTiles
         {
             get
             {
-                TileData[,] tiles = new TileData[World.Width, World.Height];
+                TileData[] tiles = new TileData[World.Width * World.Height];
 
                 for (int x = 0; x < World.Width; x++)
                 {
                     for (int y = 0; y < World.Height; y++)
                     {
-                        tiles[x, y] = World.GetTile(x, y).VisibleState(this);
+                        tiles[x + y * World.Width] = World.GetTile(x, y).VisibleState(this);
                     }
                 }
 

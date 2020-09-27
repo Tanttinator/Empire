@@ -26,10 +26,10 @@ namespace Common
     public class StartTurnSequence : Sequence
     {
         int playerID;
-        TileData[,] seenTiles;
+        TileData[] seenTiles;
         Coords focusTile;
 
-        public StartTurnSequence(int playerID, TileData[,] seenTiles, Coords focusTile)
+        public StartTurnSequence(int playerID, TileData[] seenTiles, Coords focusTile)
         {
             this.playerID = playerID;
             this.seenTiles = seenTiles;
@@ -85,22 +85,22 @@ namespace Common
         UnitData unit;
         Coords from;
         Coords to;
-        TileData[,] vision;
+        TileData[] refreshTiles;
 
         float progress = 0f;
 
-        public UnitMoveSequence(UnitData unit, Coords from, Coords to, TileData[,] vision)
+        public UnitMoveSequence(UnitData unit, Coords from, Coords to, TileData[] refreshTiles)
         {
             this.unit = unit;
             this.from = from;
             this.to = to;
-            this.vision = vision;
+            this.refreshTiles = refreshTiles;
         }
 
         public override void Start()
         {
             GameState.MoveUnit(unit, from, to);
-            GameState.UpdateTiles(vision);
+            GameState.UpdateTiles(refreshTiles);
         }
 
         public override bool Update()

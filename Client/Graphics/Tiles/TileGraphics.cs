@@ -24,7 +24,7 @@ namespace Client
         /// </summary>
         public void Refresh(TileData state)
         {
-            if (state == null)
+            if (!state.discovered)
             {
                 unexplored.enabled = true;
             }

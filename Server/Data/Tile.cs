@@ -74,6 +74,7 @@ namespace Server
                 return new TileData()
                 {
                     coords = coords,
+                    discovered = true,
                     land = land,
                     landConnections = new bool[]
                     {
@@ -98,8 +99,7 @@ namespace Server
             else
             {
                 TileData oldData = VisibleState(player);
-                if (oldData != null)
-                    oldData.visible = false;
+                oldData.visible = false;
                 return oldData;
             }
         }
@@ -241,7 +241,11 @@ namespace Server
         {
             if (visibleStates.ContainsKey(player)) return visibleStates[player];
 
-            return null;
+            return new TileData()
+            {
+                coords = coords,
+                discovered = false
+            };
         }
 
         public void AddSequence(Sequence sequence)

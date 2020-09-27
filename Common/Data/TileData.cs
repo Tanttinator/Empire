@@ -7,6 +7,7 @@ namespace Common
     public class TileData
     {
         public Coords coords;
+        public bool discovered;
         public bool land;
         public bool[] landConnections;
         public string feature;
@@ -17,10 +18,13 @@ namespace Common
 
         public override string ToString()
         {
-            return "Tile: " + (land ? "Land" : "Sea") + "\n"
-                 + (feature != "empty" ? "Feature: " + feature + "\n" : "")
-                 + (unit != null ? "Unit: " + unit.unit + "\n" : "")
-                 + (structure != null ? "Structure: " + structure.structure : "");
+            if (discovered)
+                return "Tile: " + (land ? "Land" : "Sea") + "\n"
+                     + (feature != "empty" ? "Feature: " + feature + "\n" : "")
+                     + (unit != null ? "Unit: " + unit.unit + "\n" : "")
+                     + (structure != null ? "Structure: " + structure.structure : "");
+            else 
+                return "Undiscovered";
         }
     }
 }

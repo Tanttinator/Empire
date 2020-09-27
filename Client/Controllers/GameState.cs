@@ -11,33 +11,28 @@ namespace Client
         static int height;
         static TileData[,] tiles;
 
-        public static void UpdateTile(int x, int y, TileData data)
+        public static void UpdateTile(TileData data)
         {
-            tiles[x, y] = data;
-            RefreshTile(x, y);
+            Coords coords = data.coords;
+            tiles[coords.x, coords.y] = data;
+            RefreshTile(coords);
         }
 
-        public static void UpdateTiles(TileData[,] data)
+        public static void UpdateTiles(TileData[] data)
         {
-            for (int x = 0; x < width; x++)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    UpdateTile(x, y, data[x, y]);
-                }
-            }
+            foreach (TileData tile in data) UpdateTile(tile);
         }
 
         public static void PlaceUnit(Coords tile, UnitData unit)
         {
             GetTile(tile).unit = unit;
-            RefreshTile(tile.x, tile.y);
+            RefreshTile(tile);
         }
 
         public static void RemoveUnit(Coords tile)
         {
             GetTile(tile).unit = null;
-            RefreshTile(tile.x, tile.y);
+            RefreshTile(tile);
         }
 
         public static void MoveUnit(UnitData unit, Coords from, Coords to)
@@ -46,9 +41,9 @@ namespace Client
             RemoveUnit(from);
         }
 
-        public static void RefreshTile(int x, int y)
+        public static void RefreshTile(Coords coords)
         {
-            World.GetTileGraphics(x, y).Refresh(tiles[x, y]);
+            World.GetTileGraphics(coords).Refresh(tiles[coords.x, coords.y]);
         }
 
         public static TileData GetTile(Coords coords)

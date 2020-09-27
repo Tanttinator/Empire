@@ -18,48 +18,48 @@ namespace Client
 
         static TileInfoUI instance;
 
-        public static void Show(Coords coords, TileData data)
+        public static void Show(TileData data)
         {
-            ShowTileInfo(coords, data);
+            ShowTileInfo(data);
         }
 
-        static void ShowTileInfo(Coords coords, TileData data)
+        static void ShowTileInfo(TileData data)
         {
-            instance.locationText.text = "Location: " + coords.x + ", " + coords.y;
-            instance.infoText.text = (data != null? data.ToString() : "Undiscovered");
+            instance.locationText.text = "Location: " + data.coords.x + ", " + data.coords.y;
+            instance.infoText.text = data.ToString();
 
             instance.actionButtonContainer.Clear();
 
             if(data.structure is CityData)
-                AddAction(new ButtonAction("City", () => ShowCityInfo(coords, data)));
+                AddAction(new ButtonAction("City", () => ShowCityInfo(data)));
             if(data.unit != null)
-                AddAction(new ButtonAction("Unit", () => ShowUnitInfo(coords, data)));
+                AddAction(new ButtonAction("Unit", () => ShowUnitInfo(data)));
 
             instance.hidable.Show();
         }
 
-        static void ShowUnitInfo(Coords coords, TileData data)
+        static void ShowUnitInfo(TileData data)
         {
-            instance.locationText.text = "Location: " + coords.x + ", " + coords.y;
+            instance.locationText.text = "Location: " + data.coords.x + ", " + data.coords.y;
             instance.infoText.text = "Unit: " + data.unit.unit + "\nOwner: " + data.unit.owner.name;
 
             instance.actionButtonContainer.Clear();
 
             if (data.structure is CityData)
-                AddAction(new ButtonAction("City", () => ShowCityInfo(coords, data)));
-            AddAction(new ButtonAction("Tile", () => ShowTileInfo(coords, data)));
+                AddAction(new ButtonAction("City", () => ShowCityInfo(data)));
+            AddAction(new ButtonAction("Tile", () => ShowTileInfo(data)));
         }
 
-        static void ShowCityInfo(Coords coords, TileData data)
+        static void ShowCityInfo(TileData data)
         {
-            instance.locationText.text = "Location: " + coords.x + ", " + coords.y;
+            instance.locationText.text = "Location: " + data.coords.x + ", " + data.coords.y;
             instance.infoText.text = "City: " + (data.structure as CityData).name + "\nOwner: " + data.structure.owner.name;
 
             instance.actionButtonContainer.Clear();
 
             if (data.unit != null)
-                AddAction(new ButtonAction("Unit", () => ShowUnitInfo(coords, data)));
-            AddAction(new ButtonAction("Tile", () => ShowTileInfo(coords, data)));
+                AddAction(new ButtonAction("Unit", () => ShowUnitInfo(data)));
+            AddAction(new ButtonAction("Tile", () => ShowTileInfo(data)));
             AddAction(new ButtonAction("Production", () => Debug.Log("Choose Production")));
         }
 
