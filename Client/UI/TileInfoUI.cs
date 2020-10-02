@@ -52,8 +52,9 @@ namespace Client
 
         static void ShowCityInfo(TileData data)
         {
+            CityData city = (CityData)data.structure;
             instance.locationText.text = "Location: " + data.coords.x + ", " + data.coords.y;
-            instance.infoText.text = "City: " + (data.structure as CityData).name + "\nOwner: " + data.structure.owner.name;
+            instance.infoText.text = "City: " + city.name + "\nOwner: " + city.owner.name + "\nProduction: " + city.production + " (" + city.remaining + ")";
 
             instance.actionButtonContainer.Clear();
 

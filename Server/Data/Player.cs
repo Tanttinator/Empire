@@ -25,7 +25,7 @@ namespace Server
                 {
                     for (int y = 0; y < World.Height; y++)
                     {
-                        tiles[x + y * World.Width] = World.GetTile(x, y).VisibleState(this);
+                        tiles[x + y * World.Width] = World.GetTile(x, y).GetData(this);
                     }
                 }
 

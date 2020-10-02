@@ -237,7 +237,7 @@ namespace Server
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        public TileData VisibleState(Player player)
+        TileData VisibleState(Player player)
         {
             if (visibleStates.ContainsKey(player)) return visibleStates[player];
 
