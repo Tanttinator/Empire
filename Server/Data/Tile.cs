@@ -193,7 +193,7 @@ namespace Server
                 return unit.Move(this);
             }
 
-            if (this.unit.owner != unit.owner)
+            if (this.unit != null && this.unit.owner != unit.owner)
             {
                 unit.Battle(this.unit);
                 return true;
@@ -284,12 +284,18 @@ namespace Server
 
         float INode.EntryCost(object agent, INode from)
         {
-            return MovementCost(agent as Unit);
+            Unit unit = (Unit)agent;
+            TileData state = VisibleState(unit.owner);
+            if (state.discovered) return MovementCost(unit);
+            return 1;
         }
 
         bool INode.CanEnter(object agent, INode from)
         {
-            return CanEnter(agent as Unit);
+            Unit unit = (Unit)agent;
+            TileData state = VisibleState(unit.owner);
+            if (state.discovered) return CanEnter(unit);
+            return true;
         }
     }
 }

@@ -36,9 +36,9 @@ namespace Server
             SetTile(tile);
 
             owner.AddUnit(this);
-
-            //TODO: Create unit graphics.
         }
+
+        #region Movement
 
         /// <summary>
         /// Place this unit on the given tile.
@@ -80,31 +80,6 @@ namespace Server
         }
 
         /// <summary>
-        /// Tell this unit to execute the next queued action if one exists.
-        /// </summary>
-        public bool DoTurn()
-        {
-            if (moves <= 0) return true;
-
-            if (target != null && target != tile)
-            {
-                if (currentPath == null || currentPath.Count == 0) GeneratePath();
-
-                if (currentPath == null)
-                {
-                    SetTarget(null);
-                    return false;
-                }
-
-                Tile nextTile = currentPath.Dequeue();
-
-                if (!nextTile.Interact(this)) GeneratePath();
-            }
-
-            return false;
-        }
-
-        /// <summary>
         /// Generate new path to the target.
         /// </summary>
         void GeneratePath()
@@ -113,6 +88,10 @@ namespace Server
             if (currentPath != null)
                 currentPath.Dequeue();
         }
+
+        #endregion
+
+        #region Combat
 
         /// <summary>
         /// Attack the given unit.
@@ -152,22 +131,9 @@ namespace Server
             tile.AddSequence(new UnitDieSequence(tile.coords));
         }
 
-        /// <summary>
-        /// Toggle unit sleeping.
-        /// </summary>
-        /// <param name="sleeping"></param>
-        public void SetSleeping(bool sleeping)
-        {
-            this.sleeping = sleeping;
-        }
+        #endregion
 
-        /// <summary>
-        /// Called on the start of the owners turn.
-        /// </summary>
-        public void Refresh()
-        {
-            moves = type.movement;
-        }
+        #region Vision
 
         /// <summary>
         /// Update the tiles which this unit can see.
@@ -183,6 +149,10 @@ namespace Server
             foreach (Tile tile in visibleTiles) tile.AddObserver(this);
         }
 
+        /// <summary>
+        /// Returns all tiles within this units visibility.
+        /// </summary>
+        /// <returns></returns>
         Tile[] GetTilesInVision()
         {
             List<Tile> tiles = new List<Tile>();
@@ -191,6 +161,50 @@ namespace Server
             tiles.AddRange(World.GetNeighbors(tile));
 
             return tiles.ToArray();
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Tell this unit to execute the next queued action if one exists.
+        /// </summary>
+        public bool DoTurn()
+        {
+            if (moves <= 0) return true;
+
+            if (target != null && target != tile)
+            {
+                if (currentPath == null || currentPath.Count == 0) GeneratePath();
+
+                if (currentPath == null)
+                {
+                    SetTarget(null);
+                    return false;
+                }
+
+                Tile nextTile = currentPath.Dequeue();
+
+                if (!nextTile.Interact(this)) GeneratePath();
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Called on the start of the owners turn.
+        /// </summary>
+        public void Refresh()
+        {
+            moves = type.movement;
+        }
+
+        /// <summary>
+        /// Toggle unit sleeping.
+        /// </summary>
+        /// <param name="sleeping"></param>
+        public void SetSleeping(bool sleeping)
+        {
+            this.sleeping = sleeping;
         }
 
         public UnitData GetData()
