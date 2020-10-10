@@ -61,12 +61,7 @@ namespace Client
             if (data.unit != null)
                 AddAction(new ButtonAction("Unit", () => ShowUnitInfo(data)));
             AddAction(new ButtonAction("Tile", () => ShowTileInfo(data)));
-            AddAction(new ButtonAction("Production", () => Debug.Log("Choose Production")));
-        }
-
-        public static void Hide()
-        {
-            instance.hidable.Hide();
+            AddAction(new ButtonAction("Production", () => { CityProductionUI.Show(city); instance.hidable.Hide(); }));
         }
 
         static void AddAction(ButtonAction action)

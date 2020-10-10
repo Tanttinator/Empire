@@ -23,6 +23,12 @@ namespace Server
         public static UnitType infantry = new UnitType("Infantry", UnitClass.INFANTRY, 1, 10);
         public static UnitType transport = new UnitType("Transport", UnitClass.SHIP, 1, 30);
 
+        public static UnitType[] units = new UnitType[]
+        {
+            infantry,
+            transport
+        };
+
         static int nextID = 0;
 
         public Unit(UnitType type, Tile tile, Player owner)

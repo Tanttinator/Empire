@@ -15,6 +15,8 @@ namespace Common
         [SerializeField] new RTSCameraController2D camera = default;
         public static RTSCameraController2D Camera => instance.camera;
 
+        public static string[] units;
+
         public static ClientController instance;
 
         /// <summary>
@@ -31,10 +33,11 @@ namespace Common
             activePlayer = playerID;
         }
 
-        public static void Init(int width, int height)
+        public static void Init(int width, int height, string[] units)
         {
             Client.World.InitTiles(width, height);
             GameState.Init(width, height);
+            ClientController.units = units;
         }
 
         public static void SelectUnit(Coords coords)
