@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Server
+namespace Common
 {
+    [System.Serializable]
     public class UnitType
     {
         public string name { get; protected set; }

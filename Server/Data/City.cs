@@ -60,7 +60,8 @@ namespace Server
                 structure = "City",
                 owner = owner.GetData(),
                 name = name,
-                production = producedUnit.name,
+                producedUnit = producedUnit.name,
+                production = production,
                 remaining = Mathf.CeilToInt((producedUnit.productionCost - progress) * 1f / production)
             };
         }

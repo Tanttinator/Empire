@@ -42,9 +42,7 @@ namespace Server
 
         private void Start()
         {
-            string[] units = new string[Unit.units.Length];
-            for (int i = 0; i < units.Length; i++) units[i] = Unit.units[i].name;
-            ClientController.Init(World.Width, World.Height, units);
+            ClientController.Init(World.Width, World.Height, Unit.units);
 
             players = new Player[]
             {

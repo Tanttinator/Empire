@@ -54,7 +54,7 @@ namespace Client
         {
             CityData city = (CityData)data.structure;
             instance.locationText.text = "Location: " + data.coords.x + ", " + data.coords.y;
-            instance.infoText.text = "City: " + city.name + "\nOwner: " + city.owner.name + "\nProduction: " + city.production + " (" + city.remaining + ")";
+            instance.infoText.text = "City: " + city.name + "\nOwner: " + city.owner.name + "\nProduction: " + city.producedUnit + " (" + city.remaining + ")";
 
             instance.actionButtonContainer.Clear();
 

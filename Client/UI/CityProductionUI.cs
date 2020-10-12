@@ -31,21 +31,21 @@ namespace Client
 
             instance.title.text = city.name + "\nProduction";
 
-            foreach (string unit in ClientController.units) AddUnit(unit, city.owner.color);
+            foreach (UnitType unit in ClientController.units) AddUnit(city, unit, city.owner.color);
 
             instance.hidable.Show();
         }
 
-        static void AddUnit(string unit, Color color)
+        static void AddUnit(CityData city, UnitType unit, Color color)
         {
             instance.units.Add(unit, instance.productionToggle).GetComponent<ProductionSelectionToggleUI>().Setup(unit, color, (b) => ToggleUnit(unit, b));
-            instance.turns.Add(unit, instance.tableCell);
+            instance.turns.Add(unit, instance.tableCell).GetComponent<TMP_Text>().text = Mathf.CeilToInt(unit.productionCost * 1f / city.production).ToString();
             instance.counts.Add(unit, instance.tableCell);
         }
 
-        static void ToggleUnit(string unit, bool value)
+        static void ToggleUnit(UnitType unit, bool value)
         {
-            Debug.Log("Toggle production of " + unit + ": " + value);
+            Debug.Log("Toggle production of " + unit.name + ": " + value);
         }
 
         public void Confirm()

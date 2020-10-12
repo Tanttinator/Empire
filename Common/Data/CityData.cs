@@ -7,7 +7,8 @@ namespace Common
     public class CityData : StructureData
     {
         public string name;
-        public string production;
+        public string producedUnit;
+        public int production;
         public int remaining;
     }
 }

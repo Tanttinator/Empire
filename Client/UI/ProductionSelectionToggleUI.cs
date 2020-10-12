@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using Common;
 
 namespace Client
 {
@@ -16,14 +17,14 @@ namespace Client
 
         Action<bool> onToggle;
 
-        public void Setup(string unitType, Color color, Action<bool> onToggle)
+        public void Setup(UnitType unit, Color color, Action<bool> onToggle)
         {
-            unitName.text = unitType;
+            unitName.text = unit.name;
 
             background.color = color;
             unitIcon.color = color;
 
-            unitIcon.sprite = SpriteRegistry.GetSprite(unitType).GetSprite(false, false, false, false).sprite;
+            unitIcon.sprite = SpriteRegistry.GetSprite(unit.name).GetSprite(false, false, false, false).sprite;
 
             this.onToggle = onToggle;
         }
