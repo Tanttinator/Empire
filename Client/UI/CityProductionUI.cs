@@ -31,7 +31,7 @@ namespace Client
 
             instance.title.text = city.name + "\nProduction";
 
-            foreach (UnitType unit in ClientController.units) AddUnit(city, unit, city.owner.color);
+            foreach (UnitType unit in ClientController.unitTypes) AddUnit(city, unit, GameState.GetPlayer(city.owner).color);
 
             instance.hidable.Show();
         }

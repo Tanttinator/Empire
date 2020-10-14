@@ -2,20 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using RTSCamera;
-using Server;
-using Client;
+using Common;
 
-namespace Common
+namespace Client
 {
     public class ClientController : MonoBehaviour
     {
-        static int activePlayer = -1;
+        public static int activePlayer { get; protected set; } = -1;
         public static Coords? activeUnit { get; protected set; }
 
         [SerializeField] new RTSCameraController2D camera = default;
         public static RTSCameraController2D Camera => instance.camera;
 
-        public static UnitType[] units;
+        public static UnitType[] unitTypes;
 
         public static ClientController instance;
 
@@ -33,11 +32,11 @@ namespace Common
             activePlayer = playerID;
         }
 
-        public static void Init(int width, int height, UnitType[] units)
+        public static void Initialize(int width, int height, PlayerData[] players, UnitType[] unitTypes)
         {
             Client.World.InitTiles(width, height);
-            GameState.Init(width, height);
-            ClientController.units = units;
+            GameState.Init(width, height, players);
+            ClientController.unitTypes = unitTypes;
         }
 
         public static void SelectUnit(Coords coords)
@@ -54,7 +53,7 @@ namespace Common
 
         public static void ExecuteCommand(PlayerCommand command)
         {
-            ((Human)GameController.GetPlayer(activePlayer)).ExecuteCommand(command);
+            CommunicationController.ExecuteCommand(activePlayer, command);
         }
 
         public static void AddSequence(Sequence sequence)
@@ -64,7 +63,7 @@ namespace Common
 
         public static void EndTurn()
         {
-            ((Human)GameController.GetPlayer(activePlayer)).EndTurn();
+            CommunicationController.EndTurn(activePlayer);
         }
 
         private void Awake()

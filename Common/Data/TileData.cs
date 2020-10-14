@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Common
 {
+    [System.Serializable]
     public class TileData
     {
         public Coords coords;
@@ -12,18 +13,16 @@ namespace Common
         public bool[] landConnections;
         public string feature;
         public bool[] featureConnections;
-        public UnitData unit;
-        public StructureData structure;
+        public int unit;
+        public int structure;
         public bool visible;
 
         public override string ToString()
         {
             if (discovered)
                 return "Tile: " + (land ? "Land" : "Sea") + "\n"
-                     + (feature != "empty" ? "Feature: " + feature + "\n" : "")
-                     + (unit != null ? "Unit: " + unit.unit + "\n" : "")
-                     + (structure != null ? "Structure: " + structure.structure : "");
-            else 
+                     + (feature != "empty" ? "Feature: " + feature + "\n" : "");
+            else
                 return "Undiscovered";
         }
     }

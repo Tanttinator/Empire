@@ -19,7 +19,7 @@ namespace Client {
             else
             {
                 icon.sprite = SpriteRegistry.GetSprite(structure.structure).GetSprite(false, false, false, false).sprite;
-                icon.color = structure.owner.color;
+                icon.color = GameState.GetPlayer(structure.owner).color;
                 background.enabled = true;
                 icon.enabled = true;
             }

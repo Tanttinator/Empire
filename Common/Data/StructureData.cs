@@ -6,7 +6,8 @@ namespace Common
 {
     public class StructureData
     {
+        public int ID;
         public string structure;
-        public PlayerData owner;
+        public int owner;
     }
 }

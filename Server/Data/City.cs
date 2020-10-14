@@ -9,7 +9,7 @@ namespace Server
     {
 
         public string name { get; protected set; }
-        UnitType producedUnit = Unit.infantry;
+        public UnitType producedUnit { get; protected set; } = Unit.infantry;
         public int production = 1;
         int progress = 0;
 
@@ -31,19 +31,9 @@ namespace Server
         }
 
         /// <summary>
-        /// Called when the owner of this structure changes.
+        /// Advance the production in this city.
         /// </summary>
-        /// <param name="oldOwner"></param>
-        protected override void OnOwnerChanged(Player oldOwner)
-        {
-            if (oldOwner != null) oldOwner.onTurnStarted -= OnTurnStarted;
-            this.owner.onTurnStarted += OnTurnStarted;
-        }
-
-        /// <summary>
-        /// Called when the owners turn starts.
-        /// </summary>
-        void OnTurnStarted()
+        public void Produce()
         {
             progress += production;
             if (progress >= producedUnit.productionCost)
@@ -53,12 +43,19 @@ namespace Server
             }
         }
 
+        protected override void OnOwnerChanged(Player oldOwner)
+        {
+            oldOwner?.RemoveCity(this);
+            owner.AddCity(this);
+        }
+
         public override StructureData GetData()
         {
             return new CityData()
             {
+                ID = ID,
                 structure = "City",
-                owner = owner.GetData(),
+                owner = owner.ID,
                 name = name,
                 producedUnit = producedUnit.name,
                 production = production,

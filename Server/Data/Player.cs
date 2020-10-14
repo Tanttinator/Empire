@@ -13,6 +13,7 @@ namespace Server
         public Color color { get; protected set; }
 
         protected List<Unit> units = new List<Unit>();
+        protected List<City> cities = new List<City>();
 
         //TODO: cache seen tiles when they are updated.
         public TileData[] SeenTiles
@@ -33,8 +34,6 @@ namespace Server
             }
         }
 
-        public event Action onTurnStarted;
-
         static int nextID = 0;
 
         public Player(string name, Color color)
@@ -51,11 +50,17 @@ namespace Server
         /// </summary>
         public void StartTurn()
         {
-            onTurnStarted?.Invoke();
+            foreach(City city in cities)
+            {
+                city.Produce();
+            }
+
+
             foreach (Unit unit in units)
             {
                 unit.Refresh();
             }
+
             OnTurnStarted();
         }
 
@@ -100,18 +105,39 @@ namespace Server
             units.Remove(unit);
         }
 
-        public PlayerData GetData()
+        /// <summary>
+        /// Add a new city for this player.
+        /// </summary>
+        /// <param name="city"></param>
+        public void AddCity(City city)
         {
-            return new PlayerData()
-            {
-                name = name,
-                color = color
-            };
+            cities.Add(city);
         }
 
-        public virtual void AddSequence(Sequence sequence)
+        /// <summary>
+        /// Remove a city from this players control.
+        /// </summary>
+        /// <param name="city"></param>
+        public void RemoveCity(City city)
         {
+            cities.Remove(city);
+        }
 
+        public PlayerData GetData()
+        {
+            Dictionary<UnitType, int> production = new Dictionary<UnitType, int>();
+
+            foreach(UnitType unit in Unit.units) production.Add(unit, 0);
+
+            foreach (City city in cities) production[city.producedUnit] += 1;
+
+            return new PlayerData()
+            {
+                ID = ID,
+                name = name,
+                color = color,
+                production = production
+            };
         }
 
         /// <summary>

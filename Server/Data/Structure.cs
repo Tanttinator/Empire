@@ -8,15 +8,17 @@ namespace Server
 {
     public class Structure
     {
+        public int ID { get; protected set; }
         public string type { get; protected set; }
         public Player owner { get; protected set; }
         public Tile tile { get; protected set; }
 
-        public event Action onOwnerChanged;
+        static int nextID = 0;
 
         public Structure(string type)
         {
             this.type = type;
+            ID = nextID++;
             SetOwner(GameController.neutral);
         }
 
@@ -30,7 +32,7 @@ namespace Server
             Player oldOwner = this.owner;
             this.owner = owner;
             OnOwnerChanged(oldOwner);
-            onOwnerChanged?.Invoke();
+            CommunicationController.UpdateStructure(this);
         }
 
         protected virtual void OnOwnerChanged(Player oldOwner)
@@ -47,8 +49,9 @@ namespace Server
         {
             return new StructureData()
             {
+                ID = ID,
                 structure = type,
-                owner = owner.GetData()
+                owner = owner.ID
             };
         }
 
@@ -63,6 +66,7 @@ namespace Server
             structure.SetOwner(owner);
             structure.SetTile(tile);
             tile.SetStructure(structure);
+            CommunicationController.CreateStructure(structure);
         }
     }
 }

@@ -24,11 +24,6 @@ namespace Server
             command.Execute(this, ActiveUnit);
         }
 
-        public override void AddSequence(Sequence sequence)
-        {
-            ClientController.AddSequence(sequence);
-        }
-
         /// <summary>
         /// Removes current unit from the list of active units.
         /// </summary>
@@ -37,9 +32,9 @@ namespace Server
             if (activeUnits.Count == 0) return;
 
             activeUnits.RemoveAt(0);
-            ClientController.AddSequence(new DeselectUnitSequence());
+            CommunicationController.AddSequence(new DeselectUnitSequence());
 
-            if (activeUnits.Count == 0) ClientController.AddSequence(new EndTurnSequence());
+            if (activeUnits.Count == 0) CommunicationController.AddSequence(new EndTurnSequence());
             else SelectUnit(ActiveUnit);
         }
 
@@ -50,7 +45,7 @@ namespace Server
         void SelectUnit(Unit unit)
         {
             if (unit == null) return;
-            ClientController.AddSequence(new SelectUnitSequence(unit.tile.coords));
+            CommunicationController.AddSequence(new SelectUnitSequence(unit.tile.coords));
         }
 
         protected override void OnTurnStarted()
@@ -60,7 +55,7 @@ namespace Server
                 if (!unit.sleeping) activeUnits.Add(unit);
             }
 
-            ClientController.AddSequence(new StartTurnSequence(ID, SeenTiles, ActiveUnit.tile.coords));
+            CommunicationController.AddSequence(new StartTurnSequence(ID, SeenTiles, ActiveUnit.tile.coords));
 
             SelectUnit(ActiveUnit);
         }

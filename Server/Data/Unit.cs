@@ -21,7 +21,7 @@ namespace Server
         Tile[] visibleTiles;
 
         public static UnitType infantry = new UnitType("Infantry", UnitClass.INFANTRY, 1, 10);
-        public static UnitType transport = new UnitType("Transport", UnitClass.SHIP, 1, 30);
+        public static UnitType transport = new UnitType("Transport", UnitClass.SHIP, 3, 30);
 
         public static UnitType[] units = new UnitType[]
         {
@@ -72,7 +72,7 @@ namespace Server
             Tile oldTile = this.tile;
             SetTile(tile);
             moves -= tile.MovementCost(this);
-            tile.AddSequence(new UnitMoveSequence(GetData(), oldTile.coords, tile.coords, owner.SeenTiles));
+            CommunicationController.MoveUnit(oldTile, tile);
             return true;
         }
 
@@ -134,7 +134,7 @@ namespace Server
 
             foreach (Tile tile in visibleTiles) tile.RemoveObserver(this);
 
-            tile.AddSequence(new UnitDieSequence(tile.coords));
+            CommunicationController.KillUnit(tile);
         }
 
         #endregion
@@ -218,8 +218,8 @@ namespace Server
             return new UnitData()
             {
                 ID = ID,
-                unit = type.name,
-                owner = owner.GetData(),
+                unitType = type.name,
+                owner = owner.ID,
                 sleeping = sleeping
             };
         }
@@ -232,6 +232,7 @@ namespace Server
         public static Unit CreateUnit(UnitType type, Tile tile, Player owner)
         {
             Unit unit = new Unit(type, tile, owner);
+            CommunicationController.CreateUnit(unit);
             return unit;
         }
     }

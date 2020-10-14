@@ -42,8 +42,6 @@ namespace Server
 
         private void Start()
         {
-            ClientController.Init(World.Width, World.Height, Unit.units);
-
             players = new Player[]
             {
                 new Human("Player 1", Color.red),
@@ -51,6 +49,12 @@ namespace Server
             };
 
             neutral = new Player("Neutral", Color.white);
+
+            PlayerData[] allPlayers = new PlayerData[players.Length + 1];
+            for (int i = 0; i < players.Length; i++) allPlayers[i] = players[i].GetData();
+            allPlayers[players.Length] = neutral.GetData();
+
+            CommunicationController.Initialize(World.Width, World.Height, allPlayers, Unit.units);
 
             World.GenerateWorld(players);
 

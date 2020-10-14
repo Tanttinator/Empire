@@ -7,6 +7,18 @@ namespace Common
 {
     public class Sequence
     {
+        float progress;
+
+        public Sequence(float cooldown)
+        {
+            this.progress = cooldown;
+        }
+
+        public Sequence()
+        {
+            this.progress = 0f;
+        }
+
         public virtual void Start()
         {
 
@@ -14,7 +26,8 @@ namespace Common
 
         public virtual bool Update()
         {
-            return true;
+            progress -= Time.deltaTime;
+            return progress <= 0f;
         }
 
         public virtual void End()
@@ -23,31 +36,38 @@ namespace Common
         }
     }
 
+    public class UpdateTilesSequence : Sequence
+    {
+        TileData[] tiles;
+
+        public UpdateTilesSequence(TileData[] tiles, float cooldown) : base(cooldown)
+        {
+            this.tiles = tiles;
+        }
+
+        public override void Start()
+        {
+            GameState.UpdateTiles(tiles);
+        }
+    }
+
     public class StartTurnSequence : Sequence
     {
-        int playerID;
+        int player;
         TileData[] seenTiles;
         Coords focusTile;
 
-        float progress = 0f;
-
-        public StartTurnSequence(int playerID, TileData[] seenTiles, Coords focusTile)
+        public StartTurnSequence(int player, TileData[] seenTiles, Coords focusTile) : base(0.3f)
         {
-            this.playerID = playerID;
+            this.player = player;
             this.seenTiles = seenTiles;
             this.focusTile = focusTile;
         }
 
         public override void Start()
         {
-            ClientController.SetActivePlayer(playerID, focusTile);
+            ClientController.SetActivePlayer(player, focusTile);
             GameState.UpdateTiles(seenTiles);
-        }
-
-        public override bool Update()
-        {
-            progress += Time.deltaTime;
-            return progress >= 0.3f;
         }
     }
 
@@ -56,6 +76,23 @@ namespace Common
         public override void Start()
         {
             ClientController.EndTurn();
+        }
+    }
+
+    #region Units
+
+    public class UpdateUnitSequence : Sequence
+    {
+        UnitData unit;
+
+        public UpdateUnitSequence(UnitData unit)
+        {
+            this.unit = unit;
+        }
+
+        public override void Start()
+        {
+            GameState.UpdateUnit(unit);
         }
     }
 
@@ -77,7 +114,7 @@ namespace Common
 
         public override bool Update()
         {
-            if(!ClientController.Camera.isMovingToTarget)
+            if (!ClientController.Camera.isMovingToTarget)
             {
                 progress += Time.deltaTime;
                 return progress >= 0.3f;
@@ -88,72 +125,59 @@ namespace Common
 
     public class DeselectUnitSequence : Sequence
     {
-        float progress = 0f;
+        public DeselectUnitSequence() : base(0.3f)
+        {
+
+        }
 
         public override void Start()
         {
             ClientController.DeselectUnit();
         }
+    }
 
-        public override bool Update()
+    public class UnitMoveSequence : UpdateTilesSequence
+    {
+        public UnitMoveSequence(TileData[] tiles) : base(tiles, 0.3f)
         {
-            progress += Time.deltaTime;
-            return progress >= 0.3f;
+
         }
     }
 
-    public class UnitMoveSequence : Sequence
+    public class UnitDieSequence : UpdateTilesSequence
     {
-        UnitData unit;
-        Coords from;
-        Coords to;
-        TileData[] refreshTiles;
-
-        float progress = 0f;
-
-        public UnitMoveSequence(UnitData unit, Coords from, Coords to, TileData[] refreshTiles)
+        public UnitDieSequence(TileData[] tiles) : base(tiles, 0.3f)
         {
-            this.unit = unit;
-            this.from = from;
-            this.to = to;
-            this.refreshTiles = refreshTiles;
+
+        }
+    }
+
+    #endregion
+
+    #region Structures
+
+    public class UpdateStructureSequence : Sequence
+    {
+        StructureData structure;
+
+        public UpdateStructureSequence(StructureData structure)
+        {
+            this.structure = structure;
         }
 
         public override void Start()
         {
-            GameState.MoveUnit(unit, from, to);
-            GameState.UpdateTiles(refreshTiles);
-        }
-
-        public override bool Update()
-        {
-            progress += Time.deltaTime;
-            return progress >= 0.3f;
+            GameState.UpdateStructure(structure);
         }
     }
 
-    public class UnitDieSequence : Sequence
-    {
-        Coords unit;
-
-        public UnitDieSequence(Coords unit)
-        {
-            this.unit = unit;
-        }
-
-        public override void Start()
-        {
-            GameState.RemoveUnit(unit);
-        }
-    }
+    #endregion
 
     public class ExplosionSequence : Sequence
     {
         Coords tile;
 
-        float progress = 0f;
-
-        public ExplosionSequence(Coords tile)
+        public ExplosionSequence(Coords tile) : base(0.8f)
         {
             this.tile = tile;
         }
@@ -161,12 +185,6 @@ namespace Common
         public override void Start()
         {
             World.SpawnExplosion(tile);
-        }
-
-        public override bool Update()
-        {
-            progress += Time.deltaTime;
-            return progress >= 0.8f;
         }
     }
 }

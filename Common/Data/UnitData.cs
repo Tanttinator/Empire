@@ -7,8 +7,8 @@ namespace Common
     public class UnitData
     {
         public int ID;
-        public string unit;
-        public PlayerData owner;
+        public string unitType;
+        public int owner;
         public bool sleeping;
     }
 }

@@ -27,8 +27,8 @@ namespace Client
             if (unit == null) Hide();
             else
             {
-                unitSprite.sprite = SpriteRegistry.GetSprite(unit.unit).GetSprite(false, false, false, false).sprite;
-                playerColor = unit.owner.color;
+                unitSprite.sprite = SpriteRegistry.GetSprite(unit.unitType).GetSprite(false, false, false, false).sprite;
+                playerColor = GameState.GetPlayer(unit.owner).color;
                 unitSprite.color = playerColor;
                 unitBackground.color = playerColor;
                 Show();

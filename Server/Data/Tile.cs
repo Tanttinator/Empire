@@ -38,7 +38,7 @@ namespace Server
         }
 
         HashSet<Unit> seenBy = new HashSet<Unit>();
-        Player[] SeenBy
+        public Player[] SeenBy
         {
             get
             {
@@ -91,8 +91,8 @@ namespace Server
                     ConnectFeatureTexture(Direction.SOUTH),
                     ConnectFeatureTexture(Direction.WEST)
                     },
-                    unit = (unit != null ? unit.GetData() : null),
-                    structure = (structure != null ? structure.GetData() : null),
+                    unit = (unit != null ? unit.ID : -1),
+                    structure = (structure != null ? structure.ID : -1),
                     visible = true
                 };
             }
@@ -161,11 +161,8 @@ namespace Server
         /// <param name="structure"></param>
         public void SetStructure(Structure structure)
         {
-            if (this.structure != null) this.structure.onOwnerChanged -= Refresh;
-
             this.structure = structure;
             structure.SetTile(this);
-            structure.onOwnerChanged += Refresh;
 
             Refresh();
         }
@@ -246,11 +243,6 @@ namespace Server
                 coords = coords,
                 discovered = false
             };
-        }
-
-        public void AddSequence(Sequence sequence)
-        {
-            foreach (Player player in SeenBy) player.AddSequence(sequence);
         }
 
         /// <summary>
