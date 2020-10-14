@@ -9,6 +9,7 @@ namespace Common
         public int ID;
         public string unitType;
         public int owner;
+        public Coords tile;
         public bool sleeping;
     }
 }

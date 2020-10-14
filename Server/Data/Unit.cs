@@ -72,7 +72,7 @@ namespace Server
             Tile oldTile = this.tile;
             SetTile(tile);
             moves -= tile.MovementCost(this);
-            CommunicationController.MoveUnit(oldTile, tile);
+            CommunicationController.MoveUnit(this, oldTile, tile);
             return true;
         }
 
@@ -220,6 +220,7 @@ namespace Server
                 ID = ID,
                 unitType = type.name,
                 owner = owner.ID,
+                tile = tile.coords,
                 sleeping = sleeping
             };
         }

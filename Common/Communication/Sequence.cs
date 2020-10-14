@@ -98,10 +98,10 @@ namespace Common
 
     public class SelectUnitSequence : Sequence
     {
-        Coords unit;
+        int unit;
         float progress = 0f;
 
-        public SelectUnitSequence(Coords unit)
+        public SelectUnitSequence(int unit)
         {
             this.unit = unit;
         }
@@ -109,7 +109,7 @@ namespace Common
         public override void Start()
         {
             ClientController.SelectUnit(unit);
-            ClientController.Camera.MoveTowards(World.GetTilePosition(unit));
+            ClientController.Camera.MoveTowards(World.GetTilePosition(GameState.GetUnit(unit).tile));
         }
 
         public override bool Update()

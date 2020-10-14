@@ -45,7 +45,7 @@ namespace Server
         void SelectUnit(Unit unit)
         {
             if (unit == null) return;
-            CommunicationController.AddSequence(new SelectUnitSequence(unit.tile.coords));
+            CommunicationController.AddSequence(new SelectUnitSequence(unit.ID));
         }
 
         protected override void OnTurnStarted()

@@ -37,7 +37,7 @@ namespace Client
         /// </summary>
         public static void CancelState()
         {
-            if (ClientController.activeUnit != null) ChangeState(new UnitSelectedState(ClientController.activeUnit.Value));
+            if (ClientController.ActiveUnit != null) ChangeState(new UnitSelectedState(ClientController.ActiveUnit.Value));
             else ChangeState(new DefaultState());
         }
 

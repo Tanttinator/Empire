@@ -9,7 +9,15 @@ namespace Client
     public class ClientController : MonoBehaviour
     {
         public static int activePlayer { get; protected set; } = -1;
-        public static Coords? activeUnit { get; protected set; }
+        static int activeUnit = -1;
+        public static Coords? ActiveUnit
+        {
+            get
+            {
+                UnitData unit = GameState.GetUnit(activeUnit);
+                return unit?.tile;
+            }
+        }
 
         [SerializeField] new RTSCameraController2D camera = default;
         public static RTSCameraController2D Camera => instance.camera;
@@ -39,15 +47,15 @@ namespace Client
             ClientController.unitTypes = unitTypes;
         }
 
-        public static void SelectUnit(Coords coords)
+        public static void SelectUnit(int unit)
         {
-            activeUnit = coords;
+            activeUnit = unit;
             //InputController.ChangeState(new UnitSelectedState(coords));
         }
 
         public static void DeselectUnit()
         {
-            activeUnit = null;
+            activeUnit = -1;
             InputController.ChangeState(new DefaultState());
         }
 

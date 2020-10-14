@@ -22,11 +22,15 @@ namespace Common
             ClientController.AddSequence(sequence);
         }
 
-        public static void MoveUnit(Tile from, Tile to)
+        public static void MoveUnit(Unit unit, Tile from, Tile to)
         {
             foreach(Player player in SeenBy(from, to))
             {
-                if (ClientController.activePlayer == player.ID) ClientController.AddSequence(new UnitMoveSequence(player.SeenTiles));
+                if (ClientController.activePlayer == player.ID)
+                {
+                    ClientController.AddSequence(new UnitMoveSequence(player.SeenTiles));
+                    ClientController.AddSequence(new UpdateUnitSequence(unit.GetData()));
+                }
             }
         }
 
