@@ -28,18 +28,19 @@ namespace Common
             {
                 if (ClientController.activePlayer == player.ID)
                 {
-                    ClientController.AddSequence(new UnitMoveSequence(player.SeenTiles));
+                    ClientController.AddSequence(new UnitMoveSequence(player.seenTiles, player.SeenStructures));
                     ClientController.AddSequence(new UpdateUnitSequence(unit.GetData()));
                 }
             }
         }
 
-        public static void KillUnit(Tile tile)
+        public static void KillUnit(Unit unit, Tile tile)
         {
             foreach(Player player in SeenBy(tile))
             {
-                if (ClientController.activePlayer == player.ID) ClientController.AddSequence(new UnitDieSequence(player.SeenTiles));
+                if (ClientController.activePlayer == player.ID) ClientController.AddSequence(new UnitDieSequence(player.seenTiles, player.SeenStructures));
             }
+            ClientController.AddSequence(new UnitDieSequence(unit.owner.seenTiles, unit.owner.SeenStructures));
         }
 
         public static void CreateUnit(Unit unit)

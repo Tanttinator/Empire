@@ -55,7 +55,7 @@ namespace Server
                 if (!unit.sleeping) activeUnits.Add(unit);
             }
 
-            CommunicationController.AddSequence(new StartTurnSequence(ID, SeenTiles, ActiveUnit.tile.coords));
+            CommunicationController.AddSequence(new StartTurnSequence(ID, seenTiles, SeenStructures, ActiveUnit.tile.coords));
 
             SelectUnit(ActiveUnit);
         }

@@ -39,35 +39,36 @@ namespace Common
     public class UpdateTilesSequence : Sequence
     {
         TileData[] tiles;
+        StructureData[] structures;
 
-        public UpdateTilesSequence(TileData[] tiles, float cooldown) : base(cooldown)
+        public UpdateTilesSequence(TileData[] tiles, StructureData[] structures, float cooldown) : base(cooldown)
         {
             this.tiles = tiles;
+            this.structures = structures;
         }
 
         public override void Start()
         {
+            foreach (StructureData structure in structures) GameState.UpdateStructure(structure);
             GameState.UpdateTiles(tiles);
         }
     }
 
-    public class StartTurnSequence : Sequence
+    public class StartTurnSequence : UpdateTilesSequence
     {
         int player;
-        TileData[] seenTiles;
         Coords focusTile;
 
-        public StartTurnSequence(int player, TileData[] seenTiles, Coords focusTile) : base(0.3f)
+        public StartTurnSequence(int player, TileData[] tiles, StructureData[] structures, Coords focusTile) : base(tiles, structures, 0.3f)
         {
             this.player = player;
-            this.seenTiles = seenTiles;
             this.focusTile = focusTile;
         }
 
         public override void Start()
         {
             ClientController.SetActivePlayer(player, focusTile);
-            GameState.UpdateTiles(seenTiles);
+            base.Start();
         }
     }
 
@@ -138,7 +139,7 @@ namespace Common
 
     public class UnitMoveSequence : UpdateTilesSequence
     {
-        public UnitMoveSequence(TileData[] tiles) : base(tiles, 0.3f)
+        public UnitMoveSequence(TileData[] tiles, StructureData[] structures) : base(tiles, structures, 0.3f)
         {
 
         }
@@ -146,7 +147,7 @@ namespace Common
 
     public class UnitDieSequence : UpdateTilesSequence
     {
-        public UnitDieSequence(TileData[] tiles) : base(tiles, 0.3f)
+        public UnitDieSequence(TileData[] tiles, StructureData[] structures) : base(tiles, structures, 0.3f)
         {
 
         }

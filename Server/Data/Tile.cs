@@ -49,7 +49,6 @@ namespace Server
                 return players.ToArray();
             }
         }
-        Dictionary<Player, TileData> visibleStates = new Dictionary<Player, TileData>();
 
         AStar.Vector2 INode.Position => coords;
 
@@ -63,76 +62,58 @@ namespace Server
             this.land = land;
         }
 
+        #region Visibility
+
         /// <summary>
         /// Create tiledata object that represents this tile.
         /// </summary>
         /// <returns></returns>
-        public TileData GetData(Player player, bool forceVisible = false)
+        public TileData GetData(Player player)
         {
-            if (CanSee(player) || forceVisible)
+            return new TileData()
             {
-                return new TileData()
+                coords = coords,
+                discovered = true,
+                land = land,
+                landConnections = new bool[]
                 {
-                    coords = coords,
-                    discovered = true,
-                    land = land,
-                    landConnections = new bool[]
-                    {
                     ConnectTexture(Direction.NORTH),
                     ConnectTexture(Direction.EAST),
                     ConnectTexture(Direction.SOUTH),
                     ConnectTexture(Direction.WEST)
-                    },
-                    feature = (feature != null ? feature.name : "empty"),
-                    featureConnections = new bool[]
-                    {
+                },
+                feature = (feature != null ? feature.name : "empty"),
+                featureConnections = new bool[]
+                {
                     ConnectFeatureTexture(Direction.NORTH),
                     ConnectFeatureTexture(Direction.EAST),
                     ConnectFeatureTexture(Direction.SOUTH),
                     ConnectFeatureTexture(Direction.WEST)
-                    },
-                    unit = (unit != null ? unit.ID : -1),
-                    structure = (structure != null ? structure.ID : -1),
-                    visible = true
-                };
-            }
-            else
+                },
+                unit = (unit != null ? unit.ID : -1),
+                structure = (structure != null ? structure.ID : -1),
+                visible = SeenBy.Contains(player)
+            };
+        }
+
+        /// <summary>
+        /// Update the seen state of this tile to all players who currently have vision on it.
+        /// </summary>
+        public void UpdateState()
+        {
+            foreach (Player player in SeenBy)
             {
-                TileData oldData = VisibleState(player);
-                oldData.visible = false;
-                return oldData;
+                player.UpdateTile(GetData(player));
             }
         }
 
         /// <summary>
-        /// Should our ground texture connect to the one in the given direction?
+        /// Called when the visibility of this tile changes for a player.
         /// </summary>
-        /// <param name="dir"></param>
-        /// <returns></returns>
-        bool ConnectTexture(Direction dir)
+        /// <param name="player"></param>
+        public void UpdateVisibility(Player player)
         {
-            return World.GetNeighbor(this, dir) == null || World.GetNeighbor(this, dir).land == land;
-        }
-
-        /// <summary>
-        /// Should our feature texture connect to the one in the given direction?
-        /// </summary>
-        /// <param name="dir"></param>
-        /// <returns></returns>
-        bool ConnectFeatureTexture(Direction dir)
-        {
-            return feature != null && feature.ConnectTexture(World.GetNeighbor(this, dir));
-        }
-
-        /// <summary>
-        /// Refresh the seen state of this tile to all players who currently have vision on it.
-        /// </summary>
-        public void Refresh()
-        {
-            foreach (Player player in GameController.players)
-            {
-                visibleStates[player] = GetData(player);
-            }
+            player.UpdateTile(GetData(player));
         }
 
         /// <summary>
@@ -141,42 +122,33 @@ namespace Server
         /// <param name="player"></param>
         public void Reveal(Player player)
         {
-            visibleStates[player] = GetData(player, true);
+            player.UpdateTile(GetData(player));
         }
 
         /// <summary>
-        /// Set the feature on this tile.
-        /// </summary>
-        /// <param name="feature"></param>
-        public void SetFeature(Feature feature)
-        {
-            this.feature = feature;
-
-            Refresh();
-        }
-
-        /// <summary>
-        /// Set the structure on this tile.
-        /// </summary>
-        /// <param name="structure"></param>
-        public void SetStructure(Structure structure)
-        {
-            this.structure = structure;
-            structure.SetTile(this);
-
-            Refresh();
-        }
-
-        /// <summary>
-        /// Place the unit on this tile.
+        /// Add a unit who can see this tile.
         /// </summary>
         /// <param name="unit"></param>
-        public void SetUnit(Unit unit)
+        public void AddObserver(Unit unit)
         {
-            this.unit = unit;
-            onTileUnitSet?.Invoke(this, unit);
-            Refresh();
+            seenBy.Add(unit);
+            UpdateVisibility(unit.owner);
+            structure?.UpdateState(unit.owner);
         }
+
+        /// <summary>
+        /// The given unit no longer sees this tile.
+        /// </summary>
+        /// <param name="unit"></param>
+        public void RemoveObserver(Unit unit)
+        {
+            seenBy.Remove(unit);
+            UpdateVisibility(unit.owner);
+        }
+
+        #endregion
+
+        #region Movement
 
         /// <summary>
         /// Called when the given unit tries to move onto this tile.
@@ -197,52 +169,6 @@ namespace Server
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Add a unit who can see this tile.
-        /// </summary>
-        /// <param name="unit"></param>
-        public void AddObserver(Unit unit)
-        {
-            seenBy.Add(unit);
-            Refresh();
-        }
-
-        /// <summary>
-        /// The given unit no longer sees this tile.
-        /// </summary>
-        /// <param name="unit"></param>
-        public void RemoveObserver(Unit unit)
-        {
-            seenBy.Remove(unit);
-            Refresh();
-        }
-
-        /// <summary>
-        /// Does any unit of the given player have sight onto this tile.
-        /// </summary>
-        /// <param name="player"></param>
-        /// <returns></returns>
-        public bool CanSee(Player player)
-        {
-            return SeenBy.Contains(player);
-        }
-
-        /// <summary>
-        /// Get the state of this tile that is visible to a player.
-        /// </summary>
-        /// <param name="player"></param>
-        /// <returns></returns>
-        TileData VisibleState(Player player)
-        {
-            if (visibleStates.ContainsKey(player)) return visibleStates[player];
-
-            return new TileData()
-            {
-                coords = coords,
-                discovered = false
-            };
         }
 
         /// <summary>
@@ -274,10 +200,66 @@ namespace Server
             return 1;
         }
 
+        #endregion
+
+        /// <summary>
+        /// Set the feature on this tile.
+        /// </summary>
+        /// <param name="feature"></param>
+        public void SetFeature(Feature feature)
+        {
+            this.feature = feature;
+
+            UpdateState();
+        }
+
+        /// <summary>
+        /// Set the structure on this tile.
+        /// </summary>
+        /// <param name="structure"></param>
+        public void SetStructure(Structure structure)
+        {
+            this.structure = structure;
+            structure.SetTile(this);
+
+            UpdateState();
+        }
+
+        /// <summary>
+        /// Place the unit on this tile.
+        /// </summary>
+        /// <param name="unit"></param>
+        public void SetUnit(Unit unit)
+        {
+            this.unit = unit;
+            onTileUnitSet?.Invoke(this, unit);
+            UpdateState();
+        }
+
+        /// <summary>
+        /// Should our ground texture connect to the one in the given direction?
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <returns></returns>
+        bool ConnectTexture(Direction dir)
+        {
+            return World.GetNeighbor(this, dir) == null || World.GetNeighbor(this, dir).land == land;
+        }
+
+        /// <summary>
+        /// Should our feature texture connect to the one in the given direction?
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <returns></returns>
+        bool ConnectFeatureTexture(Direction dir)
+        {
+            return feature != null && feature.ConnectTexture(World.GetNeighbor(this, dir));
+        }
+
         float INode.EntryCost(object agent, INode from)
         {
             Unit unit = (Unit)agent;
-            TileData state = VisibleState(unit.owner);
+            TileData state = unit.owner.seenTiles[coords.x + coords.y * World.Width];
             if (state.discovered) return MovementCost(unit);
             return 1;
         }
@@ -285,7 +267,7 @@ namespace Server
         bool INode.CanEnter(object agent, INode from)
         {
             Unit unit = (Unit)agent;
-            TileData state = VisibleState(unit.owner);
+            TileData state = unit.owner.seenTiles[coords.x + coords.y * World.Width];
             if (state.discovered) return CanEnter(unit);
             return true;
         }

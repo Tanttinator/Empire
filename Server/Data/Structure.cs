@@ -32,7 +32,20 @@ namespace Server
             Player oldOwner = this.owner;
             this.owner = owner;
             OnOwnerChanged(oldOwner);
-            CommunicationController.UpdateStructure(this);
+            UpdateState();
+            if(oldOwner != null)
+                UpdateState(oldOwner);
+        }
+
+        void UpdateState()
+        {
+            if (tile == null) return;
+            foreach (Player player in tile.SeenBy) UpdateState(player);
+        }
+
+        public void UpdateState(Player player)
+        {
+            player.UpdateStructure(GetData());
         }
 
         protected virtual void OnOwnerChanged(Player oldOwner)
@@ -63,10 +76,9 @@ namespace Server
         /// <param name="owner"></param>
         public static void CreateStructure(Structure structure, Tile tile, Player owner)
         {
-            structure.SetOwner(owner);
             structure.SetTile(tile);
+            structure.SetOwner(owner);
             tile.SetStructure(structure);
-            CommunicationController.CreateStructure(structure);
         }
     }
 }

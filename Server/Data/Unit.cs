@@ -134,7 +134,7 @@ namespace Server
 
             foreach (Tile tile in visibleTiles) tile.RemoveObserver(this);
 
-            CommunicationController.KillUnit(tile);
+            CommunicationController.KillUnit(this, tile);
         }
 
         #endregion
