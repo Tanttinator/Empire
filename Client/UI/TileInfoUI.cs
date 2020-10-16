@@ -20,7 +20,7 @@ namespace Client
 
         public static void Show(TileData data)
         {
-            ShowTileInfo(data, GameState.GetUnit(data.unit), GameState.GetStructure(data.structure));
+            ShowTileInfo(data, data.unit, data.structure);
         }
 
         static void ShowTileInfo(TileData data, UnitData unit, StructureData structure)
@@ -41,7 +41,7 @@ namespace Client
         static void ShowUnitInfo(TileData data, UnitData unit, StructureData structure)
         {
             instance.locationText.text = "Location: " + data.coords.x + ", " + data.coords.y;
-            instance.infoText.text = "Unit: " + unit.unitType + "\nOwner: " + GameState.GetPlayer(unit.owner).name;
+            instance.infoText.text = "Unit: " + unit.unitType + "\nOwner: " + ClientController.CurrentState.GetPlayer(unit.owner).name;
 
             instance.actionButtonContainer.Clear();
 
@@ -54,7 +54,7 @@ namespace Client
         {
             CityData city = (CityData)structure;
             instance.locationText.text = "Location: " + data.coords.x + ", " + data.coords.y;
-            instance.infoText.text = "City: " + city.name + "\nOwner: " + GameState.GetPlayer(city.owner).name + "\nProduction: " + city.producedUnit + " (" + city.remaining + ")";
+            instance.infoText.text = "City: " + city.name + "\nOwner: " + ClientController.CurrentState.GetPlayer(city.owner).name + "\nProduction: " + city.producedUnit + " (" + city.remaining + ")";
 
             instance.actionButtonContainer.Clear();
 

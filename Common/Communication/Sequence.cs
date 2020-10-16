@@ -2,21 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Client;
+using System;
 
 namespace Common
 {
     public class Sequence
     {
-        float progress;
+        float delay;
 
-        public Sequence(float cooldown)
+        public Sequence(float delay)
         {
-            this.progress = cooldown;
+            this.delay = delay;
         }
 
         public Sequence()
         {
-            this.progress = 0f;
+            this.delay = 0f;
         }
 
         public virtual void Start()
@@ -26,8 +27,8 @@ namespace Common
 
         public virtual bool Update()
         {
-            progress -= Time.deltaTime;
-            return progress <= 0f;
+            delay -= Time.deltaTime;
+            return delay <= 0f;
         }
 
         public virtual void End()
@@ -35,145 +36,37 @@ namespace Common
 
         }
     }
-
-    public class UpdateTilesSequence : Sequence
+    public class ControlSequence : Sequence
     {
-        TileData[] tiles;
-        StructureData[] structures;
+        Action callback;
 
-        public UpdateTilesSequence(TileData[] tiles, StructureData[] structures, float cooldown) : base(cooldown)
+        public ControlSequence(Action callback, float delay = 0f) : base(delay)
         {
-            this.tiles = tiles;
-            this.structures = structures;
+            this.callback = callback;
         }
 
         public override void Start()
         {
-            foreach (StructureData structure in structures) GameState.UpdateStructure(structure);
-            GameState.UpdateTiles(tiles);
+            callback();
         }
     }
-
-    public class StartTurnSequence : UpdateTilesSequence
+    public class MoveCameraToUnitSequence : Sequence
     {
-        int player;
-        Coords focusTile;
-
-        public StartTurnSequence(int player, TileData[] tiles, StructureData[] structures, Coords focusTile) : base(tiles, structures, 0.3f)
+        public MoveCameraToUnitSequence() : base(0.3f)
         {
-            this.player = player;
-            this.focusTile = focusTile;
+
         }
 
         public override void Start()
         {
-            ClientController.SetActivePlayer(player, focusTile);
-            base.Start();
-        }
-    }
-
-    public class EndTurnSequence : Sequence
-    {
-        public override void Start()
-        {
-            ClientController.EndTurn();
-        }
-    }
-
-    #region Units
-
-    public class UpdateUnitSequence : Sequence
-    {
-        UnitData unit;
-
-        public UpdateUnitSequence(UnitData unit)
-        {
-            this.unit = unit;
-        }
-
-        public override void Start()
-        {
-            GameState.UpdateUnit(unit);
-        }
-    }
-
-    public class SelectUnitSequence : Sequence
-    {
-        int unit;
-        float progress = 0f;
-
-        public SelectUnitSequence(int unit)
-        {
-            this.unit = unit;
-        }
-
-        public override void Start()
-        {
-            ClientController.SelectUnit(unit);
-            ClientController.Camera.MoveTowards(World.GetTilePosition(GameState.GetUnit(unit).tile));
+            ClientController.Camera.MoveTowards(World.GetTilePosition(ClientController.ActiveUnit.tile));
         }
 
         public override bool Update()
         {
-            if (!ClientController.Camera.isMovingToTarget)
-            {
-                progress += Time.deltaTime;
-                return progress >= 0.3f;
-            }
-            return false;
+            return !ClientController.Camera.isMovingToTarget;
         }
     }
-
-    public class DeselectUnitSequence : Sequence
-    {
-        public DeselectUnitSequence() : base(0.3f)
-        {
-
-        }
-
-        public override void Start()
-        {
-            ClientController.DeselectUnit();
-        }
-    }
-
-    public class UnitMoveSequence : UpdateTilesSequence
-    {
-        public UnitMoveSequence(TileData[] tiles, StructureData[] structures) : base(tiles, structures, 0.3f)
-        {
-
-        }
-    }
-
-    public class UnitDieSequence : UpdateTilesSequence
-    {
-        public UnitDieSequence(TileData[] tiles, StructureData[] structures) : base(tiles, structures, 0.3f)
-        {
-
-        }
-    }
-
-    #endregion
-
-    #region Structures
-
-    public class UpdateStructureSequence : Sequence
-    {
-        StructureData structure;
-
-        public UpdateStructureSequence(StructureData structure)
-        {
-            this.structure = structure;
-        }
-
-        public override void Start()
-        {
-            GameState.UpdateStructure(structure);
-        }
-    }
-
-    #endregion
-
     public class ExplosionSequence : Sequence
     {
         Coords tile;

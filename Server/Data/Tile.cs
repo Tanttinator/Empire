@@ -90,8 +90,8 @@ namespace Server
                     ConnectFeatureTexture(Direction.SOUTH),
                     ConnectFeatureTexture(Direction.WEST)
                 },
-                unit = (unit != null ? unit.ID : -1),
-                structure = (structure != null ? structure.ID : -1),
+                unit = (unit != null ? unit.GetData() : null),
+                structure = (structure != null ? structure.GetData() : null),
                 visible = SeenBy.Contains(player)
             };
         }
@@ -103,15 +103,15 @@ namespace Server
         {
             foreach (Player player in SeenBy)
             {
-                player.UpdateTile(GetData(player));
+                UpdateState(player);
             }
         }
 
         /// <summary>
-        /// Called when the visibility of this tile changes for a player.
+        /// Provide the player with the current state of this tile.
         /// </summary>
         /// <param name="player"></param>
-        public void UpdateVisibility(Player player)
+        public void UpdateState(Player player)
         {
             player.UpdateTile(GetData(player));
         }
@@ -132,7 +132,7 @@ namespace Server
         public void AddObserver(Unit unit)
         {
             seenBy.Add(unit);
-            UpdateVisibility(unit.owner);
+            UpdateState(unit.owner);
             structure?.UpdateState(unit.owner);
         }
 
@@ -143,7 +143,7 @@ namespace Server
         public void RemoveObserver(Unit unit)
         {
             seenBy.Remove(unit);
-            UpdateVisibility(unit.owner);
+            UpdateState(unit.owner);
         }
 
         #endregion
@@ -259,7 +259,7 @@ namespace Server
         float INode.EntryCost(object agent, INode from)
         {
             Unit unit = (Unit)agent;
-            TileData state = unit.owner.seenTiles[coords.x + coords.y * World.Width];
+            TileData state = unit.owner.currentState.GetTile(coords);
             if (state.discovered) return MovementCost(unit);
             return 1;
         }
@@ -267,7 +267,7 @@ namespace Server
         bool INode.CanEnter(object agent, INode from)
         {
             Unit unit = (Unit)agent;
-            TileData state = unit.owner.seenTiles[coords.x + coords.y * World.Width];
+            TileData state = unit.owner.currentState.GetTile(coords);
             if (state.discovered) return CanEnter(unit);
             return true;
         }

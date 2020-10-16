@@ -54,7 +54,10 @@ namespace Server
             for (int i = 0; i < players.Length; i++) allPlayers[i] = players[i].GetData();
             allPlayers[players.Length] = neutral.GetData();
 
-            CommunicationController.Initialize(World.Width, World.Height, allPlayers, Unit.units);
+            foreach (Player player in players) player.Initialize(allPlayers);
+            neutral.Initialize(allPlayers);
+
+            CommunicationController.Initialize(new int[] { 0, 1 }, World.Width, World.Height, allPlayers, Unit.units);
 
             World.GenerateWorld(players);
 
@@ -62,6 +65,8 @@ namespace Server
             {
                 if (revealMap) player.RevealMap();
             }
+
+            CommunicationController.UpdateState();
 
             ActivePlayer.StartTurn();
         }

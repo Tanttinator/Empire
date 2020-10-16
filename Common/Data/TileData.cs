@@ -13,8 +13,8 @@ namespace Common
         public bool[] landConnections;
         public string feature;
         public bool[] featureConnections;
-        public int unit;
-        public int structure;
+        public UnitData unit;
+        public StructureData structure;
         public bool visible;
 
         public override string ToString()

@@ -37,7 +37,7 @@ namespace Client
         /// </summary>
         public static void CancelState()
         {
-            if (ClientController.ActiveUnit != null) ChangeState(new UnitSelectedState(ClientController.ActiveUnit.Value));
+            if (ClientController.ActiveUnit != null) ChangeState(new UnitSelectedState(ClientController.ActiveUnit.tile));
             else ChangeState(new DefaultState());
         }
 
@@ -229,7 +229,7 @@ namespace Client
             {
                 if (hoverTile != null)
                 {
-                    TileInfoUI.Show(GameState.GetTile(hoverTile));
+                    TileInfoUI.Show(ClientController.CurrentState.GetTile(hoverTile));
                 }
             }
         }

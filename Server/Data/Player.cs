@@ -16,9 +16,7 @@ namespace Server
         protected List<Unit> units = new List<Unit>();
         protected List<City> cities = new List<City>();
 
-        public TileData[] seenTiles { get; protected set; }
-        Dictionary<int, StructureData> seenStructures = new Dictionary<int, StructureData>();
-        public StructureData[] SeenStructures => seenStructures.Values.ToArray();
+        public GameState currentState { get; protected set; }
 
         static int nextID = 0;
 
@@ -29,19 +27,15 @@ namespace Server
 
             this.name = name;
             this.color = color;
+        }
 
-            seenTiles = new TileData[World.Width * World.Height];
-            for(int x = 0; x < World.Width; x++)
-            {
-                for(int y = 0; y < World.Height; y++)
-                {
-                    seenTiles[x + y * World.Width] = new TileData()
-                    {
-                        coords = new Coords(x, y),
-                        discovered = false
-                    };
-                }
-            }
+        /// <summary>
+        /// Initialize current state.
+        /// </summary>
+        /// <param name="players"></param>
+        public void Initialize(PlayerData[] players)
+        {
+            currentState = new GameState(World.Width, World.Height, players);
         }
 
         /// <summary>
@@ -75,19 +69,10 @@ namespace Server
         /// <summary>
         /// Update the visible state of a tile.
         /// </summary>
-        /// <param name="data"></param>
-        public void UpdateTile(TileData data)
+        /// <param name="tile"></param>
+        public void UpdateTile(TileData tile)
         {
-            seenTiles[data.coords.x + data.coords.y * World.Width] = data;
-        }
-
-        /// <summary>
-        /// Update the visible state of a structure.
-        /// </summary>
-        /// <param name="data"></param>
-        public void UpdateStructure(StructureData data)
-        {
-            seenStructures[data.ID] = data;
+            currentState.UpdateTile(tile);
         }
 
         /// <summary>

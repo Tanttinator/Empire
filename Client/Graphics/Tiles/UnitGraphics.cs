@@ -28,7 +28,7 @@ namespace Client
             else
             {
                 unitSprite.sprite = SpriteRegistry.GetSprite(unit.unitType).GetSprite(false, false, false, false).sprite;
-                playerColor = GameState.GetPlayer(unit.owner).color;
+                playerColor = ClientController.CurrentState.GetPlayer(unit.owner).color;
                 unitSprite.color = playerColor;
                 unitBackground.color = playerColor;
                 Show();

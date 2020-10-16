@@ -32,9 +32,9 @@ namespace Server
             if (activeUnits.Count == 0) return;
 
             activeUnits.RemoveAt(0);
-            CommunicationController.AddSequence(new DeselectUnitSequence());
+            CommunicationController.DeselectUnit();
 
-            if (activeUnits.Count == 0) CommunicationController.AddSequence(new EndTurnSequence());
+            if (activeUnits.Count == 0) CommunicationController.TurnCompleted(this);
             else SelectUnit(ActiveUnit);
         }
 
@@ -45,7 +45,7 @@ namespace Server
         void SelectUnit(Unit unit)
         {
             if (unit == null) return;
-            CommunicationController.AddSequence(new SelectUnitSequence(unit.ID));
+            CommunicationController.SelectUnit(unit);
         }
 
         protected override void OnTurnStarted()
@@ -55,7 +55,7 @@ namespace Server
                 if (!unit.sleeping) activeUnits.Add(unit);
             }
 
-            CommunicationController.AddSequence(new StartTurnSequence(ID, seenTiles, SeenStructures, ActiveUnit.tile.coords));
+            CommunicationController.StartTurn(this);
 
             SelectUnit(ActiveUnit);
         }

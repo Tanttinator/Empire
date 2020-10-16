@@ -40,12 +40,13 @@ namespace Server
         void UpdateState()
         {
             if (tile == null) return;
-            foreach (Player player in tile.SeenBy) UpdateState(player);
+            tile.UpdateState();
         }
 
         public void UpdateState(Player player)
         {
-            player.UpdateStructure(GetData());
+            if (tile == null) return;
+            tile.UpdateState(player);
         }
 
         protected virtual void OnOwnerChanged(Player oldOwner)

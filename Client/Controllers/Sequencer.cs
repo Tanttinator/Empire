@@ -25,6 +25,7 @@ namespace Client
         /// <param name="sequence"></param>
         public static void AddSequence(Sequence sequence)
         {
+            //Debug.Log("Added sequence: " + sequence);
             sequenceQueue.Enqueue(sequence);
 
             if (idle)
@@ -50,8 +51,8 @@ namespace Client
                 if (cooldown == 0f)
                 {
                     currentSequence = sequenceQueue.Dequeue();
-                    currentSequence.Start();
                     //Debug.Log("Started sequence: " + currentSequence);
+                    currentSequence.Start();
                 }
             }
             else if (!idle)

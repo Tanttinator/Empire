@@ -41,6 +41,21 @@ namespace Client
             ClientController.Camera.SetConstraints(0f, 0f, width, height);
         }
 
+        /// <summary>
+        /// Draw the given state.
+        /// </summary>
+        /// <param name="state"></param>
+        public static void DrawState(GameState state)
+        {
+            for(int x = 0; x < width; x++)
+            {
+                for(int y = 0; y < height; y++)
+                {
+                    GetTileGraphics(x, y).Refresh(state.GetTile(new Coords(x, y)));
+                }
+            }
+        }
+
         public static bool ValidCoords(int x, int y)
         {
             return x >= 0 && x < width && y >= 0 && y < height;
