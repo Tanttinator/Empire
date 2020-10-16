@@ -22,6 +22,16 @@ namespace Server
         }
 
         /// <summary>
+        /// Set the unit which is produced in this city.
+        /// </summary>
+        /// <param name="unit"></param>
+        public void SetProduction(UnitType unit)
+        {
+            producedUnit = unit;
+            CommunicationController.UpdatePlayer(owner);
+        }
+
+        /// <summary>
         /// Called when a unit tries to move onto this tile.
         /// </summary>
         /// <param name="unit"></param>
@@ -48,6 +58,7 @@ namespace Server
         {
             oldOwner?.RemoveCity(this);
             owner.AddCity(this);
+            SetProduction(Unit.infantry);
         }
 
         public override StructureData GetData()

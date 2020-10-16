@@ -42,6 +42,11 @@ namespace Common
             ClientController.UpdateTile(player.ID, tile);
         }
 
+        public static void UpdatePlayer(Player player)
+        {
+            ClientController.UpdatePlayer(player.ID, player.GetData());
+        }
+
         public static void Redraw(float delay)
         {
             foreach (Player player in GameController.players) ClientController.Redraw(player.ID, delay);

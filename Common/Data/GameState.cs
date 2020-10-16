@@ -39,6 +39,11 @@ namespace Common
             }
         }
 
+        public void UpdatePlayer(PlayerData player)
+        {
+            players[player.ID] = player;
+        }
+
         public TileData GetTile(Coords coords)
         {
             return tiles[coords.x, coords.y];

@@ -43,6 +43,11 @@ namespace Client
             if (playerStates.ContainsKey(player)) playerStates[player].UpdateTile(tile);
         }
 
+        public static void UpdatePlayer(int player, PlayerData data)
+        {
+            if (playerStates.ContainsKey(player)) playerStates[player].UpdatePlayer(data);
+        }
+
         public static void Redraw(int player, float delay)
         {
             if (activePlayer == player) Sequencer.AddSequence(new RedrawSequence(player, delay));

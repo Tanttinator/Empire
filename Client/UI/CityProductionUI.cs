@@ -40,7 +40,7 @@ namespace Client
         {
             instance.units.Add(unit, instance.productionToggle).GetComponent<ProductionSelectionToggleUI>().Setup(unit, color, (b) => ToggleUnit(unit, b));
             instance.turns.Add(unit, instance.tableCell).GetComponent<TMP_Text>().text = Mathf.CeilToInt(unit.productionCost * 1f / city.production).ToString();
-            instance.counts.Add(unit, instance.tableCell);
+            instance.counts.Add(unit, instance.tableCell).GetComponent<TMP_Text>().text = ClientController.CurrentState.GetPlayer(city.owner).production[unit].ToString();
         }
 
         static void ToggleUnit(UnitType unit, bool value)
