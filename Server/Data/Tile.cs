@@ -133,7 +133,6 @@ namespace Server
         {
             seenBy.Add(unit);
             UpdateState(unit.owner);
-            structure?.UpdateState(unit.owner);
         }
 
         /// <summary>

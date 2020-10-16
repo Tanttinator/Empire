@@ -32,21 +32,9 @@ namespace Server
             Player oldOwner = this.owner;
             this.owner = owner;
             OnOwnerChanged(oldOwner);
-            UpdateState();
+            tile?.UpdateState();
             if(oldOwner != null)
-                UpdateState(oldOwner);
-        }
-
-        void UpdateState()
-        {
-            if (tile == null) return;
-            tile.UpdateState();
-        }
-
-        public void UpdateState(Player player)
-        {
-            if (tile == null) return;
-            tile.UpdateState(player);
+                tile?.UpdateState(oldOwner);
         }
 
         protected virtual void OnOwnerChanged(Player oldOwner)

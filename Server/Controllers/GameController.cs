@@ -28,8 +28,6 @@ namespace Server
             {
                 turn++;
                 activePlayer = 0;
-
-                Debug.Log("Turn " + turn);
             }
 
             ActivePlayer.StartTurn();
@@ -65,8 +63,6 @@ namespace Server
             {
                 if (revealMap) player.RevealMap();
             }
-
-            CommunicationController.UpdateState();
 
             ActivePlayer.StartTurn();
         }

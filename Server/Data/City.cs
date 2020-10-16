@@ -41,6 +41,7 @@ namespace Server
                 progress = 0;
                 Unit.CreateUnit(producedUnit, tile, owner);
             }
+            tile?.UpdateState(owner);
         }
 
         protected override void OnOwnerChanged(Player oldOwner)

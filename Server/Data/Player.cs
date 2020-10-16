@@ -73,6 +73,7 @@ namespace Server
         public void UpdateTile(TileData tile)
         {
             currentState.UpdateTile(tile);
+            CommunicationController.UpdateTile(this, tile);
         }
 
         /// <summary>

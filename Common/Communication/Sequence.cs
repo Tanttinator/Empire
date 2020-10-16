@@ -50,6 +50,19 @@ namespace Common
             callback();
         }
     }
+    public class RedrawSequence : Sequence
+    {
+        int player;
+        public RedrawSequence(int player, float delay) : base(delay)
+        {
+            this.player = player;
+        }
+
+        public override void Start()
+        {
+            World.DrawState(ClientController.GetState(player));
+        }
+    }
     public class MoveCameraToUnitSequence : Sequence
     {
         public MoveCameraToUnitSequence() : base(0.3f)

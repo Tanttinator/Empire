@@ -38,23 +38,14 @@ namespace Client
             }
         }
 
-        public static void UpdateState(int player, GameState state, float delay = 0f)
+        public static void UpdateTile(int player, TileData tile)
         {
-            //Debug.Log("Update State, Player: " + player);
-            if(playerStates.ContainsKey(player))
-            {
-                if(activePlayer == player)
-                {
-                    Sequencer.AddSequence(new ControlSequence(() =>
-                    {
-                        playerStates[player] = state;
-                        World.DrawState(state);
-                    }, delay));
-                } else
-                {
-                    playerStates[player] = state;
-                }
-            }
+            if (playerStates.ContainsKey(player)) playerStates[player].UpdateTile(tile);
+        }
+
+        public static void Redraw(int player, float delay)
+        {
+            if (activePlayer == player) Sequencer.AddSequence(new RedrawSequence(player, delay));
         }
 
         public static void StartTurn(int player, Coords focusTile)
@@ -111,6 +102,12 @@ namespace Client
         public static void ExecuteCommand(PlayerCommand command)
         {
             CommunicationController.ExecuteCommand(activePlayer, command);
+        }
+
+        public static GameState GetState(int player)
+        {
+            if (playerStates.ContainsKey(player)) return playerStates[player];
+            return null;
         }
 
         private void Awake()

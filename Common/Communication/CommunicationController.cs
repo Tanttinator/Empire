@@ -37,31 +37,14 @@ namespace Common
             ClientController.DeselectUnit();
         }
 
-        public static void UpdateState()
+        public static void UpdateTile(Player player, TileData tile)
         {
-            foreach (Player player in GameController.players) ClientController.UpdateState(player.ID, player.currentState);
+            ClientController.UpdateTile(player.ID, tile);
         }
 
-        public static void UpdateTile(Tile tile)
+        public static void Redraw(float delay)
         {
-            foreach (Player player in tile.SeenBy) ClientController.UpdateState(player.ID, player.currentState);
-        }
-
-        public static void MoveUnit(Tile from, Tile to)
-        {
-            foreach(Player player in SeenBy(from, to))
-            {
-                ClientController.UpdateState(player.ID, player.currentState, 0.3f);
-            }
-        }
-
-        public static void KillUnit(Unit unit, Tile tile)
-        {
-            foreach(Player player in SeenBy(tile))
-            {
-                ClientController.UpdateState(player.ID, player.currentState);
-            }
-            ClientController.UpdateState(unit.owner.ID, unit.owner.currentState);
+            foreach (Player player in GameController.players) ClientController.Redraw(player.ID, delay);
         }
 
         #endregion

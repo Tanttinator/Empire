@@ -72,7 +72,7 @@ namespace Server
             Tile oldTile = this.tile;
             SetTile(tile);
             moves -= tile.MovementCost(this);
-            CommunicationController.MoveUnit(oldTile, tile);
+            CommunicationController.Redraw(0.3f);
             return true;
         }
 
@@ -134,7 +134,7 @@ namespace Server
 
             foreach (Tile tile in visibleTiles) tile.RemoveObserver(this);
 
-            CommunicationController.KillUnit(this, tile);
+            CommunicationController.Redraw(0.3f);
         }
 
         #endregion
@@ -233,7 +233,7 @@ namespace Server
         public static Unit CreateUnit(UnitType type, Tile tile, Player owner)
         {
             Unit unit = new Unit(type, tile, owner);
-            CommunicationController.UpdateTile(tile);
+            tile.UpdateState();
             return unit;
         }
     }
