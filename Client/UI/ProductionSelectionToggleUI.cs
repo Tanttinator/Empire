@@ -5,19 +5,18 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 using Common;
+using UnityEngine.Events;
 
 namespace Client
 {
     public class ProductionSelectionToggleUI : MonoBehaviour
     {
-
+        [SerializeField] Toggle toggle = default;
         [SerializeField] TMP_Text unitName = default;
         [SerializeField] Image background = default;
         [SerializeField] Image unitIcon = default;
 
-        Action<bool> onToggle;
-
-        public void Setup(UnitType unit, Color color, Action<bool> onToggle)
+        public void Setup(UnitType unit, Color color, bool isSelected, UnityAction<bool> onToggle)
         {
             unitName.text = unit.name;
 
@@ -26,12 +25,13 @@ namespace Client
 
             unitIcon.sprite = SpriteRegistry.GetSprite(unit.name).GetSprite(false, false, false, false).sprite;
 
-            this.onToggle = onToggle;
+            toggle.isOn = isSelected;
+            toggle.onValueChanged.AddListener(onToggle);
         }
 
-        public void Toggle(bool value)
+        public void SetValue(bool value)
         {
-            onToggle?.Invoke(value);
+            toggle.SetIsOnWithoutNotify(value);
         }
     }
 }

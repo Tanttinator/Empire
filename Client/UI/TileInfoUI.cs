@@ -54,7 +54,7 @@ namespace Client
         {
             CityData city = (CityData)structure;
             instance.locationText.text = "Location: " + data.coords.x + ", " + data.coords.y;
-            instance.infoText.text = "City: " + city.name + "\nOwner: " + ClientController.CurrentState.GetPlayer(city.owner).name + "\nProduction: " + city.producedUnit + " (" + city.remaining + ")";
+            instance.infoText.text = "City: " + city.name + "\nOwner: " + ClientController.CurrentState.GetPlayer(city.owner).name + "\nProduction: " + (city.production == null? "No Production" : city.production.name + " (" + city.remaining + ")") + "\nEfficiency: " + city.efficiency + "%";
 
             instance.actionButtonContainer.Clear();
 

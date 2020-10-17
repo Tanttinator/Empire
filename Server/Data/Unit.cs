@@ -20,8 +20,8 @@ namespace Server
 
         Tile[] visibleTiles;
 
-        public static UnitType infantry = new UnitType("Infantry", UnitClass.INFANTRY, 1, 10);
-        public static UnitType transport = new UnitType("Transport", UnitClass.SHIP, 3, 30);
+        public static UnitType infantry = new UnitType("Infantry", UnitClass.INFANTRY, 1, 500);
+        public static UnitType transport = new UnitType("Transport", UnitClass.SHIP, 3, 1500);
 
         public static UnitType[] units = new UnitType[]
         {

@@ -10,7 +10,7 @@ namespace Server
     {
         public int ID { get; protected set; }
         public string type { get; protected set; }
-        public Player owner { get; protected set; }
+        public Player owner { get; protected set; } = GameController.neutral;
         public Tile tile { get; protected set; }
 
         static int nextID = 0;
@@ -19,7 +19,7 @@ namespace Server
         {
             this.type = type;
             ID = nextID++;
-            SetOwner(GameController.neutral);
+            //SetOwner(GameController.neutral);
         }
 
         public void SetTile(Tile tile)
@@ -33,8 +33,7 @@ namespace Server
             this.owner = owner;
             OnOwnerChanged(oldOwner);
             tile?.UpdateState();
-            if(oldOwner != null)
-                tile?.UpdateState(oldOwner);
+            tile?.UpdateState(oldOwner);
         }
 
         protected virtual void OnOwnerChanged(Player oldOwner)

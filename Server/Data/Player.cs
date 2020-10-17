@@ -130,9 +130,13 @@ namespace Server
         {
             Dictionary<UnitType, int> production = new Dictionary<UnitType, int>();
 
-            foreach(UnitType unit in Unit.units) production.Add(unit, 0);
+            foreach (UnitType unit in Unit.units) production.Add(unit, 0);
 
-            foreach (City city in cities) production[city.producedUnit] += 1;
+            foreach (City city in cities)
+            {
+                if(city.production != null)
+                    production[city.production] += 1;
+            }
 
             return new PlayerData()
             {

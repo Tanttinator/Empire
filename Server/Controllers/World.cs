@@ -149,6 +149,7 @@ namespace Server
                     }
                 }
 
+                bestCity.efficiency = 100;
                 bestCity.SetOwner(player);
                 Unit.CreateUnit(Unit.infantry, bestCity.tile, player);
                 foreach (Tile neighbor in World.GetNeighbors(bestCity.tile))

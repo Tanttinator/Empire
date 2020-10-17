@@ -9,8 +9,8 @@ namespace Server
     {
 
         public string name { get; protected set; }
-        public UnitType producedUnit { get; protected set; } = Unit.infantry;
-        public int production = 1;
+        public UnitType production { get; protected set; } = Unit.infantry;
+        public int efficiency = 50;
         int progress = 0;
 
         public static List<City> cities = new List<City>();
@@ -18,7 +18,7 @@ namespace Server
         public City() : base("City")
         {
             cities.Add(this);
-            name = "City";
+            name = "City " + ID;
         }
 
         /// <summary>
@@ -27,7 +27,9 @@ namespace Server
         /// <param name="unit"></param>
         public void SetProduction(UnitType unit)
         {
-            producedUnit = unit;
+            production = unit;
+            progress = 0;
+            tile.UpdateState(owner);
             CommunicationController.UpdatePlayer(owner);
         }
 
@@ -45,11 +47,18 @@ namespace Server
         /// </summary>
         public void Produce()
         {
-            progress += production;
-            if (progress >= producedUnit.productionCost)
+            if (production == null)
             {
-                progress = 0;
-                Unit.CreateUnit(producedUnit, tile, owner);
+                efficiency += 5;
+            }
+            else
+            {
+                progress += efficiency;
+                if (progress >= production.productionCost)
+                {
+                    progress = 0;
+                    Unit.CreateUnit(production, tile, owner);
+                }
             }
             tile?.UpdateState(owner);
         }
@@ -69,9 +78,9 @@ namespace Server
                 structure = "City",
                 owner = owner.ID,
                 name = name,
-                producedUnit = producedUnit.name,
                 production = production,
-                remaining = Mathf.CeilToInt((producedUnit.productionCost - progress) * 1f / production)
+                efficiency = efficiency,
+                remaining = (production != null? Mathf.CeilToInt((production.productionCost - progress) * 1f / efficiency) : 0)
             };
         }
     }

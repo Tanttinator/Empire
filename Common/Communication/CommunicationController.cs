@@ -66,6 +66,11 @@ namespace Common
             if (GameController.GetPlayer(ID) is Human human) human.ExecuteCommand(command);
         }
 
+        public static void SetProduction(int city, UnitType unit)
+        {
+            City.cities[city].SetProduction(unit);
+        }
+
         #endregion
 
         static Player[] SeenBy(params Tile[] tiles)
