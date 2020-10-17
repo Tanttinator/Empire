@@ -6,12 +6,10 @@ using Common;
 
 namespace Server
 {
-    public class Structure
+    public class Structure : Observer
     {
         public int ID { get; protected set; }
         public string type { get; protected set; }
-        public Player owner { get; protected set; } = GameController.neutral;
-        public Tile tile { get; protected set; }
 
         static int nextID = 0;
 
@@ -19,26 +17,13 @@ namespace Server
         {
             this.type = type;
             ID = nextID++;
-            //SetOwner(GameController.neutral);
+            owner = GameController.neutral;
         }
 
-        public void SetTile(Tile tile)
+        protected override void OnOwnerChanged(Player owner, Player oldOwner)
         {
-            this.tile = tile;
-        }
-
-        public void SetOwner(Player owner)
-        {
-            Player oldOwner = this.owner;
-            this.owner = owner;
-            OnOwnerChanged(oldOwner);
             tile?.UpdateState();
             tile?.UpdateState(oldOwner);
-        }
-
-        protected virtual void OnOwnerChanged(Player oldOwner)
-        {
-
         }
 
         public virtual void Interact(Unit unit)

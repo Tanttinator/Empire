@@ -37,14 +37,14 @@ namespace Server
             }
         }
 
-        HashSet<Unit> seenBy = new HashSet<Unit>();
+        HashSet<Observer> seenBy = new HashSet<Observer>();
         public Player[] SeenBy
         {
             get
             {
                 HashSet<Player> players = new HashSet<Player>();
 
-                foreach (Unit unit in seenBy) players.Add(unit.owner);
+                foreach (Observer observer in seenBy) players.Add(observer.owner);
 
                 return players.ToArray();
             }
@@ -129,20 +129,20 @@ namespace Server
         /// Add a unit who can see this tile.
         /// </summary>
         /// <param name="unit"></param>
-        public void AddObserver(Unit unit)
+        public void AddObserver(Observer observer)
         {
-            seenBy.Add(unit);
-            UpdateState(unit.owner);
+            seenBy.Add(observer);
+            UpdateState(observer.owner);
         }
 
         /// <summary>
         /// The given unit no longer sees this tile.
         /// </summary>
         /// <param name="unit"></param>
-        public void RemoveObserver(Unit unit)
+        public void RemoveObserver(Observer observer)
         {
-            seenBy.Remove(unit);
-            UpdateState(unit.owner);
+            seenBy.Remove(observer);
+            UpdateState(observer.owner);
         }
 
         #endregion

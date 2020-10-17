@@ -6,19 +6,15 @@ using Common;
 
 namespace Server
 {
-    public class Unit
+    public class Unit : Observer
     {
         public int ID { get; protected set; }
         public UnitType type { get; protected set; }
-        public Tile tile { get; protected set; }
-        public Player owner { get; protected set; }
         public int moves { get; protected set; }
         public bool sleeping { get; protected set; } = false;
 
         Tile target;
         Queue<Tile> currentPath;
-
-        Tile[] visibleTiles;
 
         public static UnitType infantry = new UnitType("Infantry", UnitClass.INFANTRY, 1, 500);
         public static UnitType transport = new UnitType("Transport", UnitClass.SHIP, 3, 1500);
@@ -37,8 +33,8 @@ namespace Server
             nextID++;
 
             this.type = type;
-            this.owner = owner;
 
+            SetOwner(owner);
             SetTile(tile);
 
             owner.AddUnit(this);
@@ -50,14 +46,10 @@ namespace Server
         /// Place this unit on the given tile.
         /// </summary>
         /// <param name="tile"></param>
-        public void SetTile(Tile tile)
+        protected override void OnTileChanged(Tile tile, Tile oldTile)
         {
-            this.tile?.SetUnit(null);
-
-            this.tile = tile;
+            oldTile?.SetUnit(null);
             tile.SetUnit(this);
-
-            RefreshVision();
         }
 
         /// <summary>
@@ -65,11 +57,10 @@ namespace Server
         /// </summary>
         /// <param name="tile"></param>
         /// <returns></returns>
-        public bool Move(Tile tile, bool forced = false)
+        public bool Move(Tile tile, bool ignoreMovement = false)
         {
-            if (moves <= 0 && !forced) return false;
+            if (moves <= 0 && !ignoreMovement) return false;
 
-            Tile oldTile = this.tile;
             SetTile(tile);
             moves -= tile.MovementCost(this);
             CommunicationController.Redraw(0.3f);
@@ -132,41 +123,9 @@ namespace Server
             tile.SetUnit(null);
             moves = 0;
 
-            foreach (Tile tile in visibleTiles) tile.RemoveObserver(this);
+            RemoveObserver();
 
             CommunicationController.Redraw(0.3f);
-        }
-
-        #endregion
-
-        #region Vision
-
-        /// <summary>
-        /// Update the tiles which this unit can see.
-        /// </summary>
-        void RefreshVision()
-        {
-            if (visibleTiles != null)
-            {
-                foreach (Tile tile in visibleTiles) tile.RemoveObserver(this);
-            }
-
-            visibleTiles = GetTilesInVision();
-            foreach (Tile tile in visibleTiles) tile.AddObserver(this);
-        }
-
-        /// <summary>
-        /// Returns all tiles within this units visibility.
-        /// </summary>
-        /// <returns></returns>
-        Tile[] GetTilesInVision()
-        {
-            List<Tile> tiles = new List<Tile>();
-
-            tiles.Add(tile);
-            tiles.AddRange(World.GetNeighbors(tile));
-
-            return tiles.ToArray();
         }
 
         #endregion

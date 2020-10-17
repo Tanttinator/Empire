@@ -63,8 +63,9 @@ namespace Server
             tile?.UpdateState(owner);
         }
 
-        protected override void OnOwnerChanged(Player oldOwner)
+        protected override void OnOwnerChanged(Player owner, Player oldOwner)
         {
+            base.OnOwnerChanged(owner, oldOwner);
             oldOwner?.RemoveCity(this);
             owner.AddCity(this);
             SetProduction(Unit.infantry);
