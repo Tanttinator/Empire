@@ -6,13 +6,16 @@ using Common;
 
 namespace Server
 {
-    public class Unit : Observer
+    public class Unit : Observer, ICombatant
     {
         public int ID { get; protected set; }
         public UnitType type { get; protected set; }
         public int moves { get; protected set; }
         public int health { get; protected set; }
         public bool sleeping { get; protected set; } = false;
+
+        Player ICombatant.Owner => owner;
+        Tile ICombatant.Tile => tile;
 
         Tile target;
         Queue<Tile> currentPath;
@@ -97,12 +100,12 @@ namespace Server
         /// Attack the given unit.
         /// </summary>
         /// <param name="enemy"></param>
-        public void Battle(Unit enemy)
+        public void Battle(ICombatant enemy)
         {
             bool attackerDead = false;
             bool defenderDead = false;
 
-            Tile enemyTile = enemy.tile;
+            Tile enemyTile = enemy.Tile;
 
             CommunicationController.SpawnExplosion(enemyTile, tile);
             CommunicationController.SpawnExplosion(tile, enemyTile);
@@ -120,12 +123,15 @@ namespace Server
                     defenderDead = enemy.TakeDamage();
                 }
 
+                if(attackerDead) Defeated(enemy);
+
                 if(defenderDead)
                 {
+                    enemy.Defeated(this);
                     if (enemyTile.CanEnter(this))
                     {
                         SetTarget(enemyTile);
-                        enemyTile.UpdateState(enemy.owner);
+                        enemyTile.UpdateState(enemy.Owner);
                     }
                 }
             }
@@ -148,13 +154,17 @@ namespace Server
         public void SetHealth(int health)
         {
             this.health = Mathf.Clamp(health, 0, type.maxHealth);
-            if (this.health == 0) Destroy();
         }
 
         public bool TakeDamage()
         {
             SetHealth(health - 1);
             return health == 0;
+        }
+
+        public void Defeated(ICombatant enemy)
+        {
+            Destroy();
         }
 
         #endregion

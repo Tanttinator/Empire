@@ -5,11 +5,16 @@ using Common;
 
 namespace Server
 {
-    public class City : Structure
+    public class City : Structure, ICombatant
     {
 
         public string name { get; protected set; }
         public UnitType production { get; protected set; } = Unit.infantry;
+
+        Player ICombatant.Owner => owner;
+
+        Tile ICombatant.Tile => tile;
+
         public int efficiency = 50;
         int progress = 0;
 
@@ -39,9 +44,12 @@ namespace Server
         /// <param name="unit"></param>
         public override bool Interact(Unit unit)
         {
-            SetOwner(unit.owner);
-            unit.Move(tile);
-            return true;
+            if (unit.owner != owner)
+            {
+                unit.Battle(this);
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -85,6 +93,16 @@ namespace Server
                 efficiency = efficiency,
                 remaining = (production != null? Mathf.CeilToInt((production.productionCost - progress) * 1f / efficiency) : 0)
             };
+        }
+
+        void ICombatant.Defeated(ICombatant enemy)
+        {
+            SetOwner(enemy.Owner);
+        }
+
+        bool ICombatant.TakeDamage()
+        {
+            return true;
         }
     }
 }
