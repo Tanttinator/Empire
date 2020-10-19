@@ -104,6 +104,11 @@ namespace Client
             }, 0.3f));
         }
 
+        public static void AddSequence(int player, Sequence sequence)
+        {
+            if (activePlayer == player) Sequencer.AddSequence(sequence);
+        }
+
         public static void ExecuteCommand(PlayerCommand command)
         {
             CommunicationController.ExecuteCommand(activePlayer, command);

@@ -54,8 +54,6 @@ namespace Server
 
         INode[] INode.Neighbors => World.GetNeighbors(this);
 
-        public static event Action<Tile, Unit> onTileUnitSet;
-
         public Tile(Coords coords, bool land)
         {
             this.coords = coords;
@@ -155,19 +153,17 @@ namespace Server
         /// <param name="unit"></param>
         public bool Interact(Unit unit)
         {
-            if (structure != null) structure.Interact(unit);
-            if (this.unit == null && CanEnter(unit))
+            if (structure != null && structure.Interact(unit)) return true;
+            if(this.unit != null)
             {
-                return unit.Move(this);
+                if(this.unit.owner != unit.owner)
+                {
+                    unit.Battle(this.unit);
+                    return true;
+                }
+                return false;
             }
-
-            if (this.unit != null && this.unit.owner != unit.owner)
-            {
-                unit.Battle(this.unit);
-                return true;
-            }
-
-            return false;
+            return unit.Move(this);
         }
 
         /// <summary>
@@ -175,10 +171,8 @@ namespace Server
         /// </summary>
         /// <param name="unit"></param>
         /// <returns></returns>
-        bool CanEnter(Unit unit)
+        public bool CanEnter(Unit unit)
         {
-            if (this.unit != null && this.unit.owner == unit.owner) return false;
-
             switch (unit.type.unitClass)
             {
                 case UnitClass.INFANTRY: return land;
@@ -196,7 +190,8 @@ namespace Server
         /// <returns></returns>
         public int MovementCost(Unit unit)
         {
-            return 1;
+            if (unit.type.unitClass == UnitClass.PLANE) return 1;
+            return 1 + (feature != null? feature.movementCost : 0);
         }
 
         #endregion
@@ -219,7 +214,6 @@ namespace Server
         public void SetStructure(Structure structure)
         {
             this.structure = structure;
-            structure.SetTile(this);
 
             UpdateState();
         }
@@ -231,7 +225,7 @@ namespace Server
         public void SetUnit(Unit unit)
         {
             this.unit = unit;
-            onTileUnitSet?.Invoke(this, unit);
+
             UpdateState();
         }
 

@@ -8,12 +8,14 @@ namespace Server
     public class Feature
     {
         public string name { get; protected set; }
+        public int movementCost { get; protected set; }
 
         Func<Tile, bool> connectTexture;
 
-        public Feature(string name, Func<Tile, bool> connectTexture)
+        public Feature(string name, int movementCost, Func<Tile, bool> connectTexture)
         {
             this.name = name;
+            this.movementCost = movementCost;
             this.connectTexture = connectTexture;
         }
 
@@ -28,8 +30,8 @@ namespace Server
             return connectTexture(tile);
         }
 
-        public static Feature forest = new Feature("Forest", (tile) => tile.feature == forest);
-        public static Feature mountains = new Feature("Mountains", (tile) => tile.feature == mountains);
-        public static Feature river = new Feature("River", (tile) => tile.feature == river || tile.feature == mountains || !tile.land);
+        public static Feature forest = new Feature("Forest", 1, (tile) => tile.feature == forest);
+        public static Feature mountains = new Feature("Mountains", 1, (tile) => tile.feature == mountains);
+        public static Feature river = new Feature("River", 1, (tile) => tile.feature == river || tile.feature == mountains || !tile.land);
     }
 }

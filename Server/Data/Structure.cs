@@ -26,9 +26,9 @@ namespace Server
             tile?.UpdateState(oldOwner);
         }
 
-        public virtual void Interact(Unit unit)
+        public virtual bool Interact(Unit unit)
         {
-
+            return false;
         }
 
         public virtual StructureData GetData()

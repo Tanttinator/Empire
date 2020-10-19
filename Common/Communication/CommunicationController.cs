@@ -52,6 +52,11 @@ namespace Common
             foreach (Player player in GameController.players) ClientController.Redraw(player.ID, delay);
         }
 
+        public static void SpawnExplosion(Tile tile, Tile other)
+        {
+            foreach (Player player in SeenBy(tile, other)) ClientController.AddSequence(player.ID, new ExplosionSequence(tile.coords));
+        }
+
         #endregion
 
         #region Client -> Server

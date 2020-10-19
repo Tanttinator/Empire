@@ -37,9 +37,11 @@ namespace Server
         /// Called when a unit tries to move onto this tile.
         /// </summary>
         /// <param name="unit"></param>
-        public override void Interact(Unit unit)
+        public override bool Interact(Unit unit)
         {
             SetOwner(unit.owner);
+            unit.Move(tile);
+            return true;
         }
 
         /// <summary>

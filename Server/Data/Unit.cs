@@ -11,17 +11,20 @@ namespace Server
         public int ID { get; protected set; }
         public UnitType type { get; protected set; }
         public int moves { get; protected set; }
+        public int health { get; protected set; }
         public bool sleeping { get; protected set; } = false;
 
         Tile target;
         Queue<Tile> currentPath;
 
-        public static UnitType infantry = new UnitType("Infantry", UnitClass.INFANTRY, 1, 500);
-        public static UnitType transport = new UnitType("Transport", UnitClass.SHIP, 3, 1500);
+        public static UnitType infantry = new UnitType("Infantry", UnitClass.INFANTRY, 1, 1, 500);
+        public static UnitType tank = new UnitType("Tank", UnitClass.VEHICLE, 2, 2, 1000);
+        public static UnitType transport = new UnitType("Transport", UnitClass.SHIP, 3, 2, 1500);
 
         public static UnitType[] units = new UnitType[]
         {
             infantry,
+            tank,
             transport
         };
 
@@ -34,6 +37,7 @@ namespace Server
 
             this.type = type;
 
+            SetHealth(type.maxHealth);
             SetOwner(owner);
             SetTile(tile);
 
@@ -57,10 +61,9 @@ namespace Server
         /// </summary>
         /// <param name="tile"></param>
         /// <returns></returns>
-        public bool Move(Tile tile, bool ignoreMovement = false)
+        public bool Move(Tile tile)
         {
-            if (moves <= 0 && !ignoreMovement) return false;
-
+            if (!tile.CanEnter(this)) return false;
             SetTile(tile);
             moves -= tile.MovementCost(this);
             CommunicationController.Redraw(0.3f);
@@ -96,22 +99,38 @@ namespace Server
         /// <param name="enemy"></param>
         public void Battle(Unit enemy)
         {
-            if (enemy.owner == owner) return;
+            bool attackerDead = false;
+            bool defenderDead = false;
 
-            if (UnityEngine.Random.Range(0, 2) == 0)
+            Tile enemyTile = enemy.tile;
+
+            CommunicationController.SpawnExplosion(enemyTile, tile);
+            CommunicationController.SpawnExplosion(tile, enemyTile);
+
+            while (!attackerDead && !defenderDead)
             {
-                //TODO: Play battle animation.
-                //onUnitsBattled?.Invoke(this, enemy, new Unit[] { this });
-                Destroy();
+                if(UnityEngine.Random.Range(0, 2) == 0)
+                {
+                    CommunicationController.SpawnExplosion(tile, enemyTile);
+                    attackerDead = TakeDamage();
+                } 
+                else
+                {
+                    CommunicationController.SpawnExplosion(enemyTile, tile);
+                    defenderDead = enemy.TakeDamage();
+                }
+
+                if(defenderDead)
+                {
+                    if (enemyTile.CanEnter(this))
+                    {
+                        SetTarget(enemyTile);
+                        enemyTile.UpdateState(enemy.owner);
+                    }
+                }
             }
-            else
-            {
-                Tile tile = enemy.tile;
-                //onUnitsBattled?.Invoke(this, enemy, new Unit[] { enemy });
-                enemy.Destroy();
-                Move(tile, true);
-                moves = 0;
-            }
+
+            CommunicationController.Redraw(0.3f);
         }
 
         /// <summary>
@@ -124,8 +143,18 @@ namespace Server
             moves = 0;
 
             RemoveObserver();
+        }
 
-            CommunicationController.Redraw(0.3f);
+        public void SetHealth(int health)
+        {
+            this.health = Mathf.Clamp(health, 0, type.maxHealth);
+            if (this.health == 0) Destroy();
+        }
+
+        public bool TakeDamage()
+        {
+            SetHealth(health - 1);
+            return health == 0;
         }
 
         #endregion
