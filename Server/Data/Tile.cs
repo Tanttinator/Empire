@@ -254,7 +254,7 @@ namespace Server
             Unit unit = (Unit)agent;
             TileData state = unit.owner.currentState.GetTile(coords);
             if (state.discovered) return MovementCost(unit);
-            return 1;
+            return 10;
         }
 
         bool INode.CanEnter(object agent, INode from)

@@ -152,14 +152,6 @@ namespace Server
                 bestCity.efficiency = 100;
                 bestCity.SetOwner(player);
                 Unit.CreateUnit(Unit.infantry, bestCity.tile, player);
-                foreach (Tile neighbor in World.GetNeighbors(bestCity.tile))
-                {
-                    if (!neighbor.land)
-                    {
-                        Unit.CreateUnit(Unit.transport, neighbor, player);
-                        break;
-                    }
-                }
             }
         }
 

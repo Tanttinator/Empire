@@ -17,7 +17,7 @@ namespace Common
 
         public Sequence()
         {
-            this.delay = 0f;
+            delay = 0f;
         }
 
         public virtual void Start()
@@ -39,9 +39,11 @@ namespace Common
     public class ControlSequence : Sequence
     {
         Action callback;
+        string name;
 
-        public ControlSequence(Action callback, float delay = 0f) : base(delay)
+        public ControlSequence(string name, Action callback, float delay = 0f) : base(delay)
         {
+            this.name = name;
             this.callback = callback;
         }
 
@@ -49,35 +51,54 @@ namespace Common
         {
             callback();
         }
+
+        public override string ToString()
+        {
+            return name;
+        }
     }
-    public class RedrawSequence : Sequence
+    public class StateUpdateSequence : Sequence
     {
         int player;
-        public RedrawSequence(int player, float delay) : base(delay)
+        GameState state;
+
+        public StateUpdateSequence(int player, GameState state, float delay = 0f) : base(delay)
         {
             this.player = player;
+            this.state = state;
         }
 
         public override void Start()
         {
-            World.DrawState(ClientController.GetState(player));
-        }
-    }
-    public class MoveCameraToUnitSequence : Sequence
-    {
-        public MoveCameraToUnitSequence() : base(0.3f)
-        {
-
-        }
-
-        public override void Start()
-        {
-            ClientController.Camera.MoveTowards(World.GetTilePosition(ClientController.ActiveUnit.tile));
+            if (ClientController.activePlayer == player) ClientController.SetState(state);
         }
 
         public override bool Update()
         {
-            return !ClientController.Camera.isMovingToTarget;
+            return player != ClientController.activePlayer || base.Update();
+        }
+    }
+    public class MoveCameraToUnitSequence : Sequence
+    {
+        int unit;
+
+        public MoveCameraToUnitSequence(int unit) : base(0.3f)
+        {
+            this.unit = unit;
+        }
+
+        public override void Start()
+        {
+            ClientController.Camera.MoveTowards(World.GetTilePosition(ClientController.currentState.GetUnit(unit).tile));
+        }
+
+        public override bool Update()
+        {
+            if(!ClientController.Camera.isMovingToTarget)
+            {
+                return base.Update();
+            }
+            return false;
         }
     }
     public class ExplosionSequence : Sequence

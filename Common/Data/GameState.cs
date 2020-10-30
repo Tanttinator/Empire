@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Common
@@ -27,6 +28,13 @@ namespace Common
                 }
             }
             units = new Dictionary<int, UnitData>();
+        }
+
+        GameState(PlayerData[] players, TileData[,] tiles, Dictionary<int, UnitData> units)
+        {
+            this.players = players;
+            this.tiles = tiles;
+            this.units = units;
         }
 
         public void UpdateTile(TileData tile)
@@ -59,6 +67,11 @@ namespace Common
         public PlayerData GetPlayer(int ID)
         {
             return players[ID];
+        }
+
+        public GameState Clone()
+        {
+            return new GameState((PlayerData[])players.Clone(), (TileData[,])tiles.Clone(), units.ToDictionary(entry => entry.Key, entry => entry.Value));
         }
     }
 }

@@ -12,14 +12,14 @@ namespace Common
 
         #region Server -> Client
 
-        public static void Initialize(int[] myPlayers, int width, int height, PlayerData[] players, UnitType[] unitTypes)
+        public static void Initialize(int width, int height, PlayerData[] players, UnitType[] unitTypes)
         {
-            ClientController.Initialize(myPlayers, width, height, players, unitTypes);
+            ClientController.Initialize(width, height, players, unitTypes);
         }
 
         public static void StartTurn(Human human)
         {
-            ClientController.StartTurn(human.ID, human.ActiveUnit.tile.coords);
+            ClientController.StartTurn(human.ID, human.currentState.Clone(), human.ActiveUnit.tile.coords);
         }
 
         public static void TurnCompleted(Player player)
@@ -39,17 +39,17 @@ namespace Common
 
         public static void UpdateTile(Player player, TileData tile)
         {
-            ClientController.UpdateTile(player.ID, tile);
+            //ClientController.UpdateTile(player.ID, tile);
         }
 
         public static void UpdatePlayer(Player player)
         {
-            ClientController.UpdatePlayer(player.ID, player.GetData());
+            //ClientController.UpdatePlayer(player.ID, player.GetData());
         }
 
-        public static void Redraw(float delay)
+        public static void UpdateState(float delay)
         {
-            foreach (Player player in GameController.players) ClientController.Redraw(player.ID, delay);
+            foreach (Player player in GameController.players) ClientController.UpdateState(player.ID, player.currentState.Clone());
         }
 
         public static void SpawnExplosion(Tile tile, Tile other)

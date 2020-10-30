@@ -22,7 +22,7 @@ namespace Server
 
         public static UnitType infantry = new UnitType("Infantry", UnitClass.INFANTRY, 1, 1, 500);
         public static UnitType tank = new UnitType("Tank", UnitClass.VEHICLE, 2, 2, 1000);
-        public static UnitType transport = new UnitType("Transport", UnitClass.SHIP, 3, 2, 1500);
+        public static UnitType transport = new UnitType("Transport", UnitClass.SHIP, 2, 2, 1500);
 
         public static UnitType[] units = new UnitType[]
         {
@@ -69,7 +69,7 @@ namespace Server
             if (!tile.CanEnter(this)) return false;
             SetTile(tile);
             moves -= tile.MovementCost(this);
-            CommunicationController.Redraw(0.3f);
+            CommunicationController.UpdateState(0.3f);
             return true;
         }
 
@@ -130,13 +130,14 @@ namespace Server
                     enemy.Defeated(this);
                     if (enemyTile.CanEnter(this))
                     {
-                        SetTarget(enemyTile);
+                        SetTile(enemyTile);
                         enemyTile.UpdateState(enemy.Owner);
                     }
+                    moves = 0;
                 }
             }
 
-            CommunicationController.Redraw(0.3f);
+            CommunicationController.UpdateState(0.3f);
         }
 
         /// <summary>

@@ -45,12 +45,12 @@ namespace Client
             instance.title.text = city.name + "\nProduction";
 
             selectedUnit = city.production;
-            productionCounts = ClientController.CurrentState.GetPlayer(city.owner).production;
+            productionCounts = ClientController.currentState.GetPlayer(city.owner).production;
 
             toggles.Clear();
             countTexts.Clear();
 
-            foreach (UnitType unit in ClientController.unitTypes) AddUnit(city, unit, ClientController.CurrentState.GetPlayer(city.owner).color);
+            foreach (UnitType unit in ClientController.unitTypes) AddUnit(city, unit, ClientController.currentState.GetPlayer(city.owner).color);
 
             instance.noProduction.onValueChanged.RemoveAllListeners();
             instance.noProduction.isOn = selectedUnit == null;
@@ -92,6 +92,7 @@ namespace Client
         public void Confirm()
         {
             if (city == null) return;
+            city.production = selectedUnit;
             CommunicationController.SetProduction(city.ID, selectedUnit);
         }
 

@@ -76,6 +76,11 @@ namespace Server
             CommunicationController.UpdateTile(this, tile);
         }
 
+        public void UpdatePlayer(PlayerData player)
+        {
+            currentState.UpdatePlayer(player);
+        }
+
         /// <summary>
         /// Set all tiles visible to this player.
         /// </summary>

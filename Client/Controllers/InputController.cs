@@ -229,7 +229,7 @@ namespace Client
             {
                 if (hoverTile != null)
                 {
-                    TileInfoUI.Show(ClientController.CurrentState.GetTile(hoverTile));
+                    TileInfoUI.Show(ClientController.currentState.GetTile(hoverTile));
                 }
             }
         }

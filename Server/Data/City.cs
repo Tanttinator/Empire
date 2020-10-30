@@ -35,7 +35,7 @@ namespace Server
             production = unit;
             progress = 0;
             tile.UpdateState(owner);
-            CommunicationController.UpdatePlayer(owner);
+            owner.UpdatePlayer(owner.GetData());
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Server
                 name = name,
                 production = production,
                 efficiency = efficiency,
-                remaining = (production != null? Mathf.CeilToInt((production.productionCost - progress) * 1f / efficiency) : 0)
+                progress = progress
             };
         }
 

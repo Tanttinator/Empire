@@ -41,7 +41,7 @@ namespace Client
         static void ShowUnitInfo(TileData data, UnitData unit, StructureData structure)
         {
             instance.locationText.text = "Location: " + data.coords.x + ", " + data.coords.y;
-            instance.infoText.text = "Unit: " + unit.unitType + "\nOwner: " + ClientController.CurrentState.GetPlayer(unit.owner).name;
+            instance.infoText.text = "Unit: " + unit.unitType + "\nOwner: " + ClientController.currentState.GetPlayer(unit.owner).name;
 
             instance.actionButtonContainer.Clear();
 
@@ -54,7 +54,7 @@ namespace Client
         {
             CityData city = (CityData)structure;
             instance.locationText.text = "Location: " + data.coords.x + ", " + data.coords.y;
-            instance.infoText.text = "City: " + city.name + "\nOwner: " + ClientController.CurrentState.GetPlayer(city.owner).name + "\nProduction: " + (city.production == null? "No Production" : city.production.name + " (" + city.remaining + ")") + "\nEfficiency: " + city.efficiency + "%";
+            instance.infoText.text = "City: " + city.name + "\nOwner: " + ClientController.currentState.GetPlayer(city.owner).name + "\nProduction: " + (city.production == null? "No Production" : city.production.name + " (" + Mathf.CeilToInt((city.production.productionCost - city.progress) * 1f / city.efficiency) + ")") + "\nEfficiency: " + city.efficiency + "%";
 
             instance.actionButtonContainer.Clear();
 

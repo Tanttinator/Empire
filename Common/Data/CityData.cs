@@ -9,6 +9,6 @@ namespace Common
         public string name;
         public UnitType production;
         public int efficiency;
-        public int remaining;
+        public int progress;
     }
 }
