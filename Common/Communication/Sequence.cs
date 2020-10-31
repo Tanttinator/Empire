@@ -78,6 +78,40 @@ namespace Common
             return player != ClientController.activePlayer || base.Update();
         }
     }
+    public class StartTurnSequence : Sequence
+    {
+        int player;
+        int turn;
+        GameState state;
+        Coords focusTile;
+
+        bool promptClosed = false;
+
+        public StartTurnSequence(int player, int turn, GameState state, Coords focusTile) : base()
+        {
+            this.player = player;
+            this.turn = turn;
+            this.state = state;
+            this.focusTile = focusTile;
+        }
+
+        public override void Start()
+        {
+            if (ClientController.activePlayer != player)
+            {
+                PromptUI.Show(state.GetPlayer(player).name + "\nTurn " + turn, state.GetPlayer(player).color, () => promptClosed = true);
+                ClientController.Camera.Translate(World.GetTilePosition(focusTile) - ClientController.Camera.transform.position);
+            }
+
+            ClientController.ChangeActivePlayer(player);
+            ClientController.SetState(state);
+        }
+
+        public override bool Update()
+        {
+            return promptClosed;
+        }
+    }
     public class MoveCameraToUnitSequence : Sequence
     {
         int unit;

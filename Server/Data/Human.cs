@@ -50,6 +50,11 @@ namespace Server
 
         protected override void OnTurnStarted()
         {
+            if(units.Count == 0)
+            {
+                EndTurn();
+                return;
+            }
             foreach (Unit unit in units)
             {
                 if (!unit.sleeping) activeUnits.Add(unit);

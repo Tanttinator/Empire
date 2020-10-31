@@ -19,7 +19,7 @@ namespace Common
 
         public static void StartTurn(Human human)
         {
-            ClientController.StartTurn(human.ID, human.currentState.Clone(), human.ActiveUnit.tile.coords);
+            ClientController.StartTurn(human.ID, GameController.turn, human.currentState.Clone(), human.ActiveUnit.tile.coords);
         }
 
         public static void TurnCompleted(Player player)

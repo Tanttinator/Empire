@@ -37,14 +37,14 @@ namespace Server
             }
         }
 
-        HashSet<Observer> seenBy = new HashSet<Observer>();
+        HashSet<Combatant> seenBy = new HashSet<Combatant>();
         public Player[] SeenBy
         {
             get
             {
                 HashSet<Player> players = new HashSet<Player>();
 
-                foreach (Observer observer in seenBy) players.Add(observer.owner);
+                foreach (Combatant observer in seenBy) players.Add(observer.owner);
 
                 return players.ToArray();
             }
@@ -127,7 +127,7 @@ namespace Server
         /// Add a unit who can see this tile.
         /// </summary>
         /// <param name="unit"></param>
-        public void AddObserver(Observer observer)
+        public void AddObserver(Combatant observer)
         {
             seenBy.Add(observer);
             UpdateState(observer.owner);
@@ -137,7 +137,7 @@ namespace Server
         /// The given unit no longer sees this tile.
         /// </summary>
         /// <param name="unit"></param>
-        public void RemoveObserver(Observer observer)
+        public void RemoveObserver(Combatant observer)
         {
             seenBy.Remove(observer);
             UpdateState(observer.owner);
@@ -154,15 +154,7 @@ namespace Server
         public bool Interact(Unit unit)
         {
             if (structure != null && structure.Interact(unit)) return true;
-            if(this.unit != null)
-            {
-                if(this.unit.owner != unit.owner)
-                {
-                    unit.Battle(this.unit);
-                    return true;
-                }
-                return false;
-            }
+            if (this.unit != null && this.unit.Interact(unit)) return true;
             return unit.Move(this);
         }
 

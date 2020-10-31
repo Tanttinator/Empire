@@ -13,7 +13,7 @@ namespace Server
         static int activePlayer = 0;
         static Player ActivePlayer => players[activePlayer];
 
-        static int turn = 1;
+        public static int turn { get; protected set; } = 1;
 
         public static Player neutral { get; protected set; }
 

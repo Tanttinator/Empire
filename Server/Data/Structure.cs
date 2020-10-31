@@ -6,7 +6,7 @@ using Common;
 
 namespace Server
 {
-    public class Structure : Observer
+    public class Structure : Combatant
     {
         public int ID { get; protected set; }
         public string type { get; protected set; }

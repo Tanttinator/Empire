@@ -44,20 +44,10 @@ namespace Client
             Sequencer.AddSequence(new StateUpdateSequence(player, state, 0.3f));
         }
 
-        public static void StartTurn(int player, GameState state, Coords focusTile)
+        public static void StartTurn(int player, int turn, GameState state, Coords focusTile)
         {
             //Debug.Log("Start Turn, Player: " + player);
-            Sequencer.AddSequence(new ControlSequence("Start Turn", () =>
-            {
-                if (activePlayer != player)
-                {
-                    Camera.Translate(World.GetTilePosition(focusTile) - Camera.transform.position);
-                }
-
-                activePlayer = player;
-
-                SetState(state);
-            }));
+            Sequencer.AddSequence(new StartTurnSequence(player, turn, state, focusTile));
         }
 
         public static void TurnCompleted(int player)
@@ -97,6 +87,11 @@ namespace Client
         public static void ExecuteCommand(PlayerCommand command)
         {
             CommunicationController.ExecuteCommand(activePlayer, command);
+        }
+
+        public static void ChangeActivePlayer(int player)
+        {
+            activePlayer = player;
         }
 
         private void Awake()

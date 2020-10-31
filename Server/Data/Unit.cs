@@ -6,7 +6,7 @@ using Common;
 
 namespace Server
 {
-    public class Unit : Observer, ICombatant
+    public class Unit : Combatant
     {
         public int ID { get; protected set; }
         public UnitType type { get; protected set; }
@@ -14,9 +14,6 @@ namespace Server
         public int health { get; protected set; }
         public bool sleeping { get; protected set; } = false;
         public int fuel { get; protected set; }
-
-        Player ICombatant.Owner => owner;
-        Tile ICombatant.Tile => tile;
 
         Tile target;
         Queue<Tile> currentPath;
@@ -46,7 +43,7 @@ namespace Server
             SetHealth(type.maxHealth);
             SetOwner(owner);
             SetTile(tile);
-            fuel = type.maxFuel;
+            Refuel();
 
             owner.AddUnit(this);
         }
@@ -106,53 +103,14 @@ namespace Server
                 currentPath.Dequeue();
         }
 
+        public void Refuel()
+        {
+            fuel = type.maxFuel;
+        }
+
         #endregion
 
         #region Combat
-
-        /// <summary>
-        /// Attack the given unit.
-        /// </summary>
-        /// <param name="enemy"></param>
-        public void Battle(ICombatant enemy)
-        {
-            bool attackerDead = false;
-            bool defenderDead = false;
-
-            Tile enemyTile = enemy.Tile;
-
-            CommunicationController.SpawnExplosion(enemyTile, tile);
-            CommunicationController.SpawnExplosion(tile, enemyTile);
-
-            while (!attackerDead && !defenderDead)
-            {
-                if(UnityEngine.Random.Range(0, 2) == 0)
-                {
-                    CommunicationController.SpawnExplosion(tile, enemyTile);
-                    attackerDead = TakeDamage();
-                } 
-                else
-                {
-                    CommunicationController.SpawnExplosion(enemyTile, tile);
-                    defenderDead = enemy.TakeDamage();
-                }
-
-                if(attackerDead) Defeated(enemy);
-
-                if(defenderDead)
-                {
-                    enemy.Defeated(this);
-                    if (enemyTile.CanEnter(this))
-                    {
-                        SetTile(enemyTile);
-                        enemyTile.UpdateState(enemy.Owner);
-                    }
-                    moves = 0;
-                }
-            }
-
-            CommunicationController.UpdateState(0.3f);
-        }
 
         /// <summary>
         /// Destroy this unit.
@@ -171,18 +129,34 @@ namespace Server
             this.health = Mathf.Clamp(health, 0, type.maxHealth);
         }
 
-        public bool TakeDamage()
+        protected override bool TakeDamage()
         {
             SetHealth(health - 1);
             return health == 0;
         }
 
-        public void Defeated(ICombatant enemy)
+        protected override void OnVictory(Combatant enemy)
         {
+            moves = 0;
+        }
+
+        protected override void OnDefeat(Combatant enemy)
+        {
+            if (enemy is Unit unit && tile.CanEnter(unit)) unit.SetTile(tile);
             Destroy();
         }
 
         #endregion
+
+        public bool Interact(Unit unit)
+        {
+            if (unit.owner != owner)
+            {
+                Battle(unit, this);
+                return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// Tell this unit to execute the next queued action if one exists.

@@ -5,15 +5,11 @@ using Common;
 
 namespace Server
 {
-    public class City : Structure, ICombatant
+    public class City : Structure
     {
 
         public string name { get; protected set; }
         public UnitType production { get; protected set; } = Unit.infantry;
-
-        Player ICombatant.Owner => owner;
-
-        Tile ICombatant.Tile => tile;
 
         public int efficiency = 50;
         int progress = 0;
@@ -46,7 +42,7 @@ namespace Server
         {
             if (unit.owner != owner)
             {
-                unit.Battle(this);
+                Battle(unit, this);
                 return true;
             }
             return false;
@@ -81,6 +77,32 @@ namespace Server
             SetProduction(Unit.infantry);
         }
 
+        protected override void OnDefeat(Combatant enemy)
+        {
+            if(enemy is Unit unit)
+            {
+                if(unit.type.name == "Fighter")
+                {
+                    progress = 0;
+                }
+                else if(unit.type.name == "Bomber")
+                {
+                    progress = 0;
+                    efficiency -= 5;
+                }
+                else if(unit.type.unitClass == UnitClass.SHIP)
+                {
+
+                }
+                else
+                {
+                    SetOwner(enemy.owner);
+                    unit.SetTile(tile);
+                    efficiency -= 5;
+                }
+            }
+        }
+
         public override StructureData GetData()
         {
             return new CityData()
@@ -93,16 +115,6 @@ namespace Server
                 efficiency = efficiency,
                 progress = progress
             };
-        }
-
-        void ICombatant.Defeated(ICombatant enemy)
-        {
-            SetOwner(enemy.Owner);
-        }
-
-        bool ICombatant.TakeDamage()
-        {
-            return true;
         }
     }
 }
