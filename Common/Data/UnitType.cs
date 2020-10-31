@@ -12,14 +12,16 @@ namespace Common
         public int movement { get; protected set; }
         public int maxHealth { get; protected set; }
         public int productionCost { get; protected set; }
+        public int maxFuel { get; protected set; }
 
-        public UnitType(string name, UnitClass unitClass, int movement, int maxHealth, int productionCost)
+        public UnitType(string name, UnitClass unitClass, int movement, int maxHealth, int productionCost, int maxFuel = -1)
         {
             this.name = name;
             this.unitClass = unitClass;
             this.movement = movement;
             this.maxHealth = maxHealth;
             this.productionCost = productionCost;
+            this.maxFuel = maxFuel;
         }
     }
 

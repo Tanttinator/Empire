@@ -54,7 +54,12 @@ namespace Client
         {
             CityData city = (CityData)structure;
             instance.locationText.text = "Location: " + data.coords.x + ", " + data.coords.y;
-            instance.infoText.text = "City: " + city.name + "\nOwner: " + ClientController.currentState.GetPlayer(city.owner).name + "\nProduction: " + (city.production == null? "No Production" : city.production.name + " (" + Mathf.CeilToInt((city.production.productionCost - city.progress) * 1f / city.efficiency) + ")") + "\nEfficiency: " + city.efficiency + "%";
+            instance.infoText.text = "City: " + city.name + 
+                "\nOwner: " + ClientController.currentState.GetPlayer(city.owner).name + 
+                "\nProduction: " + (
+                    city.production == null? "No Production" : 
+                    city.production.name + " (" + Mathf.CeilToInt((city.production.productionCost - city.progress) * 1f / city.efficiency) + ")") + 
+                "\nEfficiency: " + city.efficiency + "%";
 
             instance.actionButtonContainer.Clear();
 

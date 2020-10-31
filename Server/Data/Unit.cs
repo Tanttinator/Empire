@@ -13,6 +13,7 @@ namespace Server
         public int moves { get; protected set; }
         public int health { get; protected set; }
         public bool sleeping { get; protected set; } = false;
+        public int fuel { get; protected set; }
 
         Player ICombatant.Owner => owner;
         Tile ICombatant.Tile => tile;
@@ -22,12 +23,14 @@ namespace Server
 
         public static UnitType infantry = new UnitType("Infantry", UnitClass.INFANTRY, 1, 1, 500);
         public static UnitType tank = new UnitType("Tank", UnitClass.VEHICLE, 2, 2, 1000);
+        public static UnitType fighter = new UnitType("Fighter", UnitClass.PLANE, 5, 1, 1000, 20);
         public static UnitType transport = new UnitType("Transport", UnitClass.SHIP, 2, 2, 1500);
 
         public static UnitType[] units = new UnitType[]
         {
             infantry,
             tank,
+            fighter,
             transport
         };
 
@@ -43,6 +46,7 @@ namespace Server
             SetHealth(type.maxHealth);
             SetOwner(owner);
             SetTile(tile);
+            fuel = type.maxFuel;
 
             owner.AddUnit(this);
         }
@@ -70,6 +74,16 @@ namespace Server
             SetTile(tile);
             moves -= tile.MovementCost(this);
             CommunicationController.UpdateState(0.3f);
+            if (fuel != -1)
+            {
+                fuel--;
+                if (fuel == 0)
+                {
+                    CommunicationController.SpawnExplosion(tile, tile);
+                    Destroy();
+                    CommunicationController.UpdateState(0.3f);
+                }
+            }
             return true;
         }
 
