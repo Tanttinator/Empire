@@ -209,6 +209,9 @@ namespace Server
         public void SetSleeping(bool sleeping)
         {
             this.sleeping = sleeping;
+            moves = 0;
+            tile.UpdateState();
+            CommunicationController.UpdateState(0f);
         }
 
         public UnitData GetData()

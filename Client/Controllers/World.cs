@@ -38,7 +38,7 @@ namespace Client
                 }
             }
 
-            ClientController.Camera.SetConstraints(0f, 0f, width, height);
+            ClientController.CameraController.SetConstraints(0f, 0f, width, height);
         }
 
         /// <summary>

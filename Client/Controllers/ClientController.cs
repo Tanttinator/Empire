@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using RTSCamera;
 using Common;
+using Tanttinator.ModularUI;
 
 namespace Client
 {
@@ -14,18 +15,30 @@ namespace Client
         {
             get
             {
-                return currentState.GetUnit(activeUnit);
+                return gameState.GetUnit(activeUnit);
             }
         }
-        public static GameState currentState { get; protected set; }
+        public static GameState gameState { get; protected set; }
 
 
         [SerializeField] new RTSCameraController2D camera = default;
-        public static RTSCameraController2D Camera => instance.camera;
+        public static RTSCameraController2D CameraController => instance.camera;
+        [SerializeField] LineRenderer movementIndicator = default;
 
         public static UnitType[] unitTypes;
 
-        public static ClientController instance;
+        static InputState inputState = new DefaultState();
+
+        static Coords hoverTile;
+        bool[] isDragging;
+        Vector3[] clickPos;
+        bool pressed = false;
+        
+        static Queue<Sequence> sequenceQueue = new Queue<Sequence>();
+        static Sequence currentSequence;
+        float cooldown = 0f;
+
+        static ClientController instance;
 
         public static void Initialize(int width, int height, PlayerData[] players, UnitType[] unitTypes)
         {
@@ -35,25 +48,25 @@ namespace Client
 
         public static void SetState(GameState state)
         {
-            currentState = state;
+            gameState = state;
             World.DrawState(state);
         }
 
         public static void UpdateState(int player, GameState state)
         {
-            Sequencer.AddSequence(new StateUpdateSequence(player, state, 0.3f));
+            AddSequence(new StateUpdateSequence(player, state, 0.3f));
         }
 
         public static void StartTurn(int player, int turn, GameState state, Coords focusTile)
         {
             //Debug.Log("Start Turn, Player: " + player);
-            Sequencer.AddSequence(new StartTurnSequence(player, turn, state, focusTile));
+            AddSequence(new StartTurnSequence(player, turn, state, focusTile));
         }
 
         public static void TurnCompleted(int player)
         {
             //Debug.Log("Turn Completed, Player: " + player);
-            Sequencer.AddSequence(new ControlSequence("Turn Completed", () =>
+            AddSequence(new ControlSequence("Turn Completed", () =>
             {
                 CommunicationController.EndTurn(player);
             }));
@@ -62,26 +75,26 @@ namespace Client
         public static void SelectUnit(int unit)
         {
             //Debug.Log("Select Unit, Unit: " + unit);
-            Sequencer.AddSequence(new ControlSequence("Select Unit", () =>
+            AddSequence(new ControlSequence("Select Unit", () =>
             {
                 activeUnit = unit;
             }));
-            Sequencer.AddSequence(new MoveCameraToUnitSequence(unit));
+            AddSequence(new MoveCameraToUnitSequence(unit));
         }
 
         public static void DeselectUnit()
         {
             //Debug.Log("Deselect Unit");
-            Sequencer.AddSequence(new ControlSequence("Deselect Unit", () =>
+            AddSequence(new ControlSequence("Deselect Unit", () =>
             {
                 activeUnit = -1;
-                InputController.ChangeState(new DefaultState());
+                ChangeState(new DefaultState());
             }));
         }
 
         public static void AddSequence(int player, Sequence sequence)
         {
-            if (activePlayer == player) Sequencer.AddSequence(sequence);
+            if (activePlayer == player) AddSequence(sequence);
         }
 
         public static void ChangeActivePlayer(int player)
@@ -89,9 +102,328 @@ namespace Client
             activePlayer = player;
         }
 
+        #region Input
+
+        /// <summary>
+        /// Change the current input state.
+        /// </summary>
+        /// <param name="state"></param>
+        public static void ChangeState(InputState state)
+        {
+            inputState.End();
+            inputState = state;
+            inputState.Start(hoverTile);
+        }
+
+        /// <summary>
+        /// Returns the coords of the tile which is under the mouse pointer currently.
+        /// </summary>
+        /// <returns></returns>
+        public static Coords GetCoordsUnderMouse()
+        {
+            Vector2 point = Camera.main.ScreenToWorldPoint(Input.mousePosition, Camera.MonoOrStereoscopicEye.Mono);
+            return World.GetTileAtPoint(point);
+        }
+
+        /// <summary>
+        /// Draw a from start to end.
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        public static void DrawMovementIndicator(Coords start, Coords end)
+        {
+            instance.movementIndicator.SetPositions(new Vector3[] { (Vector2)start, (Vector2)end });
+            instance.movementIndicator.enabled = true;
+        }
+
+        /// <summary>
+        /// Hide the movement indicator line.
+        /// </summary>
+        public static void HideMovementIndicator()
+        {
+            instance.movementIndicator.enabled = false;
+        }
+
+        /// <summary>
+        /// Handle all mouse interactions.
+        /// </summary>
+        /// <param name="button"></param>
+        void HandleMouse(int button)
+        {
+            if (Input.GetMouseButtonDown(button) && Hoverable.MouseOver == null)
+            {
+                pressed = true;
+                inputState.MouseDown(button);
+                clickPos[button] = Input.mousePosition;
+            }
+
+            if (Input.GetMouseButton(button) && pressed)
+            {
+                if (isDragging[button]) inputState.Drag(button);
+                else if (Vector3.Distance(clickPos[button], Input.mousePosition) > 5f)
+                {
+                    isDragging[button] = true;
+                    inputState.DragStart(button);
+                }
+                else inputState.MouseHold(button);
+            }
+
+            if (Input.GetMouseButtonUp(button) && pressed)
+            {
+                if (isDragging[button])
+                {
+                    inputState.DragEnd(button);
+                    isDragging[button] = false;
+                }
+                else inputState.Click(button, hoverTile);
+                pressed = false;
+            }
+        }
+
+        #endregion
+
+        #region Sequencer
+
+        /// <summary>
+        /// Add new sequence to be executed.
+        /// </summary>
+        /// <param name="sequence"></param>
+        public static void AddSequence(Sequence sequence)
+        {
+            //Debug.Log("Added sequence: " + sequence);
+            sequenceQueue.Enqueue(sequence);
+        }
+
+        #endregion
+
+        private void Update()
+        {
+            if (currentSequence != null)
+            {
+                if (currentSequence.Update())
+                {
+                    currentSequence.End();
+                    currentSequence = null;
+                    cooldown = 0f;
+                }
+            }
+            else if (sequenceQueue.Count > 0)
+            {
+                if (cooldown == 0f)
+                {
+                    currentSequence = sequenceQueue.Dequeue();
+                    //Debug.Log("Started sequence: " + currentSequence);
+                    currentSequence.Start();
+                }
+            }
+
+            cooldown = Mathf.Max(0f, cooldown - Time.deltaTime); 
+            
+            inputState.Update();
+            HandleMouse(0);
+            HandleMouse(1);
+
+            Coords newHoverTile = GetCoordsUnderMouse();
+            if (World.ValidCoords(newHoverTile) && newHoverTile != hoverTile)
+            {
+                hoverTile = newHoverTile;
+                inputState.HoverEnter(hoverTile);
+            }
+        }
+
         private void Awake()
         {
             instance = this;
+
+            isDragging = new bool[] { false, false };
+            clickPos = new Vector3[] { Vector3.zero, Vector3.zero };
+        }
+    }
+
+    public abstract class InputState
+    {
+        public virtual void Start(Coords hoverTile)
+        {
+
+        }
+
+        public virtual void Update()
+        {
+
+        }
+
+        public virtual void End()
+        {
+
+        }
+
+        public virtual void HoverEnter(Coords tile)
+        {
+
+        }
+
+        public virtual void MouseDown(int button)
+        {
+
+        }
+
+        public virtual void MouseHold(int button)
+        {
+
+        }
+
+        public virtual void Click(int button, Coords hoverTile)
+        {
+
+        }
+
+        public virtual void DragStart(int button)
+        {
+
+        }
+
+        public virtual void Drag(int button)
+        {
+
+        }
+
+        public virtual void DragEnd(int button)
+        {
+
+        }
+    }
+
+    public class CameraMoveState : InputState
+    {
+        public override void Update()
+        {
+            if (Input.GetKey(KeyCode.UpArrow)) ClientController.CameraController.Move(new Vector2(0, 1));
+            if (Input.GetKey(KeyCode.RightArrow)) ClientController.CameraController.Move(new Vector2(1, 0));
+            if (Input.GetKey(KeyCode.DownArrow)) ClientController.CameraController.Move(new Vector2(0, -1));
+            if (Input.GetKey(KeyCode.LeftArrow)) ClientController.CameraController.Move(new Vector2(-1, 0));
+
+            ClientController.CameraController.Zoom(Input.GetAxis("Mouse ScrollWheel"));
+        }
+
+        public override void DragStart(int button)
+        {
+            if (button == 0) ClientController.CameraController.Drag(true);
+        }
+
+        public override void Drag(int button)
+        {
+            if (button == 0) ClientController.CameraController.Drag();
+        }
+
+        public override void Click(int button, Coords hoverTile)
+        {
+            if (button == 0)
+            {
+                if (hoverTile != null)
+                {
+                    TileInfoUI.Show(ClientController.gameState.GetTile(hoverTile));
+                }
+            }
+        }
+    }
+
+    public class DefaultState : CameraMoveState
+    {
+        public override void Update()
+        {
+            if (ClientController.ActiveUnit != null) ClientController.ChangeState(new UnitSelectedState(ClientController.ActiveUnit.tile));
+            base.Update();
+        }
+    }
+
+    public class UnitSelectedState : CameraMoveState
+    {
+        UnitGraphics unit;
+        Coords pos;
+
+        public UnitSelectedState(Coords unit)
+        {
+            pos = unit;
+            this.unit = World.GetTileGraphics(unit).Unit;
+        }
+
+        public override void Start(Coords hoverTile)
+        {
+            unit.SetIdle(true);
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            if (Input.GetKeyDown(KeyCode.Space)) CommunicationController.ExecuteCommand(ClientController.activePlayer, new CommandWait());
+            if (Input.GetKeyDown(KeyCode.S)) CommunicationController.ExecuteCommand(ClientController.activePlayer, new CommandSleep());
+        }
+
+        public override void End()
+        {
+            unit.SetIdle(false);
+        }
+
+        public override void Click(int button, Coords hoverTile)
+        {
+            base.Click(button, hoverTile);
+            if (button == 1)
+            {
+                if (hoverTile != null) CommunicationController.ExecuteCommand(ClientController.activePlayer, new CommandMove(hoverTile));
+            }
+        }
+
+        public override void DragStart(int button)
+        {
+            base.DragStart(button);
+            if (button == 1)
+            {
+                ClientController.ChangeState(new DragMoveState(pos, unit));
+            }
+        }
+    }
+
+    public class DragMoveState : CameraMoveState
+    {
+        Coords pos;
+        UnitGraphics unit;
+
+        public DragMoveState(Coords pos, UnitGraphics unit)
+        {
+            this.pos = pos;
+            this.unit = unit;
+        }
+
+        public override void Start(Coords hoverTile)
+        {
+            unit.SetIdle(false);
+            ClientController.DrawMovementIndicator(pos, hoverTile);
+        }
+
+        public override void HoverEnter(Coords tile)
+        {
+            ClientController.DrawMovementIndicator(pos, tile);
+        }
+
+        public override void End()
+        {
+            ClientController.HideMovementIndicator();
+        }
+
+        public override void DragEnd(int button)
+        {
+            if (button == 1)
+            {
+                Coords tile = ClientController.GetCoordsUnderMouse();
+                if (World.ValidCoords(tile)) CommunicationController.ExecuteCommand(ClientController.activePlayer, new CommandMove(tile));
+                ClientController.ChangeState(new DefaultState());
+            }
+        }
+
+        public override void Click(int button, Coords hoverTile)
+        {
+
         }
     }
 }

@@ -45,12 +45,12 @@ namespace Client
             instance.title.text = city.name + "\nProduction";
 
             selectedUnit = city.production;
-            productionCounts = ClientController.currentState.GetPlayer(city.owner).production;
+            productionCounts = ClientController.gameState.GetPlayer(city.owner).production;
 
             toggles.Clear();
             countTexts.Clear();
 
-            foreach (UnitType unit in ClientController.unitTypes) AddUnit(city, unit, ClientController.currentState.GetPlayer(city.owner).color);
+            foreach (UnitType unit in ClientController.unitTypes) AddUnit(city, unit, ClientController.gameState.GetPlayer(city.owner).color);
 
             instance.noProduction.onValueChanged.RemoveAllListeners();
             instance.noProduction.isOn = selectedUnit == null;

@@ -22,15 +22,18 @@ namespace Client
         /// Set the type of unit to be shown.
         /// </summary>
         /// <param name="unit"></param>
-        public void SetUnit(UnitData unit)
+        public void SetUnit(bool visible, UnitData unit)
         {
             if (unit == null) Hide();
             else
             {
                 unitSprite.sprite = SpriteRegistry.GetSprite(unit.unitType).GetSprite(false, false, false, false).sprite;
-                playerColor = ClientController.currentState.GetPlayer(unit.owner).color;
+                playerColor = ClientController.gameState.GetPlayer(unit.owner).color;
                 unitSprite.color = playerColor;
-                unitBackground.color = playerColor;
+                Color backgroundColor = playerColor;
+                if (unit.sleeping) backgroundColor = Color.white;
+                if (!visible) backgroundColor = new Color(0.2f, 0.2f, 0.2f, 1f);
+                unitBackground.color = backgroundColor;
                 Show();
             }
         }
