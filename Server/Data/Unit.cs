@@ -50,14 +50,13 @@ namespace Server
 
         #region Movement
 
-        /// <summary>
-        /// Place this unit on the given tile.
-        /// </summary>
-        /// <param name="tile"></param>
-        protected override void OnTileChanged(Tile tile, Tile oldTile)
+        public override void SetTile(Tile tile)
         {
-            oldTile?.SetUnit(null);
-            tile.SetUnit(this);
+            this.tile?.RemoveUnit(this);
+            RemoveObserver();
+            this.tile = tile;
+            tile.PlaceUnit(this);
+            AddObserver();
         }
 
         /// <summary>
@@ -71,6 +70,7 @@ namespace Server
             SetTile(tile);
             moves -= tile.MovementCost(this);
             CommunicationController.UpdateState(0.3f);
+
             if (fuel != -1)
             {
                 fuel--;
@@ -81,6 +81,7 @@ namespace Server
                     CommunicationController.UpdateState(0.3f);
                 }
             }
+
             return true;
         }
 
@@ -118,7 +119,7 @@ namespace Server
         void Destroy()
         {
             owner.RemoveUnit(this);
-            tile.SetUnit(null);
+            tile.RemoveUnit(this);
             moves = 0;
 
             RemoveObserver();
@@ -137,17 +138,22 @@ namespace Server
 
         protected override void OnVictory(Combatant enemy)
         {
+            Move(enemy.tile);
             moves = 0;
         }
 
         protected override void OnDefeat(Combatant enemy)
         {
-            if (enemy is Unit unit && tile.CanEnter(unit)) unit.SetTile(tile);
             Destroy();
         }
 
         #endregion
 
+        /// <summary>
+        /// Called when another unit tries to interact with this unit.
+        /// </summary>
+        /// <param name="unit"></param>
+        /// <returns></returns>
         public bool Interact(Unit unit)
         {
             if (unit.owner != owner)
@@ -177,7 +183,12 @@ namespace Server
 
                 Tile nextTile = currentPath.Dequeue();
 
-                if (!nextTile.Interact(this)) GeneratePath();
+                if (nextTile == target)
+                {
+                    if(!nextTile.Interact(this)) target = null;
+                }
+                else if (nextTile.Hostile(owner)) target = null;
+                else if (!Move(nextTile)) GeneratePath();
             }
 
             return false;

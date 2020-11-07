@@ -255,7 +255,7 @@ namespace Client
         {
             base.Update();
 
-            if (Input.GetKeyDown(KeyCode.Space)) ClientController.ExecuteCommand(new CommandWait());
+            if (Input.GetKeyDown(KeyCode.Space)) CommunicationController.ExecuteCommand(ClientController.activePlayer, new CommandWait());
         }
 
         public override void End()
@@ -268,7 +268,7 @@ namespace Client
             base.Click(button, hoverTile);
             if (button == 1)
             {
-                if (hoverTile != null) ClientController.ExecuteCommand(new CommandMove(hoverTile));
+                if (hoverTile != null) CommunicationController.ExecuteCommand(ClientController.activePlayer, new CommandMove(hoverTile));
             }
         }
 
@@ -319,7 +319,7 @@ namespace Client
             if (button == 1)
             {
                 Coords tile = InputController.GetCoordsUnderMouse();
-                if (World.ValidCoords(tile)) ClientController.ExecuteCommand(new CommandMove(tile));
+                if (World.ValidCoords(tile)) CommunicationController.ExecuteCommand(ClientController.activePlayer, new CommandMove(tile));
                 InputController.CancelState();
             }
         }

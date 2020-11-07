@@ -159,12 +159,36 @@ namespace Server
         }
 
         /// <summary>
+        /// Called when a unit moves to this tile.
+        /// </summary>
+        /// <param name="unit"></param>
+        public void PlaceUnit(Unit unit)
+        {
+            this.unit = unit;
+
+            UpdateState();
+        }
+
+        /// <summary>
+        /// Called when a unit leaves this tile.
+        /// </summary>
+        /// <param name="unit"></param>
+        public void RemoveUnit(Unit unit)
+        {
+            if (this.unit == unit) this.unit = null;
+
+            UpdateState();
+        }
+
+        /// <summary>
         /// Can the given unit enter this tile?
         /// </summary>
         /// <param name="unit"></param>
         /// <returns></returns>
         public bool CanEnter(Unit unit)
         {
+            if (this.unit != null) return false;
+            if (structure != null && structure.owner != unit.owner) return false;
             switch (unit.type.unitClass)
             {
                 case UnitClass.INFANTRY: return land;
@@ -189,6 +213,16 @@ namespace Server
         #endregion
 
         /// <summary>
+        /// Is there something hostile to the given player on this tile.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns></returns>
+        public bool Hostile(Player player)
+        {
+            return (unit != null && unit.owner != player) || (structure != null && structure.owner != player);
+        }
+
+        /// <summary>
         /// Set the feature on this tile.
         /// </summary>
         /// <param name="feature"></param>
@@ -206,17 +240,6 @@ namespace Server
         public void SetStructure(Structure structure)
         {
             this.structure = structure;
-
-            UpdateState();
-        }
-
-        /// <summary>
-        /// Place the unit on this tile.
-        /// </summary>
-        /// <param name="unit"></param>
-        public void SetUnit(Unit unit)
-        {
-            this.unit = unit;
 
             UpdateState();
         }
@@ -245,7 +268,11 @@ namespace Server
         {
             Unit unit = (Unit)agent;
             TileData state = unit.owner.currentState.GetTile(coords);
-            if (state.discovered) return MovementCost(unit);
+            if (state.discovered)
+            {
+                if (unit.moves == 1) return 1;
+                return MovementCost(unit);
+            }
             return 10;
         }
 

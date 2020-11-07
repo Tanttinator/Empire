@@ -66,7 +66,7 @@ namespace Common
             GameController.GetPlayer(ID).EndTurn();
         }
 
-        public static void ExecuteCommand(int ID, PlayerCommand command)
+        public static void ExecuteCommand(int ID, UnitCommand command)
         {
             if (GameController.GetPlayer(ID) is Human human) human.ExecuteCommand(command);
         }

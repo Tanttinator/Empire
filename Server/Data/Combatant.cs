@@ -11,40 +11,21 @@ namespace Server
         public Tile tile { get; protected set; }
         Tile[] visibleTiles;
 
-        public void SetTile(Tile tile)
-        {
-            Tile oldTile = this.tile;
-            this.tile = tile;
-            OnTileChanged(tile, oldTile);
-            RefreshVision();
-        }
-
-        protected virtual void OnTileChanged(Tile tile, Tile oldTile)
-        {
-
-        }
-
-        public void SetOwner(Player owner)
+        public virtual void SetTile(Tile tile)
         {
             RemoveObserver();
-            Player oldOwner = this.owner;
-            this.owner = owner;
-            OnOwnerChanged(owner, oldOwner);
+            this.tile = tile;
             AddObserver();
         }
 
-        protected virtual void OnOwnerChanged(Player owner, Player oldOwner)
+        public virtual void SetOwner(Player owner)
         {
-
+            RemoveObserver();
+            this.owner = owner;
+            AddObserver();
         }
 
         #region Vision
-
-        void RefreshVision()
-        {
-            RemoveObserver();
-            AddObserver();
-        }
 
         protected void RemoveObserver()
         {
@@ -55,7 +36,7 @@ namespace Server
             }
         }
 
-        void AddObserver()
+        protected void AddObserver()
         {
             if (tile == null) return;
             visibleTiles = GetTilesInVision();
@@ -100,17 +81,17 @@ namespace Server
                     CommunicationController.SpawnExplosion(defender.tile, attacker.tile);
                     defenderDead = defender.TakeDamage();
                 }
+            }
 
-                if (attackerDead)
-                {
-                    attacker.OnDefeat(defender);
-                }
+            if (attackerDead)
+            {
+                attacker.OnDefeat(defender);
+            }
 
-                if (defenderDead)
-                {
-                    attacker.OnVictory(defender);
-                    defender.OnDefeat(attacker);
-                }
+            if (defenderDead)
+            {
+                defender.OnDefeat(attacker);
+                attacker.OnVictory(defender);
             }
 
             CommunicationController.UpdateState(0.3f);

@@ -20,8 +20,10 @@ namespace Server
             owner = GameController.neutral;
         }
 
-        protected override void OnOwnerChanged(Player owner, Player oldOwner)
+        public override void SetOwner(Player owner)
         {
+            Player oldOwner = this.owner;
+            base.SetOwner(owner);
             tile?.UpdateState();
             tile?.UpdateState(oldOwner);
         }

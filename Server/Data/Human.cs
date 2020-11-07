@@ -16,10 +16,10 @@ namespace Server
         }
 
         /// <summary>
-        /// Try to execute a command given by the player.
+        /// Issue a command to the active unit.
         /// </summary>
         /// <param name="command"></param>
-        public void ExecuteCommand(PlayerCommand command)
+        public void ExecuteCommand(UnitCommand command)
         {
             command.Execute(this, ActiveUnit);
         }

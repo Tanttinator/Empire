@@ -69,10 +69,10 @@ namespace Server
             tile?.UpdateState(owner);
         }
 
-        protected override void OnOwnerChanged(Player owner, Player oldOwner)
+        public override void SetOwner(Player owner)
         {
-            base.OnOwnerChanged(owner, oldOwner);
-            oldOwner?.RemoveCity(this);
+            this.owner?.RemoveCity(this);
+            base.SetOwner(owner);
             owner.AddCity(this);
             SetProduction(Unit.infantry);
         }
@@ -97,7 +97,6 @@ namespace Server
                 else
                 {
                     SetOwner(enemy.owner);
-                    unit.SetTile(tile);
                     efficiency -= 5;
                 }
             }

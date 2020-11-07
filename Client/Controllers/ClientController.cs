@@ -84,11 +84,6 @@ namespace Client
             if (activePlayer == player) Sequencer.AddSequence(sequence);
         }
 
-        public static void ExecuteCommand(PlayerCommand command)
-        {
-            CommunicationController.ExecuteCommand(activePlayer, command);
-        }
-
         public static void ChangeActivePlayer(int player)
         {
             activePlayer = player;
