@@ -20,10 +20,10 @@ namespace Client
 
         public static void Show(TileData data)
         {
-            ShowTileInfo(data, data.unit, data.structure);
+            ShowTileInfo(data, data.structure);
         }
 
-        static void ShowTileInfo(TileData data, UnitData unit, StructureData structure)
+        static void ShowTileInfo(TileData data, StructureData structure)
         {
             instance.locationText.text = "Location: " + data.coords.x + ", " + data.coords.y;
             instance.infoText.text = data.ToString();
@@ -31,9 +31,9 @@ namespace Client
             instance.actionButtonContainer.Clear();
 
             if(structure is CityData)
-                AddAction(new ButtonAction("City", () => ShowCityInfo(data, unit, structure)));
-            if(unit != null)
-                AddAction(new ButtonAction("Unit", () => ShowUnitInfo(data, unit, structure)));
+                AddAction(new ButtonAction("City", () => ShowCityInfo(data, structure)));
+            /*if(unit != null)
+                AddAction(new ButtonAction("Unit", () => ShowUnitInfo(data, unit, structure)));*/
 
             instance.hidable.Show();
         }
@@ -46,11 +46,11 @@ namespace Client
             instance.actionButtonContainer.Clear();
 
             if (structure is CityData)
-                AddAction(new ButtonAction("City", () => ShowCityInfo(data, unit, structure)));
-            AddAction(new ButtonAction("Tile", () => ShowTileInfo(data, unit, structure)));
+                AddAction(new ButtonAction("City", () => ShowCityInfo(data, structure)));
+            AddAction(new ButtonAction("Tile", () => ShowTileInfo(data, structure)));
         }
 
-        static void ShowCityInfo(TileData data, UnitData unit, StructureData structure)
+        static void ShowCityInfo(TileData data, StructureData structure)
         {
             CityData city = (CityData)structure;
             instance.locationText.text = "Location: " + data.coords.x + ", " + data.coords.y;
@@ -63,9 +63,9 @@ namespace Client
 
             instance.actionButtonContainer.Clear();
 
-            if (unit != null)
-                AddAction(new ButtonAction("Unit", () => ShowUnitInfo(data, unit, structure)));
-            AddAction(new ButtonAction("Tile", () => ShowTileInfo(data, unit, structure)));
+            /*if (unit != null)
+                AddAction(new ButtonAction("Unit", () => ShowUnitInfo(data, unit, structure)));*/
+            AddAction(new ButtonAction("Tile", () => ShowTileInfo(data, structure)));
             AddAction(new ButtonAction("Production", () => { CityProductionUI.Show(city); instance.hidable.Hide(); }));
         }
 

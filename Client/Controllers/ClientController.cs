@@ -331,25 +331,26 @@ namespace Client
     {
         public override void Update()
         {
-            if (ClientController.ActiveUnit != null) ClientController.ChangeState(new UnitSelectedState(ClientController.ActiveUnit.tile));
+            if (ClientController.ActiveUnit != null) ClientController.ChangeState(new UnitSelectedState(ClientController.ActiveUnit));
             base.Update();
         }
     }
 
     public class UnitSelectedState : CameraMoveState
     {
-        UnitGraphics unit;
-        Coords pos;
+        UnitData unit;
+        UnitGraphics gfx;
 
-        public UnitSelectedState(Coords unit)
+        public UnitSelectedState(UnitData unit)
         {
-            pos = unit;
-            this.unit = World.GetTileGraphics(unit).Unit;
+            this.unit = unit;
+            gfx = World.GetTileGraphics(unit.tile).Unit;
         }
 
         public override void Start(Coords hoverTile)
         {
-            unit.SetIdle(true);
+            gfx.SetActiveUnit(unit);
+            gfx.StartIdle();
         }
 
         public override void Update()
@@ -362,7 +363,7 @@ namespace Client
 
         public override void End()
         {
-            unit.SetIdle(false);
+            gfx.StopIdle();
         }
 
         public override void Click(int button, Coords hoverTile)
@@ -379,7 +380,7 @@ namespace Client
             base.DragStart(button);
             if (button == 1)
             {
-                ClientController.ChangeState(new DragMoveState(pos, unit));
+                ClientController.ChangeState(new DragMoveState(unit.tile, gfx));
             }
         }
     }
@@ -397,7 +398,7 @@ namespace Client
 
         public override void Start(Coords hoverTile)
         {
-            unit.SetIdle(false);
+            unit.StopIdle();
             ClientController.DrawMovementIndicator(pos, hoverTile);
         }
 

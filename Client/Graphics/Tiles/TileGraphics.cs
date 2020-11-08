@@ -41,7 +41,7 @@ namespace Client
                     featureGfx.sprite = featureSprite.sprite;
                     featureGfx.transform.rotation = Quaternion.Euler(0f, 0f, featureSprite.rotation);
                 }
-                unitGfx.SetUnit(state.visible, state.unit);
+                unitGfx.SetUnit(state.unit);
                 structureGfx.SetStructure(state.structure);
                 fogOfWar.enabled = !state.visible;
                 unexplored.enabled = false;

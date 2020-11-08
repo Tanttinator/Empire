@@ -73,7 +73,16 @@ namespace Server
         public void UpdateTile(TileData tile)
         {
             currentState.UpdateTile(tile);
-            CommunicationController.UpdateTile(this, tile);
+        }
+
+        public void UpdateUnit(UnitData unit)
+        {
+            currentState.UpdateUnit(unit);
+        }
+
+        public void DestroyUnit(int unit)
+        {
+            currentState.RemoveUnit(unit);
         }
 
         public void UpdatePlayer(PlayerData player)

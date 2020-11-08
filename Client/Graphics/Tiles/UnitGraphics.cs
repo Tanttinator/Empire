@@ -10,65 +10,87 @@ namespace Client
         [SerializeField] SpriteRenderer unitSprite = default;
         [SerializeField] SpriteRenderer unitBackground = default;
 
-        bool shown = false;
-
         bool idle = false;
+        bool idleOn = true;
         float idleTimer = 0f;
         [SerializeField] float idleFrequency = 1f;
 
         Color playerColor = Color.white;
 
+        UnitData unit;
+        UnitData activeUnit;
+
         /// <summary>
         /// Set the type of unit to be shown.
         /// </summary>
         /// <param name="unit"></param>
-        public void SetUnit(bool visible, UnitData unit)
+        public void SetUnit(int unit)
         {
-            if (unit == null) Hide();
-            else
+            this.unit = ClientController.gameState.GetUnit(unit);
+            SetActiveUnit(this.unit);
+        }
+
+        public void SetActiveUnit(UnitData unit)
+        {
+            activeUnit = unit;
+            ShowGraphics(unit);
+        }
+
+        void ShowGraphics(UnitData unit)
+        {
+            if (unit == null)
             {
-                unitSprite.sprite = SpriteRegistry.GetSprite(unit.unitType).GetSprite(false, false, false, false).sprite;
-                playerColor = ClientController.gameState.GetPlayer(unit.owner).color;
-                unitSprite.color = playerColor;
-                Color backgroundColor = playerColor;
-                if (unit.sleeping) backgroundColor = Color.white;
-                if (!visible) backgroundColor = new Color(0.2f, 0.2f, 0.2f, 1f);
-                unitBackground.color = backgroundColor;
-                Show();
+                Hide();
+                return;
             }
-        }
 
-        /// <summary>
-        /// Start / Stop unit idle animation.
-        /// </summary>
-        /// <param name="idle"></param>
-        public void SetIdle(bool idle)
-        {
-            this.idle = idle;
-            idleTimer = idleFrequency / 1.1f;
-            unitSprite.enabled = shown;
-            unitBackground.enabled = shown;
-        }
+            unitSprite.sprite = SpriteRegistry.GetSprite(unit.unitType).GetSprite(false, false, false, false).sprite;
+            playerColor = ClientController.gameState.GetPlayer(unit.owner).color;
+            unitSprite.color = playerColor;
+            Color backgroundColor = playerColor;
+            if (unit.sleeping) backgroundColor = Color.white;
+            unitBackground.color = backgroundColor;
 
-        /// <summary>
-        /// Make this graphic visible.
-        /// </summary>
-        public void Show()
-        {
             unitSprite.enabled = true;
             unitBackground.enabled = true;
-            shown = true;
         }
 
-        /// <summary>
-        /// Make this graphic invisible.
-        /// </summary>
-        public void Hide()
+        void Hide()
         {
             unitSprite.enabled = false;
             unitBackground.enabled = false;
-            shown = false;
-            SetIdle(false);
+        }
+
+        public void StartIdle()
+        {
+            idle = true;
+            idleTimer = idleFrequency / 1.1f;
+            IdleOn();
+        }
+
+        public void StopIdle()
+        {
+            idle = false;
+            ShowGraphics(activeUnit);
+        }
+
+        void ToggleIdle()
+        {
+            if (idleOn) IdleOff();
+            else IdleOn();
+        }
+
+        void IdleOn()
+        {
+            ShowGraphics(activeUnit);
+            idleOn = true;
+        }
+
+        void IdleOff()
+        {
+            if (activeUnit == unit) Hide();
+            else ShowGraphics(unit);
+            idleOn = false;
         }
 
         private void Awake()
@@ -78,13 +100,12 @@ namespace Client
 
         private void Update()
         {
-            if (idle && shown)
+            if (idle)
             {
                 idleTimer += Time.deltaTime;
                 if (idleTimer >= idleFrequency)
                 {
-                    unitSprite.enabled = !unitSprite.enabled;
-                    unitBackground.enabled = !unitBackground.enabled;
+                    ToggleIdle();
                     idleTimer = 0f;
                 }
             }

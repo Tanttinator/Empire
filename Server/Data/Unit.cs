@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Common;
+using System.Linq;
 
 namespace Server
 {
@@ -15,13 +16,24 @@ namespace Server
         public bool sleeping { get; protected set; } = false;
         public int fuel { get; protected set; }
 
+        int RemainingCargoSpace
+        {
+            get
+            {
+                int space = 0;
+                foreach (Unit unit in cargo) space += unit.type.cargoSize;
+                return type.cargoSpace - space;
+            }
+        }
+        List<Unit> cargo = new List<Unit>();
+
         Tile target;
         Queue<Tile> currentPath;
 
-        public static UnitType infantry = new UnitType("Infantry", UnitClass.INFANTRY, 1, 1, 500);
-        public static UnitType tank = new UnitType("Tank", UnitClass.VEHICLE, 2, 2, 1000);
-        public static UnitType fighter = new UnitType("Fighter", UnitClass.PLANE, 5, 1, 1000, 20);
-        public static UnitType transport = new UnitType("Transport", UnitClass.SHIP, 2, 2, 1500);
+        public static UnitType infantry = new UnitType("Infantry", UnitClass.INFANTRY, 1, 1, 200);
+        public static UnitType tank = new UnitType("Tank", UnitClass.VEHICLE, 2, 2, 200, -1, 2);
+        public static UnitType fighter = new UnitType("Fighter", UnitClass.PLANE, 5, 1, 200, 20);
+        public static UnitType transport = new UnitType("Transport", UnitClass.SHIP, 2, 2, 200, -1, 1, 6, infantry, tank);
 
         public static UnitType[] units = new UnitType[]
         {
@@ -43,6 +55,7 @@ namespace Server
             SetHealth(type.maxHealth);
             SetOwner(owner);
             SetTile(tile);
+            tile.PlaceUnit(this);
             Refuel();
 
             owner.AddUnit(this);
@@ -52,23 +65,26 @@ namespace Server
 
         public override void SetTile(Tile tile)
         {
-            this.tile?.RemoveUnit(this);
-            RemoveObserver();
-            this.tile = tile;
-            tile.PlaceUnit(this);
-            AddObserver();
+            base.SetTile(tile);
+            foreach (Unit unit in cargo) unit.SetTile(tile);
+            UpdateState();
         }
 
         /// <summary>
-        /// Try to move to the given target.
+        /// Moves the unit onto the tile.
         /// </summary>
         /// <param name="tile"></param>
         /// <returns></returns>
         public bool Move(Tile tile)
         {
             if (!tile.CanEnter(this)) return false;
+
+            this.tile.RemoveUnit(this);
             SetTile(tile);
+            tile.PlaceUnit(this);
+
             moves -= tile.MovementCost(this);
+
             CommunicationController.UpdateState(0.3f);
 
             if (fuel != -1)
@@ -83,6 +99,20 @@ namespace Server
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Moves the unit into the cargo space of another unit.
+        /// </summary>
+        /// <param name="unit"></param>
+        public void MoveToCargo(Unit unit)
+        {
+            tile.RemoveUnit(this);
+            unit.AddCargo(this);
+            SetTile(unit.tile);
+            moves = 0;
+
+            CommunicationController.UpdateState(0.3f);
         }
 
         /// <summary>
@@ -122,6 +152,8 @@ namespace Server
             tile.RemoveUnit(this);
             moves = 0;
 
+            foreach (Player player in tile.SeenBy) player.DestroyUnit(ID);
+
             RemoveObserver();
         }
 
@@ -149,6 +181,31 @@ namespace Server
 
         #endregion
 
+        #region Cargo
+
+        /// <summary>
+        /// Add a unit to this units cargo space.
+        /// </summary>
+        /// <param name="unit"></param>
+        void AddCargo(Unit unit)
+        {
+            cargo.Add(unit);
+            unit.SetTile(tile);
+            unit.moves = 0;
+            CommunicationController.UpdateState(0.3f);
+        }
+
+        /// <summary>
+        /// Can we add the given unit to our cargo space?
+        /// </summary>
+        /// <param name="unit"></param>
+        /// <returns></returns>
+        bool CanEnterCargo(Unit unit)
+        {
+            return type.cargoTypes.Contains(unit.type) && RemainingCargoSpace >= unit.type.cargoSize;
+        }
+        #endregion
+
         /// <summary>
         /// Called when another unit tries to interact with this unit.
         /// </summary>
@@ -161,6 +218,13 @@ namespace Server
                 Battle(unit, this);
                 return true;
             }
+
+            if (CanEnterCargo(unit))
+            {
+                unit.MoveToCargo(this);
+                return true;
+            }
+
             return false;
         }
 
@@ -185,7 +249,8 @@ namespace Server
 
                 if (nextTile == target)
                 {
-                    if(!nextTile.Interact(this)) target = null;
+                    nextTile.Interact(this);
+                    target = null;
                 }
                 else if (nextTile.Hostile(owner)) target = null;
                 else if (!Move(nextTile)) GeneratePath();
@@ -210,8 +275,16 @@ namespace Server
         {
             this.sleeping = sleeping;
             moves = 0;
-            tile.UpdateState();
+            UpdateState();
             CommunicationController.UpdateState(0f);
+        }
+
+        /// <summary>
+        /// Update the state of this unit to all players who see it.
+        /// </summary>
+        void UpdateState()
+        {
+            foreach(Player player in tile.SeenBy) player.UpdateUnit(GetData());
         }
 
         public UnitData GetData()
@@ -234,7 +307,6 @@ namespace Server
         public static Unit CreateUnit(UnitType type, Tile tile, Player owner)
         {
             Unit unit = new Unit(type, tile, owner);
-            tile.UpdateState();
             return unit;
         }
     }

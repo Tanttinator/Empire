@@ -11,6 +11,7 @@ namespace Common
         PlayerData[] players;
         TileData[,] tiles;
         Dictionary<int, UnitData> units;
+        public UnitData[] Units => units.Values.ToArray();
 
         public GameState(int mapWidth, int mapHeight, PlayerData[] players)
         {
@@ -41,10 +42,16 @@ namespace Common
         {
             Coords coords = tile.coords;
             tiles[coords.x, coords.y] = tile;
-            if(tile.unit != null)
-            {
-                units[tile.unit.ID] = tile.unit;
-            }
+        }
+
+        public void UpdateUnit(UnitData unit)
+        {
+            units[unit.ID] = unit;
+        }
+
+        public void RemoveUnit(int unit)
+        {
+            units.Remove(unit);
         }
 
         public void UpdatePlayer(PlayerData player)

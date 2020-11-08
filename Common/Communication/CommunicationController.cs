@@ -37,16 +37,6 @@ namespace Common
             ClientController.DeselectUnit();
         }
 
-        public static void UpdateTile(Player player, TileData tile)
-        {
-            //ClientController.UpdateTile(player.ID, tile);
-        }
-
-        public static void UpdatePlayer(Player player)
-        {
-            //ClientController.UpdatePlayer(player.ID, player.GetData());
-        }
-
         public static void UpdateState(float delay)
         {
             foreach (Player player in GameController.players) ClientController.UpdateState(player.ID, player.currentState.Clone());

@@ -88,7 +88,7 @@ namespace Server
                     ConnectFeatureTexture(Direction.SOUTH),
                     ConnectFeatureTexture(Direction.WEST)
                 },
-                unit = (unit != null ? unit.GetData() : null),
+                unit = (unit != null ? unit.ID : -1),
                 structure = (structure != null ? structure.GetData() : null),
                 visible = SeenBy.Contains(player)
             };
