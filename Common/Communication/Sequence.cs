@@ -34,7 +34,7 @@ namespace Common
 
         public override void Start()
         {
-            ClientController.ChangeState(new CameraMoveState());
+            InputController.ChangeState(new CameraMoveState());
         }
 
         public override bool Update()
@@ -45,7 +45,7 @@ namespace Common
 
         public override void End()
         {
-            ClientController.ChangeState(new DefaultState());
+            InputController.ChangeState(new DefaultState());
         }
     }
     public class ControlSequence : DelaySequence
@@ -115,7 +115,7 @@ namespace Common
             {
                 promptClosed = false;
                 PromptUI.Show(state.GetPlayer(player).name + "\nTurn " + turn, state.GetPlayer(player).color, () => promptClosed = true);
-                ClientController.CameraController.Translate(World.GetTilePosition(focusTile) - ClientController.CameraController.transform.position);
+                ClientController.CameraController.Translate(WorldGraphics.GetTilePosition(focusTile) - ClientController.CameraController.transform.position);
             }
 
             ClientController.ChangeActivePlayer(player);
@@ -139,7 +139,7 @@ namespace Common
         public override void Start()
         {
             base.Start();
-            ClientController.CameraController.MoveTowards(World.GetTilePosition(ClientController.gameState.GetUnit(unit).tile));
+            ClientController.CameraController.MoveTowards(WorldGraphics.GetTilePosition(ClientController.gameState.GetUnit(unit).tile));
         }
 
         public override bool Update()
@@ -163,7 +163,7 @@ namespace Common
         public override void Start()
         {
             base.Start();
-            World.SpawnExplosion(tile);
+            WorldGraphics.SpawnExplosion(tile);
         }
     }
 }

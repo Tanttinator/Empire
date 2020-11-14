@@ -55,7 +55,7 @@ namespace Server
             foreach (Player player in players) player.Initialize(allPlayers);
             neutral.Initialize(allPlayers);
 
-            CommunicationController.Initialize(World.Width, World.Height, allPlayers, Unit.units);
+            CommunicationController.Initialize(World.Width, World.Height, Unit.unitTypes);
 
             World.GenerateWorld(players);
 

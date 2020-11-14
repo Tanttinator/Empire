@@ -7,7 +7,7 @@ namespace Server
 {
     public class Human : Player
     {
-        public Unit ActiveUnit => (activeUnits.Count > 0 ? activeUnits[0] : null);
+        Unit selectedUnit = null;
         List<Unit> activeUnits = new List<Unit>();
 
         public Human(string name, Color color) : base(name, color)
@@ -21,7 +21,7 @@ namespace Server
         /// <param name="command"></param>
         public void ExecuteCommand(UnitCommand command)
         {
-            command.Execute(this, ActiveUnit);
+            command.Execute(this, selectedUnit);
         }
 
         /// <summary>
@@ -29,23 +29,29 @@ namespace Server
         /// </summary>
         public void NextUnit()
         {
-            if (activeUnits.Count == 0) return;
-
-            activeUnits.RemoveAt(0);
-            CommunicationController.DeselectUnit();
-
+            DeselectUnit();
             if (activeUnits.Count == 0) CommunicationController.TurnCompleted(this);
-            else SelectUnit(ActiveUnit);
+            else SelectUnit(activeUnits[0]);
         }
 
         /// <summary>
         /// Set a unit as active.
         /// </summary>
         /// <param name="unit"></param>
-        void SelectUnit(Unit unit)
+        public void SelectUnit(Unit unit)
         {
             if (unit == null) return;
+            DeselectUnit();
+            activeUnits.Remove(unit);
+            selectedUnit = unit;
             CommunicationController.SelectUnit(unit);
+        }
+
+        void DeselectUnit()
+        {
+            if (selectedUnit == null) return;
+            selectedUnit = null;
+            CommunicationController.DeselectUnit();
         }
 
         protected override void OnTurnStarted()
@@ -60,9 +66,9 @@ namespace Server
                 return;
             }
 
-            CommunicationController.StartTurn(this);
+            CommunicationController.StartTurn(this, activeUnits[0]);
 
-            SelectUnit(ActiveUnit);
+            SelectUnit(activeUnits[0]);
         }
 
         protected override void OnTurnEnded()
@@ -72,8 +78,8 @@ namespace Server
 
         public override void DoTurn()
         {
-            if (ActiveUnit == null) return;
-            if (ActiveUnit.DoTurn()) NextUnit();
+            if (selectedUnit == null) return;
+            if (selectedUnit.DoTurn()) NextUnit();
         }
     }
 }

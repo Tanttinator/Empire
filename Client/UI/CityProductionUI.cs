@@ -53,7 +53,7 @@ namespace Client
             foreach (UnitType unit in ClientController.unitTypes) AddUnit(city, unit, ClientController.gameState.GetPlayer(city.owner).color);
 
             instance.noProduction.onValueChanged.RemoveAllListeners();
-            instance.noProduction.isOn = selectedUnit == null;
+            instance.noProduction.interactable = instance.noProduction.isOn = selectedUnit == null;
             instance.noProduction.onValueChanged.AddListener((value) => { if (value) { ToggleUnit(null, value); }; instance.noProduction.interactable = !value; });
 
             instance.hidable.Show();

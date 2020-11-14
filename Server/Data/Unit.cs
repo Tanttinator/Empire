@@ -26,16 +26,17 @@ namespace Server
             }
         }
         List<Unit> cargo = new List<Unit>();
+        Unit transportedIn = null;
 
         Tile target;
         Queue<Tile> currentPath;
 
-        public static UnitType infantry = new UnitType("Infantry", UnitClass.INFANTRY, 1, 1, 200);
-        public static UnitType tank = new UnitType("Tank", UnitClass.VEHICLE, 2, 2, 200, -1, 2);
-        public static UnitType fighter = new UnitType("Fighter", UnitClass.PLANE, 5, 1, 200, 20);
-        public static UnitType transport = new UnitType("Transport", UnitClass.SHIP, 2, 2, 200, -1, 1, 6, infantry, tank);
+        public static UnitType infantry = new UnitType("Infantry", UnitClass.INFANTRY, 1, 1, 400);
+        public static UnitType tank = new UnitType("Tank", UnitClass.VEHICLE, 2, 2, 800, -1, 2);
+        public static UnitType fighter = new UnitType("Fighter", UnitClass.PLANE, 5, 1, 800, 20);
+        public static UnitType transport = new UnitType("Transport", UnitClass.SHIP, 2, 2, 1500, -1, 1, 6, infantry, tank);
 
-        public static UnitType[] units = new UnitType[]
+        public static UnitType[] unitTypes = new UnitType[]
         {
             infantry,
             tank,
@@ -43,12 +44,11 @@ namespace Server
             transport
         };
 
-        static int nextID = 0;
+        static List<Unit> units = new List<Unit>();
 
         public Unit(UnitType type, Tile tile, Player owner)
         {
-            ID = nextID;
-            nextID++;
+            ID = units.Count;
 
             this.type = type;
 
@@ -59,6 +59,8 @@ namespace Server
             Refuel();
 
             owner.AddUnit(this);
+
+            units.Add(this);
         }
 
         #region Movement
@@ -80,6 +82,9 @@ namespace Server
             if (!tile.CanEnter(this)) return false;
 
             this.tile.RemoveUnit(this);
+            if (transportedIn != null) transportedIn.RemoveCargo(this);
+            if (sleeping) sleeping = false;
+
             SetTile(tile);
             tile.PlaceUnit(this);
 
@@ -108,6 +113,9 @@ namespace Server
         public void MoveToCargo(Unit unit)
         {
             tile.RemoveUnit(this);
+            if (transportedIn != null) transportedIn.RemoveCargo(this);
+            if (sleeping) sleeping = false;
+
             unit.AddCargo(this);
             SetTile(unit.tile);
             moves = 0;
@@ -190,9 +198,16 @@ namespace Server
         void AddCargo(Unit unit)
         {
             cargo.Add(unit);
-            unit.SetTile(tile);
-            unit.moves = 0;
-            CommunicationController.UpdateState(0.3f);
+            unit.Refuel();
+        }
+
+        /// <summary>
+        /// Remove a unit from this units cargo space.
+        /// </summary>
+        /// <param name="unit"></param>
+        void RemoveCargo(Unit unit)
+        {
+            cargo.Remove(unit);
         }
 
         /// <summary>
@@ -308,6 +323,11 @@ namespace Server
         {
             Unit unit = new Unit(type, tile, owner);
             return unit;
+        }
+
+        public static Unit GetUnit(int ID)
+        {
+            return units[ID];
         }
     }
 }

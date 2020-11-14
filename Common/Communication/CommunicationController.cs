@@ -12,14 +12,14 @@ namespace Common
 
         #region Server -> Client
 
-        public static void Initialize(int width, int height, PlayerData[] players, UnitType[] unitTypes)
+        public static void Initialize(int width, int height, UnitType[] unitTypes)
         {
-            ClientController.Initialize(width, height, players, unitTypes);
+            ClientController.Initialize(width, height, unitTypes);
         }
 
-        public static void StartTurn(Human human)
+        public static void StartTurn(Human human, Unit selectedUnit)
         {
-            ClientController.StartTurn(human.ID, GameController.turn, human.currentState.Clone(), human.ActiveUnit.tile.coords);
+            ClientController.StartTurn(human.ID, GameController.turn, human.currentState.Clone(), selectedUnit.tile.coords);
         }
 
         public static void TurnCompleted(Player player)
@@ -64,6 +64,11 @@ namespace Common
         public static void SetProduction(int city, UnitType unit)
         {
             City.cities[city].SetProduction(unit);
+        }
+
+        public static void SetActiveUnit(int player, int unit)
+        {
+            if (GameController.GetPlayer(player) is Human human) human.SelectUnit(Unit.GetUnit(unit));
         }
 
         #endregion

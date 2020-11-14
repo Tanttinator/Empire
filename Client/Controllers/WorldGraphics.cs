@@ -8,7 +8,7 @@ namespace Client
     /// <summary>
     /// Responsible for the graphical representation of the world.
     /// </summary>
-    public class World : MonoBehaviour
+    public class WorldGraphics : MonoBehaviour
     {
 
         [SerializeField] TileGraphics tileObject = default;
@@ -18,15 +18,15 @@ namespace Client
         static int width;
         static int height;
 
-        static World instance;
+        static WorldGraphics instance;
 
         /// <summary>
         /// Create all tile objects.
         /// </summary>
         public static void InitTiles(int width, int height)
         {
-            World.width = width;
-            World.height = height;
+            WorldGraphics.width = width;
+            WorldGraphics.height = height;
 
             tiles = new TileGraphics[width, height];
 
