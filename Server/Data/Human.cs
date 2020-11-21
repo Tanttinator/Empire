@@ -24,32 +24,31 @@ namespace Server
             command.Execute(this, selectedUnit);
         }
 
-        /// <summary>
-        /// Removes current unit from the list of active units.
-        /// </summary>
-        public void NextUnit()
+        public void SetUnitInactive(Unit unit)
         {
-            DeselectUnit();
-            if (activeUnits.Count == 0) CommunicationController.TurnCompleted(this);
-            else SelectUnit(activeUnits[0]);
+            bool wasSelected = selectedUnit == unit;
+
+            if (wasSelected) DeselectUnit();
+
+            activeUnits.Remove(unit);
+
+            if (wasSelected)
+            {
+                if (activeUnits.Count == 0) CommunicationController.TurnCompleted(this);
+                else SelectUnit(activeUnits[0]);
+            }
         }
 
-        /// <summary>
-        /// Set a unit as active.
-        /// </summary>
-        /// <param name="unit"></param>
         public void SelectUnit(Unit unit)
         {
-            if (unit == null) return;
-            DeselectUnit();
-            activeUnits.Remove(unit);
+            if (unit.moves == 0) return;
+            if (selectedUnit != null) DeselectUnit();
             selectedUnit = unit;
             CommunicationController.SelectUnit(unit);
         }
 
         void DeselectUnit()
         {
-            if (selectedUnit == null) return;
             selectedUnit = null;
             CommunicationController.DeselectUnit();
         }
@@ -79,7 +78,7 @@ namespace Server
         public override void DoTurn()
         {
             if (selectedUnit == null) return;
-            if (selectedUnit.DoTurn()) NextUnit();
+            if (selectedUnit.DoTurn()) SetUnitInactive(selectedUnit);
         }
     }
 }

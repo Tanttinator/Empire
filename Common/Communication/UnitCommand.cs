@@ -29,7 +29,7 @@ namespace Common
     {
         public override void Execute(Human human, Unit unit)
         {
-            human.NextUnit();
+            human.SetUnitInactive(unit);
         }
     }
 

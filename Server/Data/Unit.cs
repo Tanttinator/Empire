@@ -162,6 +162,8 @@ namespace Server
 
             foreach (Player player in tile.SeenBy) player.DestroyUnit(ID);
 
+            foreach (Unit unit in cargo) unit.Destroy();
+
             RemoveObserver();
         }
 

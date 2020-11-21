@@ -22,9 +22,9 @@ namespace Common
             ClientController.StartTurn(human.ID, GameController.turn, human.currentState.Clone(), selectedUnit.tile.coords);
         }
 
-        public static void TurnCompleted(Player player)
+        public static void TurnCompleted(Human human)
         {
-            ClientController.TurnCompleted(player.ID);
+            ClientController.TurnCompleted(human.ID);
         }
 
         public static void SelectUnit(Unit unit)
