@@ -24,6 +24,22 @@ namespace Server
             command.Execute(this, selectedUnit);
         }
 
+        /// <summary>
+        /// Activate all units within this units cargo.
+        /// </summary>
+        /// <param name="unit"></param>
+        public void UnloadUnit(Unit unit)
+        {
+            if (unit.Cargo.Length == 0) return;
+
+            foreach(Unit other in unit.Cargo)
+            {
+                activeUnits.Remove(other);
+                activeUnits.Insert(0, other);
+            }
+            SelectUnit(activeUnits[0]);
+        }
+
         public void SetUnitInactive(Unit unit)
         {
             bool wasSelected = selectedUnit == unit;

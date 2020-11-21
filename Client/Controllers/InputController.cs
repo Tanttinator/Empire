@@ -208,6 +208,7 @@ namespace Client
 
             if (Input.GetKeyDown(KeyCode.Space)) CommunicationController.ExecuteCommand(ClientController.activePlayer, new CommandWait());
             if (Input.GetKeyDown(KeyCode.S)) CommunicationController.ExecuteCommand(ClientController.activePlayer, new CommandSleep());
+            if (Input.GetKeyDown(KeyCode.U)) CommunicationController.ExecuteCommand(ClientController.activePlayer, new CommandUnload());
         }
 
         public override void End()

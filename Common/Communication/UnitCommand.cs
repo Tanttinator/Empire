@@ -40,4 +40,12 @@ namespace Common
             unit.SetSleeping(true);
         }
     }
+
+    public class CommandUnload : UnitCommand
+    {
+        public override void Execute(Human human, Unit unit)
+        {
+            human.UnloadUnit(unit);
+        }
+    }
 }

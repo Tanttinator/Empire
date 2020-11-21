@@ -26,6 +26,7 @@ namespace Server
             }
         }
         List<Unit> cargo = new List<Unit>();
+        public Unit[] Cargo => cargo.ToArray();
         Unit transportedIn = null;
 
         Tile target;
@@ -201,6 +202,7 @@ namespace Server
         {
             cargo.Add(unit);
             unit.Refuel();
+            unit.transportedIn = this;
         }
 
         /// <summary>
