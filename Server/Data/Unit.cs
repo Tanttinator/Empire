@@ -161,8 +161,6 @@ namespace Server
             tile.RemoveUnit(this);
             moves = 0;
 
-            foreach (Player player in tile.SeenBy) player.DestroyUnit(ID);
-
             foreach (Unit unit in cargo) unit.Destroy();
 
             RemoveObserver();
@@ -171,6 +169,11 @@ namespace Server
         public void SetHealth(int health)
         {
             this.health = Mathf.Clamp(health, 0, type.maxHealth);
+        }
+
+        protected override int CalculateStrength(Combatant enemy)
+        {
+            return 1;
         }
 
         protected override bool TakeDamage()

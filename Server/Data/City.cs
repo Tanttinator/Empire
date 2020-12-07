@@ -77,6 +77,11 @@ namespace Server
             SetProduction(Unit.infantry);
         }
 
+        protected override int CalculateStrength(Combatant enemy)
+        {
+            return efficiency / 50;
+        }
+
         protected override void OnDefeat(Combatant enemy)
         {
             if(enemy is Unit unit)

@@ -66,20 +66,23 @@ namespace Server
             bool attackerDead = false;
             bool defenderDead = false;
 
+            int attackerStrength = attacker.CalculateStrength(defender);
+            int defenderStrength = defender.CalculateStrength(attacker);
+
             CommunicationController.SpawnExplosion(defender.tile, attacker.tile);
             CommunicationController.SpawnExplosion(attacker.tile, defender.tile);
 
             while (!attackerDead && !defenderDead)
             {
-                if (Random.Range(0, 2) == 0)
-                {
-                    CommunicationController.SpawnExplosion(attacker.tile, defender.tile);
-                    attackerDead = attacker.TakeDamage();
-                }
-                else
+                if (Random.Range(0f, 1f) < attackerStrength * 1f / (attackerStrength + defenderStrength))
                 {
                     CommunicationController.SpawnExplosion(defender.tile, attacker.tile);
                     defenderDead = defender.TakeDamage();
+                }
+                else
+                {
+                    CommunicationController.SpawnExplosion(attacker.tile, defender.tile);
+                    attackerDead = attacker.TakeDamage();
                 }
             }
 
@@ -95,6 +98,11 @@ namespace Server
             }
 
             CommunicationController.UpdateState(0.3f);
+        }
+
+        protected virtual int CalculateStrength(Combatant enemy)
+        {
+            return 1;
         }
 
         protected virtual bool TakeDamage()

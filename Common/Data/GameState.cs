@@ -49,11 +49,6 @@ namespace Common
             units[unit.ID] = unit;
         }
 
-        public void RemoveUnit(int unit)
-        {
-            units.Remove(unit);
-        }
-
         public void UpdatePlayer(PlayerData player)
         {
             players[player.ID] = player;

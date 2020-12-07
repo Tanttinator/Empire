@@ -80,11 +80,6 @@ namespace Server
             currentState.UpdateUnit(unit);
         }
 
-        public void DestroyUnit(int unit)
-        {
-            currentState.RemoveUnit(unit);
-        }
-
         public void UpdatePlayer(PlayerData player)
         {
             currentState.UpdatePlayer(player);
