@@ -65,7 +65,7 @@ namespace Client
             ProductionSelectionToggleUI toggle = instance.units.Add(unit, instance.productionToggle).GetComponent<ProductionSelectionToggleUI>();
             toggle.Setup(unit, color, selectedUnit == unit, (b) => ToggleUnit(unit, b));
 
-            instance.turns.Add(unit, instance.tableCell).GetComponent<TMP_Text>().text = Mathf.CeilToInt(unit.productionCost * 1f / city.efficiency).ToString();
+            instance.turns.Add(unit, instance.tableCell).GetComponent<TMP_Text>().text = Mathf.CeilToInt((unit.productionCost - (city.progress.ContainsKey(unit)? city.progress[unit] : 0)) * 1f / city.efficiency).ToString();
 
             TMP_Text count = instance.counts.Add(unit, instance.tableCell).GetComponent<TMP_Text>();
             count.text = productionCounts[unit].ToString();

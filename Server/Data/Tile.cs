@@ -112,6 +112,7 @@ namespace Server
         public void UpdateState(Player player)
         {
             player.UpdateTile(GetData(player));
+            if (unit != null) player.UpdateUnit(unit.GetData());
         }
 
         /// <summary>

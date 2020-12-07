@@ -7,12 +7,12 @@ namespace Server
 {
     public class City : Structure
     {
-
         public string name { get; protected set; }
+
         public UnitType production { get; protected set; } = Unit.infantry;
+        public Dictionary<UnitType, int> progress = new Dictionary<UnitType, int>();
 
         public int efficiency = 50;
-        int progress = 0;
 
         public static List<City> cities = new List<City>();
 
@@ -29,7 +29,6 @@ namespace Server
         public void SetProduction(UnitType unit)
         {
             production = unit;
-            progress = 0;
             tile.UpdateState(owner);
             owner.UpdatePlayer(owner.GetData());
         }
@@ -59,10 +58,11 @@ namespace Server
             }
             else
             {
-                progress += efficiency;
-                if (progress >= production.productionCost)
+                if (!progress.ContainsKey(production)) progress[production] = 0;
+                progress[production] += efficiency;
+                if (progress[production] >= production.productionCost)
                 {
-                    progress = 0;
+                    progress[production] = 0;
                     Unit.CreateUnit(production, tile, owner);
                 }
             }
@@ -83,11 +83,11 @@ namespace Server
             {
                 if(unit.type.name == "Fighter")
                 {
-                    progress = 0;
+                    progress.Clear();
                 }
                 else if(unit.type.name == "Bomber")
                 {
-                    progress = 0;
+                    progress.Clear();
                     efficiency -= 5;
                 }
                 else if(unit.type.unitClass == UnitClass.SHIP)

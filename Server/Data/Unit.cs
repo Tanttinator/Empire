@@ -301,7 +301,7 @@ namespace Server
         /// <summary>
         /// Update the state of this unit to all players who see it.
         /// </summary>
-        void UpdateState()
+        public void UpdateState()
         {
             foreach(Player player in tile.SeenBy) player.UpdateUnit(GetData());
         }

@@ -58,7 +58,7 @@ namespace Client
                 "\nOwner: " + ClientController.gameState.GetPlayer(city.owner).name + 
                 "\nProduction: " + (
                     city.production == null? "No Production" : 
-                    city.production.name + " (" + Mathf.CeilToInt((city.production.productionCost - city.progress) * 1f / city.efficiency) + ")") + 
+                    city.production.name + " (" + Mathf.CeilToInt((city.production.productionCost - city.progress[city.production]) * 1f / city.efficiency) + ")") + 
                 "\nEfficiency: " + city.efficiency + "%";
 
             instance.actionButtonContainer.Clear();
