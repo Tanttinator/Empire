@@ -149,6 +149,8 @@ namespace Client
             if (Input.GetKey(KeyCode.DownArrow)) ClientController.CameraController.Move(new Vector2(0, -1));
             if (Input.GetKey(KeyCode.LeftArrow)) ClientController.CameraController.Move(new Vector2(-1, 0));
 
+            if (Input.GetKey(KeyCode.Escape)) PauseMenuUI.Show();
+
             ClientController.CameraController.Zoom(Input.GetAxis("Mouse ScrollWheel"));
         }
 
@@ -169,7 +171,7 @@ namespace Client
                 if (hoverTile != null)
                 {
                     TileData tile = ClientController.gameState.GetTile(hoverTile);
-                    if(tile.unit != -1 && tile.unit != ClientController.ActiveUnit.ID) CommunicationController.SetActiveUnit(ClientController.activePlayer, tile.unit);
+                    if (tile.unit != -1 && tile.unit != ClientController.ActiveUnit.ID) CommunicationController.SetActiveUnit(ClientController.activePlayer, tile.unit);
                     else TileInfoUI.Show(tile);
                 }
             }
