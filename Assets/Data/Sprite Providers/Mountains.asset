@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d5afff0581085e49968378688d7bd3b, type: 3}
+  m_Name: Mountains
+  m_EditorClassIdentifier: 
+  none: {fileID: -1819830194433888264, guid: bf1e11f9f57c8c143a1858fbeeeec2aa, type: 3}
+  north: {fileID: -5390007138980725549, guid: bf1e11f9f57c8c143a1858fbeeeec2aa, type: 3}
+  east: {fileID: 6679328326721774694, guid: bf1e11f9f57c8c143a1858fbeeeec2aa, type: 3}
+  south: {fileID: 7466519112198254181, guid: bf1e11f9f57c8c143a1858fbeeeec2aa, type: 3}
+  west: {fileID: 2027243247341836488, guid: bf1e11f9f57c8c143a1858fbeeeec2aa, type: 3}
+  northEast: {fileID: 957950701148466181, guid: bf1e11f9f57c8c143a1858fbeeeec2aa,
+    type: 3}
+  eastSouth: {fileID: -4461801767617157280, guid: bf1e11f9f57c8c143a1858fbeeeec2aa,
+    type: 3}
+  southWest: {fileID: 3273269306210320813, guid: bf1e11f9f57c8c143a1858fbeeeec2aa,
+    type: 3}
+  northWest: {fileID: -1831149535980772623, guid: bf1e11f9f57c8c143a1858fbeeeec2aa,
+    type: 3}
+  northSouth: {fileID: -4908599798893562610, guid: bf1e11f9f57c8c143a1858fbeeeec2aa,
+    type: 3}
+  eastWest: {fileID: 1806072713144872111, guid: bf1e11f9f57c8c143a1858fbeeeec2aa,
+    type: 3}
+  northEastSouth: {fileID: 69908119256519689, guid: bf1e11f9f57c8c143a1858fbeeeec2aa,
+    type: 3}
+  eastSouthWest: {fileID: 2405742227449336345, guid: bf1e11f9f57c8c143a1858fbeeeec2aa,
+    type: 3}
+  northSouthWest: {fileID: 3087155254655696820, guid: bf1e11f9f57c8c143a1858fbeeeec2aa,
+    type: 3}
+  northEastWest: {fileID: 3693546339569780861, guid: bf1e11f9f57c8c143a1858fbeeeec2aa,
+    type: 3}
+  northEastSouthWest: {fileID: -72054252034856396, guid: bf1e11f9f57c8c143a1858fbeeeec2aa,
+    type: 3}

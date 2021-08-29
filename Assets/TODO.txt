@@ -1,0 +1,9 @@
+Unit / city relative strengths
+Show completed units at the start of the turn
+Unit names
+Unit info panel
+City Garrisons
+More units
+Flying
+HUD
+Multiplayer?

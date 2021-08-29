@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d5afff0581085e49968378688d7bd3b, type: 3}
+  m_Name: River
+  m_EditorClassIdentifier: 
+  none: {fileID: -3663761578151886962, guid: bdc27c92e5b09bd4ea8a12ae3164d62e, type: 3}
+  north: {fileID: -7185255062576871469, guid: bdc27c92e5b09bd4ea8a12ae3164d62e, type: 3}
+  northEast: {fileID: 1685728915184137761, guid: bdc27c92e5b09bd4ea8a12ae3164d62e,
+    type: 3}
+  northSouth: {fileID: 1595096408846270116, guid: bdc27c92e5b09bd4ea8a12ae3164d62e,
+    type: 3}
+  northEastSouth: {fileID: 5988303143145752150, guid: bdc27c92e5b09bd4ea8a12ae3164d62e,
+    type: 3}
+  northEastSouthWest: {fileID: -6059524120228918619, guid: bdc27c92e5b09bd4ea8a12ae3164d62e,
+    type: 3}

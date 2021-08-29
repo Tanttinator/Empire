@@ -1,2 +1,2 @@
 # Empire
-Recreation of the game Empire Deluxe for educational purposes.
+Recreation of the game Empire Deluxe in Unity for educational purposes.
